@@ -13,14 +13,20 @@ venv/
 # macOS
 .DS_Store
 
-# Data files (generated at runtime)
+# Generated data (runtime)
+static/data/chroma_db/
+static/data/thumbnails/
 static/data/*.json
 
-# Databases (contain local data)
+# Databases
 *.db
+*.db-shm
+*.db-wal
 *.sqlite
+*.sqlite3
 planhub.db
 govwin.db
+data/project_tracker.db*
 
 # WebDriver
 chromedriver*
@@ -28,14 +34,18 @@ chromedriver*
 # Session files
 session/
 modules/planhub_scraper/session/
+data/planhub_scraper/session/
 
 # Debug artifacts
 debug_screenshots/
 modules/planhub_scraper/debug_screenshots/
+data/planhub_scraper/debug_screenshots/
+data/planhub_scraper/html_fallback/
 
-# IDE
+# IDE / Local settings
 .idea/
 .vscode/
+.claude/
 *.swp
 
 # Temp files
@@ -45,3 +55,11 @@ modules/planhub_scraper/debug_screenshots/
 
 # Windows reserved names
 nul
+
+# Training/reference data (large files)
+CSI_Masterformat/*.json
+CSI_Masterformat/*.jsonl
+CSI_Masterformat/division8_data/
+
+# Draft/snippet files
+files/
