@@ -1,0 +1,461 @@
+/* =============================================================================
+   PROJECT TRACKER - THEME VARIABLES
+   All themes defined via CSS custom properties on [data-theme] attribute
+   ============================================================================= */
+
+/* =============================================================================
+   BRUTALIST THEME (Default) - Bold, raw, intentionally "undesigned"
+   ============================================================================= */
+[data-theme="brutalist"],
+:root {
+  --font-primary: "Inter", "Work Sans", sans-serif;
+  --font-mono: "Space Mono", "JetBrains Mono", monospace;
+  --font-display: "Space Mono", monospace;
+  --font-size-base: 16px;
+  --font-size-sm: 14px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  --font-size-2xl: 32px;
+  --line-height: 1.5;
+
+  /* Colors */
+  --bg-primary: #e0e7ff;
+  --bg-secondary: #F5F5DC;
+  --bg-card: #FFFFFF;
+  --bg-hover: #F0EFE0;
+  --bg-input: #FFFFFF;
+  --bg-sidebar: #1A1A1A;
+
+  --text-primary: #1A1A1A;
+  --text-secondary: #4A4A4A;
+  --text-muted: #6A6A6A;
+  --text-inverse: #FFFFFF;
+  --text-link: #3b82f6;
+
+  --accent-primary: #3b82f6;
+  --accent-primary-hover: #2563eb;
+  --accent-secondary: #4ECDC4;
+  --accent-success: #22c55e;
+  --accent-warning: #facc15;
+  --accent-danger: #ef4444;
+  --accent-info: #3498DB;
+
+  /* Domain-specific colors */
+  --color-dcam: #a855f7;
+  --color-rfq: #06b6d4;
+  --color-local: #3b82f6;
+  --color-projectdog: #22c55e;
+  --color-planhub: #06b6d4;
+
+  /* Accent colors for tags */
+  --accent-yellow: #fef08a;
+  --accent-pink: #f9a8d4;
+  --accent-blue: #93c5fd;
+  --accent-green: #86efac;
+  --accent-orange: #fdba74;
+
+  /* Borders & Shadows */
+  --border-color: #1A1A1A;
+  --border-width: 3px;
+  --border-radius: 0px;
+  --border-radius-sm: 0px;
+  --border-radius-lg: 0px;
+
+  --shadow: 4px 4px 0px #1A1A1A;
+  --shadow-hover: 6px 6px 0px #1A1A1A;
+  --shadow-sm: 2px 2px 0px #1A1A1A;
+  --shadow-lg: 8px 8px 0px #1A1A1A;
+  --shadow-inset: inset 2px 2px 0px rgba(0,0,0,0.1);
+
+  /* Layout */
+  --transition-speed: 0.1s;
+  --transition-timing: ease-out;
+  --spacing-unit: 8px;
+  --sidebar-width: 280px;
+  --header-height: 64px;
+  --max-width: 1600px;
+
+  /* Component specific */
+  --btn-padding: 12px 24px;
+  --btn-font-weight: 600;
+  --card-padding: 24px;
+  --input-padding: 12px 16px;
+  --table-row-height: 48px;
+}
+
+/* =============================================================================
+   FRUIT THEME (Apple/iOS) - Clean, minimal, frosted glass
+   ============================================================================= */
+[data-theme="fruit"] {
+  --font-primary: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, monospace;
+  --font-display: "Inter", -apple-system, sans-serif;
+  --font-size-base: 17px;
+  --font-size-sm: 15px;
+  --font-size-lg: 20px;
+  --font-size-xl: 28px;
+  --font-size-2xl: 34px;
+  --line-height: 1.47;
+
+  /* Colors - Light */
+  --bg-primary: #F5F5F7;
+  --bg-secondary: #FFFFFF;
+  --bg-card: rgba(255, 255, 255, 0.72);
+  --bg-glass: rgba(255, 255, 255, 0.6);
+  --bg-hover: rgba(0, 0, 0, 0.04);
+  --bg-input: rgba(118, 118, 128, 0.12);
+  --bg-sidebar: rgba(255, 255, 255, 0.8);
+
+  --text-primary: #1D1D1F;
+  --text-secondary: #86868B;
+  --text-muted: #AEAEB2;
+  --text-inverse: #FFFFFF;
+  --text-link: #007AFF;
+
+  --accent-primary: #007AFF;
+  --accent-primary-hover: #0066D6;
+  --accent-secondary: #5856D6;
+  --accent-success: #34C759;
+  --accent-warning: #FF9500;
+  --accent-danger: #FF3B30;
+  --accent-info: #5AC8FA;
+
+  /* Domain-specific colors */
+  --color-dcam: #AF52DE;
+  --color-rfq: #5AC8FA;
+  --color-local: #007AFF;
+  --color-projectdog: #34C759;
+  --color-planhub: #5AC8FA;
+
+  /* Accent colors for tags */
+  --accent-yellow: #FFD60A;
+  --accent-pink: #FF2D55;
+  --accent-blue: #5AC8FA;
+  --accent-green: #34C759;
+  --accent-orange: #FF9500;
+
+  /* Borders & Shadows */
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-width: 0.5px;
+  --border-radius: 12px;
+  --border-radius-sm: 8px;
+  --border-radius-lg: 20px;
+
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  --glass-blur: blur(20px) saturate(180%);
+
+  /* Layout */
+  --transition-speed: 0.25s;
+  --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  --spacing-unit: 8px;
+  --sidebar-width: 260px;
+  --header-height: 52px;
+  --max-width: 1200px;
+
+  /* Component specific */
+  --btn-padding: 10px 20px;
+  --btn-font-weight: 500;
+  --card-padding: 20px;
+  --input-padding: 10px 14px;
+  --table-row-height: 44px;
+}
+
+/* Fruit - Dark Mode */
+[data-theme="fruit"][data-mode="dark"] {
+  --bg-primary: #000000;
+  --bg-secondary: #1C1C1E;
+  --bg-card: rgba(28, 28, 30, 0.72);
+  --bg-glass: rgba(44, 44, 46, 0.6);
+  --bg-hover: rgba(255, 255, 255, 0.08);
+  --bg-input: rgba(118, 118, 128, 0.24);
+  --bg-sidebar: rgba(28, 28, 30, 0.8);
+
+  --text-primary: #F5F5F7;
+  --text-secondary: #8E8E93;
+  --text-muted: #636366;
+  --text-inverse: #1D1D1F;
+
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.32);
+}
+
+/* =============================================================================
+   DIAL-UP THEME (90s Internet) - Windows 95, nostalgic, chunky
+   ============================================================================= */
+[data-theme="dialup"] {
+  --font-primary: "VT323", "Courier New", monospace;
+  --font-mono: "VT323", "Courier New", monospace;
+  --font-display: "Press Start 2P", "VT323", monospace;
+  --font-size-base: 20px; /* VT323 needs larger size */
+  --font-size-sm: 18px;
+  --font-size-lg: 24px;
+  --font-size-xl: 14px; /* Press Start 2P is chunky */
+  --font-size-2xl: 18px;
+  --line-height: 1.3;
+
+  /* Colors */
+  --bg-primary: #C0C0C0;
+  --bg-secondary: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-hover: #D4D0C8;
+  --bg-input: #FFFFFF;
+  --bg-sidebar: #000080;
+  --bg-titlebar: linear-gradient(90deg, #000080, #1084D0);
+
+  --text-primary: #000000;
+  --text-secondary: #404040;
+  --text-muted: #808080;
+  --text-inverse: #FFFFFF;
+  --text-link: #0000FF;
+  --text-link-visited: #800080;
+
+  --accent-primary: #000080;
+  --accent-primary-hover: #0000B0;
+  --accent-secondary: #008080;
+  --accent-success: #008000;
+  --accent-warning: #808000;
+  --accent-danger: #FF0000;
+  --accent-info: #0000FF;
+
+  /* Domain-specific colors */
+  --color-dcam: #800080;
+  --color-rfq: #008080;
+  --color-local: #000080;
+  --color-projectdog: #008000;
+  --color-planhub: #008080;
+
+  /* Accent colors for tags */
+  --accent-yellow: #FFFF00;
+  --accent-pink: #FF00FF;
+  --accent-blue: #0000FF;
+  --accent-green: #00FF00;
+  --accent-orange: #FF8000;
+
+  /* Borders - Windows 95 style */
+  --border-color: #808080;
+  --border-light: #FFFFFF;
+  --border-dark: #808080;
+  --border-darker: #404040;
+  --border-width: 2px;
+  --border-radius: 0px;
+  --border-radius-sm: 0px;
+  --border-radius-lg: 0px;
+
+  /* Windows 95 3D effects */
+  --shadow-outset:
+    inset -1px -1px 0 #404040,
+    inset 1px 1px 0 #FFFFFF,
+    inset -2px -2px 0 #808080,
+    inset 2px 2px 0 #DFDFDF;
+  --shadow-inset:
+    inset 1px 1px 0 #404040,
+    inset -1px -1px 0 #FFFFFF,
+    inset 2px 2px 0 #808080,
+    inset -2px -2px 0 #DFDFDF;
+  --shadow: none;
+  --shadow-hover: none;
+  --shadow-sm: none;
+  --shadow-lg: none;
+
+  /* Layout */
+  --transition-speed: 0s; /* Authentic: no transitions */
+  --transition-timing: step-end;
+  --spacing-unit: 4px;
+  --sidebar-width: 200px;
+  --header-height: 28px;
+  --max-width: 800px;
+
+  /* Component specific */
+  --btn-padding: 4px 12px;
+  --btn-font-weight: 400;
+  --card-padding: 8px;
+  --input-padding: 4px 6px;
+  --table-row-height: 24px;
+}
+
+/* =============================================================================
+   SAAS THEME (Modern Dashboard) - Professional, enterprise, Procore-style
+   ============================================================================= */
+[data-theme="saas"] {
+  --font-primary: "Inter", "Roboto", -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Roboto Mono", "SF Mono", ui-monospace, monospace;
+  --font-display: "Inter", sans-serif;
+  --font-size-base: 14px;
+  --font-size-sm: 12px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 28px;
+  --line-height: 1.5;
+
+  /* Colors */
+  --bg-primary: #FAFAFA;
+  --bg-secondary: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-hover: #F5F5F5;
+  --bg-input: #FFFFFF;
+  --bg-sidebar: #1E2532;
+  --bg-sidebar-hover: rgba(255, 255, 255, 0.08);
+  --bg-sidebar-active: rgba(255, 255, 255, 0.12);
+
+  --text-primary: #212121;
+  --text-secondary: #666666;
+  --text-muted: #9E9E9E;
+  --text-inverse: #FFFFFF;
+  --text-link: #1976D2;
+  --text-sidebar: #B8BEC9;
+  --text-sidebar-active: #FFFFFF;
+
+  --accent-primary: #1976D2;
+  --accent-primary-hover: #1565C0;
+  --accent-secondary: #7B1FA2;
+  --accent-success: #2E7D32;
+  --accent-warning: #F57C00;
+  --accent-danger: #C62828;
+  --accent-info: #0288D1;
+
+  /* Domain-specific colors */
+  --color-dcam: #7B1FA2;
+  --color-rfq: #0288D1;
+  --color-local: #1976D2;
+  --color-projectdog: #2E7D32;
+  --color-planhub: #0288D1;
+
+  /* Accent colors for tags */
+  --accent-yellow: #FFC107;
+  --accent-pink: #E91E63;
+  --accent-blue: #2196F3;
+  --accent-green: #4CAF50;
+  --accent-orange: #FF9800;
+
+  /* Borders & Shadows */
+  --border-color: #E0E0E0;
+  --border-width: 1px;
+  --border-radius: 8px;
+  --border-radius-sm: 4px;
+  --border-radius-lg: 12px;
+
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+
+  /* Layout */
+  --transition-speed: 0.15s;
+  --transition-timing: ease-in-out;
+  --spacing-unit: 8px;
+  --sidebar-width: 240px;
+  --header-height: 56px;
+  --max-width: 1600px;
+
+  /* Component specific */
+  --btn-padding: 8px 16px;
+  --btn-font-weight: 500;
+  --card-padding: 16px;
+  --input-padding: 8px 12px;
+  --table-row-height: 40px;
+}
+
+/* SaaS - Dark Mode (optional) */
+[data-theme="saas"][data-mode="dark"] {
+  --bg-primary: #121212;
+  --bg-secondary: #1E1E1E;
+  --bg-card: #252525;
+  --bg-hover: #2D2D2D;
+  --bg-input: #2D2D2D;
+
+  --text-primary: #FFFFFF;
+  --text-secondary: #B0B0B0;
+  --text-muted: #757575;
+
+  --border-color: #383838;
+}
+
+/* =============================================================================
+   GLOBAL UTILITY CLASSES (Theme-aware)
+   ============================================================================= */
+
+/* Glass effect - works best with Fruit theme */
+.glass {
+  background: var(--bg-glass, var(--bg-card));
+  backdrop-filter: var(--glass-blur, none);
+  -webkit-backdrop-filter: var(--glass-blur, none);
+}
+
+/* Elevated card */
+.elevated {
+  background: var(--bg-card);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  transition: box-shadow var(--transition-speed) var(--transition-timing);
+}
+
+.elevated:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+/* Win95 Button (for dial-up theme) */
+[data-theme="dialup"] .btn,
+[data-theme="dialup"] button:not(.theme-option) {
+  box-shadow: var(--shadow-outset);
+  border: none;
+  background: var(--bg-primary);
+}
+
+[data-theme="dialup"] .btn:active,
+[data-theme="dialup"] button:not(.theme-option):active {
+  box-shadow: var(--shadow-inset);
+}
+
+/* Window frame for dial-up */
+[data-theme="dialup"] .window,
+[data-theme="dialup"] .card {
+  border: 2px solid;
+  border-color: var(--border-light) var(--border-darker) var(--border-darker) var(--border-light);
+  box-shadow: none;
+}
+
+[data-theme="dialup"] .window-title {
+  background: var(--bg-titlebar);
+  color: var(--text-inverse);
+  padding: 2px 4px;
+  font-weight: bold;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Dial-up header */
+[data-theme="dialup"] .header {
+  background: var(--bg-titlebar);
+  color: var(--text-inverse);
+}
+
+[data-theme="dialup"] .header h1 {
+  color: var(--text-inverse);
+}
+
+/* Dial-up inputs */
+[data-theme="dialup"] input,
+[data-theme="dialup"] select,
+[data-theme="dialup"] textarea {
+  box-shadow: var(--shadow-inset);
+  border: none;
+}
+
+/* Animation for theme transitions */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}

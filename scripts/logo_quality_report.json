@@ -1,0 +1,2061 @@
+{
+  "generated_at": "2025-12-16T17:11:17.873337",
+  "summary": {
+    "total_logos": 119,
+    "imported": 0,
+    "converted_to_png": 0,
+    "skipped_existing": 118,
+    "low_res_count": 62,
+    "matched_to_gcs": 15,
+    "unmatched_count": 103,
+    "oversized_count": 9
+  },
+  "low_res_logos": [
+    {
+      "file": "ACT_Construction.png",
+      "dimensions": "127x62",
+      "needs_replacement": true
+    },
+    {
+      "file": "BEA.png",
+      "dimensions": "150x106",
+      "needs_replacement": true
+    },
+    {
+      "file": "Benaka_Inc.png",
+      "dimensions": "95x78",
+      "needs_replacement": true
+    },
+    {
+      "file": "Bentley_Builders.png",
+      "dimensions": "392x121",
+      "needs_replacement": true
+    },
+    {
+      "file": "Berks_Construction_Group_LLC.png",
+      "dimensions": "300x87",
+      "needs_replacement": true
+    },
+    {
+      "file": "Blake_Contracting_LLC.png",
+      "dimensions": "471x126",
+      "needs_replacement": true
+    },
+    {
+      "file": "Brackenridge_Construction.png",
+      "dimensions": "561x139",
+      "needs_replacement": true
+    },
+    {
+      "file": "Brantley_Construction_Company_LLC.png",
+      "dimensions": "464x111",
+      "needs_replacement": true
+    },
+    {
+      "file": "Breton_Avenir_Construction_Services.png",
+      "dimensions": "254x71",
+      "needs_replacement": true
+    },
+    {
+      "file": "Brookline.png",
+      "dimensions": "454x132",
+      "needs_replacement": true
+    },
+    {
+      "file": "CASTAGNA_CONSTRUCTION.png",
+      "dimensions": "259x86",
+      "needs_replacement": true
+    },
+    {
+      "file": "CBI_General_Contractors.png",
+      "dimensions": "106x106",
+      "needs_replacement": true
+    },
+    {
+      "file": "CSG_Charleston.png",
+      "dimensions": "190x105",
+      "needs_replacement": true
+    },
+    {
+      "file": "CTA_Construction_Co.png",
+      "dimensions": "348x87",
+      "needs_replacement": true
+    },
+    {
+      "file": "City_Enterprise_Inc.png",
+      "dimensions": "188x106",
+      "needs_replacement": true
+    },
+    {
+      "file": "Colantonio_Inc.png",
+      "dimensions": "242x79",
+      "needs_replacement": true
+    },
+    {
+      "file": "Consensus_Construction_Consulting_Inc.png",
+      "dimensions": "259x77",
+      "needs_replacement": true
+    },
+    {
+      "file": "Cooper_Tacia_General_Contractors.png",
+      "dimensions": "355x142",
+      "needs_replacement": true
+    },
+    {
+      "file": "DMB_Construction_Inc.png",
+      "dimensions": "329x121",
+      "needs_replacement": true
+    },
+    {
+      "file": "DeIulis_Brothers_Construction.png",
+      "dimensions": "386x75",
+      "needs_replacement": true
+    },
+    {
+      "file": "De_Jager_Construction_Inc.png",
+      "dimensions": "600x129",
+      "needs_replacement": true
+    },
+    {
+      "file": "Dunbar_Construction.png",
+      "dimensions": "205x77",
+      "needs_replacement": true
+    },
+    {
+      "file": "EBS_Builders.png",
+      "dimensions": "95x90",
+      "needs_replacement": true
+    },
+    {
+      "file": "ELS_Construction_Inc.png",
+      "dimensions": "173x100",
+      "needs_replacement": true
+    },
+    {
+      "file": "Elder_Construction.png",
+      "dimensions": "319x93",
+      "needs_replacement": true
+    },
+    {
+      "file": "Embree_Group.png",
+      "dimensions": "259x55",
+      "needs_replacement": true
+    },
+    {
+      "file": "Forrest_Grove_East_LLC.png",
+      "dimensions": "665x138",
+      "needs_replacement": true
+    },
+    {
+      "file": "General_Contracting_Solutions.png",
+      "dimensions": "292x67",
+      "needs_replacement": true
+    },
+    {
+      "file": "Haynes_Construction_Company.png",
+      "dimensions": "242x113",
+      "needs_replacement": true
+    },
+    {
+      "file": "JDR_Fixtures_Inc.png",
+      "dimensions": "169x87",
+      "needs_replacement": true
+    },
+    {
+      "file": "J_N_B_Services.png",
+      "dimensions": "207x93",
+      "needs_replacement": true
+    },
+    {
+      "file": "Jackovic_Construction.png",
+      "dimensions": "582x123",
+      "needs_replacement": true
+    },
+    {
+      "file": "Jeta_LLC.png",
+      "dimensions": "300x138",
+      "needs_replacement": true
+    },
+    {
+      "file": "LS_Black_Constructors_Inc.png",
+      "dimensions": "250x114",
+      "needs_replacement": true
+    },
+    {
+      "file": "Madco_Contracting_and_Consulting_Services.png",
+      "dimensions": "671x116",
+      "needs_replacement": true
+    },
+    {
+      "file": "Marco_Contractors_Inc.png",
+      "dimensions": "128x108",
+      "needs_replacement": true
+    },
+    {
+      "file": "Mechanical_Electrical_Plumbing_Fire_Protection_2.png",
+      "dimensions": "300x80",
+      "needs_replacement": true
+    },
+    {
+      "file": "Menemsha_Development_Group_Inc.png",
+      "dimensions": "293x50",
+      "needs_replacement": true
+    },
+    {
+      "file": "Miano_Construction_Corp.png",
+      "dimensions": "262x119",
+      "needs_replacement": true
+    },
+    {
+      "file": "Pincus_Construction.png",
+      "dimensions": "260x115",
+      "needs_replacement": true
+    },
+    {
+      "file": "Planhub_2.png",
+      "dimensions": "328x84",
+      "needs_replacement": true
+    },
+    {
+      "file": "RCCM.png",
+      "dimensions": "242x71",
+      "needs_replacement": true
+    },
+    {
+      "file": "Rand_Construction_Corporation.png",
+      "dimensions": "207x125",
+      "needs_replacement": true
+    },
+    {
+      "file": "Reconn_Construction.png",
+      "dimensions": "306x113",
+      "needs_replacement": true
+    },
+    {
+      "file": "Reeves_Young_LLC.png",
+      "dimensions": "288x36",
+      "needs_replacement": true
+    },
+    {
+      "file": "Richardson_Turner_Construction.png",
+      "dimensions": "200x113",
+      "needs_replacement": true
+    },
+    {
+      "file": "Ridge_Construction.png",
+      "dimensions": "307x133",
+      "needs_replacement": true
+    },
+    {
+      "file": "Salcoa_Contracting_Inc.png",
+      "dimensions": "272x119",
+      "needs_replacement": true
+    },
+    {
+      "file": "Simmons_Construction.png",
+      "dimensions": "322x119",
+      "needs_replacement": true
+    },
+    {
+      "file": "Southwestern_Services.png",
+      "dimensions": "300x57",
+      "needs_replacement": true
+    },
+    {
+      "file": "Stillwater_Construction_Inc.png",
+      "dimensions": "182x87",
+      "needs_replacement": true
+    },
+    {
+      "file": "Sun_Industrial_Inc.png",
+      "dimensions": "385x131",
+      "needs_replacement": true
+    },
+    {
+      "file": "Swan_Contracting.png",
+      "dimensions": "205x75",
+      "needs_replacement": true
+    },
+    {
+      "file": "TDS_Construction_Inc.png",
+      "dimensions": "542x84",
+      "needs_replacement": true
+    },
+    {
+      "file": "TGC_Construction_Group.png",
+      "dimensions": "327x80",
+      "needs_replacement": true
+    },
+    {
+      "file": "Thomas_Windows.png",
+      "dimensions": "141x135",
+      "needs_replacement": true
+    },
+    {
+      "file": "Timberline_Constructiob.png",
+      "dimensions": "230x95",
+      "needs_replacement": true
+    },
+    {
+      "file": "Trident_Construction_Group.png",
+      "dimensions": "322x74",
+      "needs_replacement": true
+    },
+    {
+      "file": "Vanguard_Construction.png",
+      "dimensions": "275x83",
+      "needs_replacement": true
+    },
+    {
+      "file": "Visible_Construction_Corp.png",
+      "dimensions": "264x45",
+      "needs_replacement": true
+    },
+    {
+      "file": "Vision_General_Contractors_of_GA.png",
+      "dimensions": "336x111",
+      "needs_replacement": true
+    },
+    {
+      "file": "metric.png",
+      "dimensions": "340x85",
+      "needs_replacement": true
+    }
+  ],
+  "converted_files": [],
+  "matched_gcs": [
+    {
+      "gc_name": "Dandis Contracting",
+      "logo": "ACT_Construction.png",
+      "company_from_filename": "ACT Construction"
+    },
+    {
+      "gc_name": "Boston 5 Star Contractors Inc.",
+      "logo": "Boston_5_Star_Contractors_Inc_5.png",
+      "company_from_filename": "Boston 5 Star Contractors Inc"
+    },
+    {
+      "gc_name": "JAC Inc",
+      "logo": "Commercial_Contractors_Inc.png",
+      "company_from_filename": "Commercial Contractors Inc"
+    },
+    {
+      "gc_name": "US Construction Group",
+      "logo": "Consensus_Construction_Consulting_Inc.png",
+      "company_from_filename": "Consensus Construction Consulting Inc"
+    },
+    {
+      "gc_name": "Embree Construction Group.",
+      "logo": "Embree_Group.png",
+      "company_from_filename": "Embree Group"
+    },
+    {
+      "gc_name": "G.V.W., Inc.",
+      "logo": "GVW_Construction.png",
+      "company_from_filename": "GVW Construction"
+    },
+    {
+      "gc_name": "JAC Inc",
+      "logo": "JAC_Inc.png",
+      "company_from_filename": "JAC Inc"
+    },
+    {
+      "gc_name": "JAC Inc",
+      "logo": "Jackovic_Construction.png",
+      "company_from_filename": "Jackovic Construction"
+    },
+    {
+      "gc_name": "Menemsha Development Group, Inc",
+      "logo": "Menemsha_Development_Group_Inc.png",
+      "company_from_filename": "Menemsha Development Group Inc"
+    },
+    {
+      "gc_name": "US Construction Group",
+      "logo": "Pincus_Construction.png",
+      "company_from_filename": "Pincus Construction"
+    },
+    {
+      "gc_name": "PlanHub - Subcontractor Prime Opportunity",
+      "logo": "Planhub.png",
+      "company_from_filename": "Planhub"
+    },
+    {
+      "gc_name": "PlanHub - Subcontractor Prime Opportunity",
+      "logo": "Planhub_2.png",
+      "company_from_filename": "Planhub"
+    },
+    {
+      "gc_name": "Boston Building and Bridge Corp",
+      "logo": "Ridge_Construction.png",
+      "company_from_filename": "Ridge Construction"
+    },
+    {
+      "gc_name": "Stillwater Construction, Inc.",
+      "logo": "Stillwater_Construction_Inc.png",
+      "company_from_filename": "Stillwater Construction Inc"
+    },
+    {
+      "gc_name": "US Construction Group",
+      "logo": "Sun_Industrial_Inc.png",
+      "company_from_filename": "Sun Industrial Inc"
+    }
+  ],
+  "unmatched_logos": [
+    {
+      "file": "AW_KK.png",
+      "company_guess": "AW KK"
+    },
+    {
+      "file": "Advanced_Construction_Services.png",
+      "company_guess": "Advanced Construction Services"
+    },
+    {
+      "file": "Architectural_Building_Systems_Inc.png",
+      "company_guess": "Architectural Building Systems Inc"
+    },
+    {
+      "file": "BEA.png",
+      "company_guess": "BEA"
+    },
+    {
+      "file": "BEC_Construction.png",
+      "company_guess": "BEC Construction"
+    },
+    {
+      "file": "Beaufort_Construction.png",
+      "company_guess": "Beaufort Construction"
+    },
+    {
+      "file": "Benaka_Inc.png",
+      "company_guess": "Benaka Inc"
+    },
+    {
+      "file": "Bentley_Builders.png",
+      "company_guess": "Bentley Builders"
+    },
+    {
+      "file": "Berks_Construction_Group_LLC.png",
+      "company_guess": "Berks Construction Group LLC"
+    },
+    {
+      "file": "Blake_Contracting_LLC.png",
+      "company_guess": "Blake Contracting LLC"
+    },
+    {
+      "file": "Brackenridge_Construction.png",
+      "company_guess": "Brackenridge Construction"
+    },
+    {
+      "file": "Brantley_Construction_Company_LLC.png",
+      "company_guess": "Brantley Construction Company LLC"
+    },
+    {
+      "file": "Breton_Avenir_Construction_Services.png",
+      "company_guess": "Breton Avenir Construction Services"
+    },
+    {
+      "file": "Brookline.png",
+      "company_guess": "Brookline"
+    },
+    {
+      "file": "CASTAGNA_CONSTRUCTION.png",
+      "company_guess": "CASTAGNA CONSTRUCTION"
+    },
+    {
+      "file": "CBI_General_Contractors.png",
+      "company_guess": "CBI General Contractors"
+    },
+    {
+      "file": "CMC_Building_Inc.png",
+      "company_guess": "CMC Building Inc"
+    },
+    {
+      "file": "CSG_Charleston.png",
+      "company_guess": "CSG Charleston"
+    },
+    {
+      "file": "CTA_Construction_Co.png",
+      "company_guess": "CTA Construction Co"
+    },
+    {
+      "file": "Caliber_1_Construction.png",
+      "company_guess": "Caliber 1 Construction"
+    },
+    {
+      "file": "Chancel_Construction_Inc.png",
+      "company_guess": "Chancel Construction Inc"
+    },
+    {
+      "file": "City_Enterprise_Inc.png",
+      "company_guess": "City Enterprise Inc"
+    },
+    {
+      "file": "Colantonio_Inc.png",
+      "company_guess": "Colantonio Inc"
+    },
+    {
+      "file": "Cooper_Tacia_General_Contractors.png",
+      "company_guess": "Cooper Tacia General Contractors"
+    },
+    {
+      "file": "DLP_Construction.png",
+      "company_guess": "DLP Construction"
+    },
+    {
+      "file": "DMB_Construction_Inc.png",
+      "company_guess": "DMB Construction Inc"
+    },
+    {
+      "file": "D_A_Sullivan_Sons_Inc.png",
+      "company_guess": "D A Sullivan Sons Inc"
+    },
+    {
+      "file": "D_F_Pray_General_Contractors.png",
+      "company_guess": "D F Pray General Contractors"
+    },
+    {
+      "file": "DeIulis_Brothers_Construction.png",
+      "company_guess": "DeIulis Brothers Construction"
+    },
+    {
+      "file": "De_Jager_Construction_Inc.png",
+      "company_guess": "De Jager Construction Inc"
+    },
+    {
+      "file": "Delphi.png",
+      "company_guess": "Delphi"
+    },
+    {
+      "file": "Dunbar_Construction.png",
+      "company_guess": "Dunbar Construction"
+    },
+    {
+      "file": "E2_Development.png",
+      "company_guess": "E2 Development"
+    },
+    {
+      "file": "EBS_Builders.png",
+      "company_guess": "EBS Builders"
+    },
+    {
+      "file": "ELS_Construction_Inc.png",
+      "company_guess": "ELS Construction Inc"
+    },
+    {
+      "file": "ERIN_Contracting.png",
+      "company_guess": "ERIN Contracting"
+    },
+    {
+      "file": "Elder_Construction.png",
+      "company_guess": "Elder Construction"
+    },
+    {
+      "file": "Elder_Jones.png",
+      "company_guess": "Elder Jones"
+    },
+    {
+      "file": "Epic_Construction_Services_LLC.png",
+      "company_guess": "Epic Construction Services LLC"
+    },
+    {
+      "file": "FBi_Construction_Inc.png",
+      "company_guess": "FBi Construction Inc"
+    },
+    {
+      "file": "Forrest_Grove_East_LLC.png",
+      "company_guess": "Forrest Grove East LLC"
+    },
+    {
+      "file": "Fortunato_Construction_Group.png",
+      "company_guess": "Fortunato Construction Group"
+    },
+    {
+      "file": "General_Contracting_Solutions.png",
+      "company_guess": "General Contracting Solutions"
+    },
+    {
+      "file": "Gilbert_Construction_Company.png",
+      "company_guess": "Gilbert Construction Company"
+    },
+    {
+      "file": "Greython_Construction.png",
+      "company_guess": "Greython Construction"
+    },
+    {
+      "file": "HMI_Commercial_Contractors_Inc.png",
+      "company_guess": "HMI Commercial Contractors Inc"
+    },
+    {
+      "file": "H_V_Collins_Co.png",
+      "company_guess": "H V Collins Co"
+    },
+    {
+      "file": "Haynes_Construction_Company.png",
+      "company_guess": "Haynes Construction Company"
+    },
+    {
+      "file": "Horizon_Construction.png",
+      "company_guess": "Horizon Construction"
+    },
+    {
+      "file": "IP_Builders_Inc.png",
+      "company_guess": "IP Builders Inc"
+    },
+    {
+      "file": "JAG_Building_Group_Inc.png",
+      "company_guess": "JAG Building Group Inc"
+    },
+    {
+      "file": "JBS_Construction_Group.png",
+      "company_guess": "JBS Construction Group"
+    },
+    {
+      "file": "JDR_Fixtures_Inc.png",
+      "company_guess": "JDR Fixtures Inc"
+    },
+    {
+      "file": "J_N_B_Services.png",
+      "company_guess": "J N B Services"
+    },
+    {
+      "file": "James_J_Welch_Co_Inc.png",
+      "company_guess": "James J Welch Co Inc"
+    },
+    {
+      "file": "Jeta_LLC.png",
+      "company_guess": "Jeta LLC"
+    },
+    {
+      "file": "Joe_N_Guy_Co_Inc.png",
+      "company_guess": "Joe N Guy Co Inc"
+    },
+    {
+      "file": "LS_Black_Constructors_Inc.png",
+      "company_guess": "LS Black Constructors Inc"
+    },
+    {
+      "file": "MGM_Development.png",
+      "company_guess": "MGM Development"
+    },
+    {
+      "file": "MPS_Engineering_and_Construction.png",
+      "company_guess": "MPS Engineering and Construction"
+    },
+    {
+      "file": "Madco_Contracting_and_Consulting_Services.png",
+      "company_guess": "Madco Contracting and Consulting Services"
+    },
+    {
+      "file": "Management_Resource_Systems_Inc.png",
+      "company_guess": "Management Resource Systems Inc"
+    },
+    {
+      "file": "Marco_Contractors_Inc.png",
+      "company_guess": "Marco Contractors Inc"
+    },
+    {
+      "file": "Maron_Construction_Co_Inc.png",
+      "company_guess": "Maron Construction Co Inc"
+    },
+    {
+      "file": "Mechanical_Electrical_Plumbing_Fire_Protection_2.png",
+      "company_guess": "Mechanical Electrical Plumbing Fire Protection"
+    },
+    {
+      "file": "Miano_Construction_Corp.png",
+      "company_guess": "Miano Construction Corp"
+    },
+    {
+      "file": "Monteith_Construction_Corp.png",
+      "company_guess": "Monteith Construction Corp"
+    },
+    {
+      "file": "PlanHub_Subcontractor_Prime_Opportunity.png",
+      "company_guess": "PlanHub Subcontractor Prime Opportunity"
+    },
+    {
+      "file": "Pyramid_Contracting.png",
+      "company_guess": "Pyramid Contracting"
+    },
+    {
+      "file": "RCCM.png",
+      "company_guess": "RCCM"
+    },
+    {
+      "file": "Rand_Construction_Corporation.png",
+      "company_guess": "Rand Construction Corporation"
+    },
+    {
+      "file": "Reconn_Construction.png",
+      "company_guess": "Reconn Construction"
+    },
+    {
+      "file": "Reeves_Young_LLC.png",
+      "company_guess": "Reeves Young LLC"
+    },
+    {
+      "file": "Reliant_Construction_Development_Management.png",
+      "company_guess": "Reliant Construction Development Management"
+    },
+    {
+      "file": "Richardson_Turner_Construction.png",
+      "company_guess": "Richardson Turner Construction"
+    },
+    {
+      "file": "S_N_B_Construction.png",
+      "company_guess": "S N B Construction"
+    },
+    {
+      "file": "Salcoa_Contracting_Inc.png",
+      "company_guess": "Salcoa Contracting Inc"
+    },
+    {
+      "file": "Sela_Building_Corporation.png",
+      "company_guess": "Sela Building Corporation"
+    },
+    {
+      "file": "Simmons_Construction.png",
+      "company_guess": "Simmons Construction"
+    },
+    {
+      "file": "Southwestern_Services.png",
+      "company_guess": "Southwestern Services"
+    },
+    {
+      "file": "Storecrafters_Construction.png",
+      "company_guess": "Storecrafters Construction"
+    },
+    {
+      "file": "Summit_General_Contractors_Inc.png",
+      "company_guess": "Summit General Contractors Inc"
+    },
+    {
+      "file": "Swan_Contracting.png",
+      "company_guess": "Swan Contracting"
+    },
+    {
+      "file": "TDS_Construction_Inc.png",
+      "company_guess": "TDS Construction Inc"
+    },
+    {
+      "file": "TGC_Construction_Group.png",
+      "company_guess": "TGC Construction Group"
+    },
+    {
+      "file": "The_Hatch_Group.png",
+      "company_guess": "The Hatch Group"
+    },
+    {
+      "file": "The_Nutmeg_Companies_Inc.png",
+      "company_guess": "The Nutmeg Companies Inc"
+    },
+    {
+      "file": "Thomas_Windows.png",
+      "company_guess": "Thomas Windows"
+    },
+    {
+      "file": "Timberline_Constructiob.png",
+      "company_guess": "Timberline Constructiob"
+    },
+    {
+      "file": "Titan_North_America.png",
+      "company_guess": "Titan North America"
+    },
+    {
+      "file": "Tom_Rectenwald_Construction_Inc.png",
+      "company_guess": "Tom Rectenwald Construction Inc"
+    },
+    {
+      "file": "Trainor_Commercial_Construction_Inc.png",
+      "company_guess": "Trainor Commercial Construction Inc"
+    },
+    {
+      "file": "Trident_Construction_Group.png",
+      "company_guess": "Trident Construction Group"
+    },
+    {
+      "file": "Tyler_Construction_Group_Inc.png",
+      "company_guess": "Tyler Construction Group Inc"
+    },
+    {
+      "file": "U_S_General_Construction.png",
+      "company_guess": "U S General Construction"
+    },
+    {
+      "file": "Vanguard_Construction.png",
+      "company_guess": "Vanguard Construction"
+    },
+    {
+      "file": "Visible_Construction_Corp.png",
+      "company_guess": "Visible Construction Corp"
+    },
+    {
+      "file": "Vision_General_Contractors_of_GA.png",
+      "company_guess": "Vision General Contractors of GA"
+    },
+    {
+      "file": "W_J_Mountford_Co.png",
+      "company_guess": "W J Mountford Co"
+    },
+    {
+      "file": "Weathers_Contracting.png",
+      "company_guess": "Weathers Contracting"
+    },
+    {
+      "file": "Wesfield_Construction_Co_Inc.png",
+      "company_guess": "Wesfield Construction Co Inc"
+    },
+    {
+      "file": "Wimco_Corp.png",
+      "company_guess": "Wimco Corp"
+    },
+    {
+      "file": "metric.png",
+      "company_guess": "metric"
+    }
+  ],
+  "oversized_logos": [
+    {
+      "file": "CMC_Building_Inc.png",
+      "dimensions": "1000x1000",
+      "size_kb": 237.5
+    },
+    {
+      "file": "Chancel_Construction_Inc.png",
+      "dimensions": "12001x5649",
+      "size_kb": 434.6
+    },
+    {
+      "file": "D_A_Sullivan_Sons_Inc.png",
+      "dimensions": "3413x3413",
+      "size_kb": 245.6
+    },
+    {
+      "file": "GVW_Construction.png",
+      "dimensions": "2254x1250",
+      "size_kb": 230.7
+    },
+    {
+      "file": "Gilbert_Construction_Company.png",
+      "dimensions": "1592x473",
+      "size_kb": 203.5
+    },
+    {
+      "file": "H_V_Collins_Co.png",
+      "dimensions": "2533x415",
+      "size_kb": 12.6
+    },
+    {
+      "file": "Management_Resource_Systems_Inc.png",
+      "dimensions": "1024x1024",
+      "size_kb": 616.4
+    },
+    {
+      "file": "Reliant_Construction_Development_Management.png",
+      "dimensions": "1568x1582",
+      "size_kb": 215.0
+    },
+    {
+      "file": "Wesfield_Construction_Co_Inc.png",
+      "dimensions": "1408x768",
+      "size_kb": 612.1
+    }
+  ],
+  "all_logos": [
+    {
+      "original_file": "ACT_Construction.png",
+      "output_file": "ACT_Construction.png",
+      "company_name": "ACT Construction",
+      "dimensions": "127x62",
+      "original_format": "PNG",
+      "file_size_kb": 10.4,
+      "quality": "low_res",
+      "has_transparency": true,
+      "matched_gc": "Dandis Contracting"
+    },
+    {
+      "original_file": "AW_KK.png",
+      "output_file": "AW_KK.png",
+      "company_name": "AW KK",
+      "dimensions": "723x282",
+      "original_format": "PNG",
+      "file_size_kb": 12.0,
+      "quality": "good",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Advanced_Construction_Services.png",
+      "output_file": "Advanced_Construction_Services.png",
+      "company_name": "Advanced Construction Services",
+      "dimensions": "1920x786",
+      "original_format": "PNG",
+      "file_size_kb": 193.7,
+      "quality": "ideal",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Architectural_Building_Systems_Inc.jpeg",
+      "output_file": "Architectural_Building_Systems_Inc.png",
+      "company_name": "Architectural Building Systems Inc",
+      "dimensions": "240x210",
+      "original_format": "JPEG",
+      "file_size_kb": 13.2,
+      "quality": "good",
+      "has_transparency": false
+    },
+    {
+      "original_file": "BEA.jpg",
+      "output_file": "BEA.png",
+      "company_name": "BEA",
+      "dimensions": "150x106",
+      "original_format": "JPEG",
+      "file_size_kb": 3.9,
+      "quality": "low_res",
+      "has_transparency": false
+    },
+    {
+      "original_file": "BEC_Construction.jpg",
+      "output_file": "BEC_Construction.png",
+      "company_name": "BEC Construction",
+      "dimensions": "600x300",
+      "original_format": "JPEG",
+      "file_size_kb": 55.5,
+      "quality": "ideal",
+      "has_transparency": false
+    },
+    {
+      "original_file": "Beaufort_Construction.png",
+      "output_file": "Beaufort_Construction.png",
+      "company_name": "Beaufort Construction",
+      "dimensions": "371x187",
+      "original_format": "PNG",
+      "file_size_kb": 29.7,
+      "quality": "good",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Benaka_Inc.png",
+      "output_file": "Benaka_Inc.png",
+      "company_name": "Benaka Inc",
+      "dimensions": "95x78",
+      "original_format": "PNG",
+      "file_size_kb": 8.7,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Bentley_Builders.PNG",
+      "output_file": "Bentley_Builders.png",
+      "company_name": "Bentley Builders",
+      "dimensions": "392x121",
+      "original_format": "PNG",
+      "file_size_kb": 16.3,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Berks_Construction_Group_LLC.png",
+      "output_file": "Berks_Construction_Group_LLC.png",
+      "company_name": "Berks Construction Group LLC",
+      "dimensions": "300x87",
+      "original_format": "PNG",
+      "file_size_kb": 11.8,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Blake_Contracting_LLC.PNG",
+      "output_file": "Blake_Contracting_LLC.png",
+      "company_name": "Blake Contracting LLC",
+      "dimensions": "471x126",
+      "original_format": "PNG",
+      "file_size_kb": 49.7,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Boston_5_Star_Contractors_Inc_5.png",
+      "output_file": "Boston_5_Star_Contractors_Inc_5.png",
+      "company_name": "Boston 5 Star Contractors Inc",
+      "dimensions": "244x155",
+      "original_format": "PNG",
+      "file_size_kb": 30.4,
+      "quality": "good",
+      "has_transparency": true,
+      "matched_gc": "Boston 5 Star Contractors Inc."
+    },
+    {
+      "original_file": "Brackenridge_Construction.png",
+      "output_file": "Brackenridge_Construction.png",
+      "company_name": "Brackenridge Construction",
+      "dimensions": "561x139",
+      "original_format": "PNG",
+      "file_size_kb": 45.7,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Brantley_Construction_Company_LLC.png",
+      "output_file": "Brantley_Construction_Company_LLC.png",
+      "company_name": "Brantley Construction Company LLC",
+      "dimensions": "464x111",
+      "original_format": "PNG",
+      "file_size_kb": 30.3,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Breton_Avenir_Construction_Services.png",
+      "output_file": "Breton_Avenir_Construction_Services.png",
+      "company_name": "Breton Avenir Construction Services",
+      "dimensions": "254x71",
+      "original_format": "PNG",
+      "file_size_kb": 31.0,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Brookline.png",
+      "output_file": "Brookline.png",
+      "company_name": "Brookline",
+      "dimensions": "454x132",
+      "original_format": "PNG",
+      "file_size_kb": 4.5,
+      "quality": "low_res",
+      "has_transparency": false
+    },
+    {
+      "original_file": "CASTAGNA_CONSTRUCTION.PNG",
+      "output_file": "CASTAGNA_CONSTRUCTION.png",
+      "company_name": "CASTAGNA CONSTRUCTION",
+      "dimensions": "259x86",
+      "original_format": "PNG",
+      "file_size_kb": 10.9,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "CBI_General_Contractors.png",
+      "output_file": "CBI_General_Contractors.png",
+      "company_name": "CBI General Contractors",
+      "dimensions": "106x106",
+      "original_format": "PNG",
+      "file_size_kb": 10.3,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "CMC_Building_Inc.jpg",
+      "output_file": "CMC_Building_Inc.png",
+      "company_name": "CMC Building Inc",
+      "dimensions": "1000x1000",
+      "original_format": "JPEG",
+      "file_size_kb": 237.5,
+      "quality": "ideal",
+      "has_transparency": false
+    },
+    {
+      "original_file": "CSG_Charleston.jpg",
+      "output_file": "CSG_Charleston.png",
+      "company_name": "CSG Charleston",
+      "dimensions": "190x105",
+      "original_format": "JPEG",
+      "file_size_kb": 10.6,
+      "quality": "low_res",
+      "has_transparency": false
+    },
+    {
+      "original_file": "CTA_Construction_Co.PNG",
+      "output_file": "CTA_Construction_Co.png",
+      "company_name": "CTA Construction Co",
+      "dimensions": "348x87",
+      "original_format": "PNG",
+      "file_size_kb": 23.6,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Caliber_1_Construction.png",
+      "output_file": "Caliber_1_Construction.png",
+      "company_name": "Caliber 1 Construction",
+      "dimensions": "506x483",
+      "original_format": "PNG",
+      "file_size_kb": 19.0,
+      "quality": "ideal",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Chancel_Construction_Inc.png",
+      "output_file": "Chancel_Construction_Inc.png",
+      "company_name": "Chancel Construction Inc",
+      "dimensions": "12001x5649",
+      "original_format": "PNG",
+      "file_size_kb": 434.6,
+      "quality": "ideal",
+      "has_transparency": true
+    },
+    {
+      "original_file": "City_Enterprise_Inc.PNG",
+      "output_file": "City_Enterprise_Inc.png",
+      "company_name": "City Enterprise Inc",
+      "dimensions": "188x106",
+      "original_format": "PNG",
+      "file_size_kb": 6.9,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Colantonio_Inc.PNG",
+      "output_file": "Colantonio_Inc.png",
+      "company_name": "Colantonio Inc",
+      "dimensions": "242x79",
+      "original_format": "PNG",
+      "file_size_kb": 5.5,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Commercial_Contractors_Inc.webp",
+      "output_file": "Commercial_Contractors_Inc.png",
+      "company_name": "Commercial Contractors Inc",
+      "dimensions": "273x300",
+      "original_format": "WEBP",
+      "file_size_kb": 4.9,
+      "quality": "good",
+      "has_transparency": true,
+      "matched_gc": "JAC Inc"
+    },
+    {
+      "original_file": "Consensus_Construction_Consulting_Inc.jpg",
+      "output_file": "Consensus_Construction_Consulting_Inc.png",
+      "company_name": "Consensus Construction Consulting Inc",
+      "dimensions": "259x77",
+      "original_format": "JPEG",
+      "file_size_kb": 21.1,
+      "quality": "low_res",
+      "has_transparency": false,
+      "matched_gc": "US Construction Group"
+    },
+    {
+      "original_file": "Cooper_Tacia_General_Contractors.png",
+      "output_file": "Cooper_Tacia_General_Contractors.png",
+      "company_name": "Cooper Tacia General Contractors",
+      "dimensions": "355x142",
+      "original_format": "PNG",
+      "file_size_kb": 2.9,
+      "quality": "low_res",
+      "has_transparency": false
+    },
+    {
+      "original_file": "DLP_Construction.jpg",
+      "output_file": "DLP_Construction.png",
+      "company_name": "DLP Construction",
+      "dimensions": "350x249",
+      "original_format": "JPEG",
+      "file_size_kb": 14.2,
+      "quality": "good",
+      "has_transparency": false
+    },
+    {
+      "original_file": "DMB_Construction_Inc.PNG",
+      "output_file": "DMB_Construction_Inc.png",
+      "company_name": "DMB Construction Inc",
+      "dimensions": "329x121",
+      "original_format": "PNG",
+      "file_size_kb": 20.0,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "D_A_Sullivan_Sons_Inc.jpg",
+      "output_file": "D_A_Sullivan_Sons_Inc.png",
+      "company_name": "D A Sullivan Sons Inc",
+      "dimensions": "3413x3413",
+      "original_format": "JPEG",
+      "file_size_kb": 245.6,
+      "quality": "ideal",
+      "has_transparency": false
+    },
+    {
+      "original_file": "D_F_Pray_General_Contractors.jpg",
+      "output_file": "D_F_Pray_General_Contractors.png",
+      "company_name": "D F Pray General Contractors",
+      "dimensions": "640x237",
+      "original_format": "JPEG",
+      "file_size_kb": 29.4,
+      "quality": "good",
+      "has_transparency": false
+    },
+    {
+      "original_file": "DeIulis_Brothers_Construction.jpg",
+      "output_file": "DeIulis_Brothers_Construction.png",
+      "company_name": "DeIulis Brothers Construction",
+      "dimensions": "386x75",
+      "original_format": "JPEG",
+      "file_size_kb": 13.1,
+      "quality": "low_res",
+      "has_transparency": false
+    },
+    {
+      "original_file": "De_Jager_Construction_Inc.gif",
+      "output_file": "De_Jager_Construction_Inc.png",
+      "company_name": "De Jager Construction Inc",
+      "dimensions": "600x129",
+      "original_format": "GIF",
+      "file_size_kb": 4.9,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Delphi.png",
+      "output_file": "Delphi.png",
+      "company_name": "Delphi",
+      "dimensions": "1420x489",
+      "original_format": "JPEG",
+      "file_size_kb": 105.7,
+      "quality": "ideal",
+      "has_transparency": false
+    },
+    {
+      "original_file": "Dunbar_Construction.png",
+      "output_file": "Dunbar_Construction.png",
+      "company_name": "Dunbar Construction",
+      "dimensions": "205x77",
+      "original_format": "PNG",
+      "file_size_kb": 5.3,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "E2_Development.png",
+      "output_file": "E2_Development.png",
+      "company_name": "E2 Development",
+      "dimensions": "192x181",
+      "original_format": "PNG",
+      "file_size_kb": 6.5,
+      "quality": "good",
+      "has_transparency": true
+    },
+    {
+      "original_file": "EBS_Builders.png",
+      "output_file": "EBS_Builders.png",
+      "company_name": "EBS Builders",
+      "dimensions": "95x90",
+      "original_format": "PNG",
+      "file_size_kb": 8.3,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "ELS_Construction_Inc.png",
+      "output_file": "ELS_Construction_Inc.png",
+      "company_name": "ELS Construction Inc",
+      "dimensions": "173x100",
+      "original_format": "PNG",
+      "file_size_kb": 8.5,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "ERIN_Contracting.jpg",
+      "output_file": "ERIN_Contracting.png",
+      "company_name": "ERIN Contracting",
+      "dimensions": "1250x714",
+      "original_format": "JPEG",
+      "file_size_kb": 72.6,
+      "quality": "ideal",
+      "has_transparency": false
+    },
+    {
+      "original_file": "Elder_Construction.png",
+      "output_file": "Elder_Construction.png",
+      "company_name": "Elder Construction",
+      "dimensions": "319x93",
+      "original_format": "PNG",
+      "file_size_kb": 23.6,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Elder_Jones.png",
+      "output_file": "Elder_Jones.png",
+      "company_name": "Elder Jones",
+      "dimensions": "465x460",
+      "original_format": "PNG",
+      "file_size_kb": 56.3,
+      "quality": "ideal",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Embree_Group.png",
+      "output_file": "Embree_Group.png",
+      "company_name": "Embree Group",
+      "dimensions": "259x55",
+      "original_format": "PNG",
+      "file_size_kb": 16.6,
+      "quality": "low_res",
+      "has_transparency": true,
+      "matched_gc": "Embree Construction Group."
+    },
+    {
+      "original_file": "Epic_Construction_Services_LLC.png",
+      "output_file": "Epic_Construction_Services_LLC.png",
+      "company_name": "Epic Construction Services LLC",
+      "dimensions": "1452x761",
+      "original_format": "PNG",
+      "file_size_kb": 77.7,
+      "quality": "ideal",
+      "has_transparency": true
+    },
+    {
+      "original_file": "FBi_Construction_Inc.png",
+      "output_file": "FBi_Construction_Inc.png",
+      "company_name": "FBi Construction Inc",
+      "dimensions": "450x207",
+      "original_format": "PNG",
+      "file_size_kb": 5.0,
+      "quality": "good",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Forrest_Grove_East_LLC.png",
+      "output_file": "Forrest_Grove_East_LLC.png",
+      "company_name": "Forrest Grove East LLC",
+      "dimensions": "665x138",
+      "original_format": "PNG",
+      "file_size_kb": 55.2,
+      "quality": "low_res",
+      "has_transparency": false
+    },
+    {
+      "original_file": "Fortunato_Construction_Group.webp",
+      "output_file": "Fortunato_Construction_Group.png",
+      "company_name": "Fortunato Construction Group",
+      "dimensions": "615x768",
+      "original_format": "WEBP",
+      "file_size_kb": 13.3,
+      "quality": "ideal",
+      "has_transparency": false
+    },
+    {
+      "original_file": "GVW_Construction.jpg",
+      "output_file": "GVW_Construction.png",
+      "company_name": "GVW Construction",
+      "dimensions": "2254x1250",
+      "original_format": "JPEG",
+      "file_size_kb": 230.7,
+      "quality": "ideal",
+      "has_transparency": false,
+      "matched_gc": "G.V.W., Inc."
+    },
+    {
+      "original_file": "General_Contracting_Solutions.png",
+      "output_file": "General_Contracting_Solutions.png",
+      "company_name": "General Contracting Solutions",
+      "dimensions": "292x67",
+      "original_format": "PNG",
+      "file_size_kb": 21.3,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Gilbert_Construction_Company.PNG",
+      "output_file": "Gilbert_Construction_Company.png",
+      "company_name": "Gilbert Construction Company",
+      "dimensions": "1592x473",
+      "original_format": "PNG",
+      "file_size_kb": 203.5,
+      "quality": "ideal",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Greython_Construction.png",
+      "output_file": "Greython_Construction.png",
+      "company_name": "Greython Construction",
+      "dimensions": "800x541",
+      "original_format": "PNG",
+      "file_size_kb": 110.7,
+      "quality": "ideal",
+      "has_transparency": true
+    },
+    {
+      "original_file": "HMI_Commercial_Contractors_Inc.png",
+      "output_file": "HMI_Commercial_Contractors_Inc.png",
+      "company_name": "HMI Commercial Contractors Inc",
+      "dimensions": "1778x1080",
+      "original_format": "PNG",
+      "file_size_kb": 32.9,
+      "quality": "ideal",
+      "has_transparency": true
+    },
+    {
+      "original_file": "H_V_Collins_Co.png",
+      "output_file": "H_V_Collins_Co.png",
+      "company_name": "H V Collins Co",
+      "dimensions": "2533x415",
+      "original_format": "PNG",
+      "file_size_kb": 12.6,
+      "quality": "ideal",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Haynes_Construction_Company.PNG",
+      "output_file": "Haynes_Construction_Company.png",
+      "company_name": "Haynes Construction Company",
+      "dimensions": "242x113",
+      "original_format": "PNG",
+      "file_size_kb": 5.5,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Horizon_Construction.png",
+      "output_file": "Horizon_Construction.png",
+      "company_name": "Horizon Construction",
+      "dimensions": "225x225",
+      "original_format": "PNG",
+      "file_size_kb": 6.4,
+      "quality": "good",
+      "has_transparency": false
+    },
+    {
+      "original_file": "IP_Builders_Inc.jpg",
+      "output_file": "IP_Builders_Inc.png",
+      "company_name": "IP Builders Inc",
+      "dimensions": "1024x713",
+      "original_format": "JPEG",
+      "file_size_kb": 87.7,
+      "quality": "ideal",
+      "has_transparency": false
+    },
+    {
+      "original_file": "JAC_Inc.jpg",
+      "output_file": "JAC_Inc.png",
+      "company_name": "JAC Inc",
+      "dimensions": "956x580",
+      "original_format": "JPEG",
+      "file_size_kb": 16.9,
+      "quality": "ideal",
+      "has_transparency": false,
+      "matched_gc": "JAC Inc"
+    },
+    {
+      "original_file": "JAG_Building_Group_Inc.png",
+      "output_file": "JAG_Building_Group_Inc.png",
+      "company_name": "JAG Building Group Inc",
+      "dimensions": "805x396",
+      "original_format": "PNG",
+      "file_size_kb": 110.2,
+      "quality": "ideal",
+      "has_transparency": true
+    },
+    {
+      "original_file": "JBS_Construction_Group.png",
+      "output_file": "JBS_Construction_Group.png",
+      "company_name": "JBS Construction Group",
+      "dimensions": "688x285",
+      "original_format": "PNG",
+      "file_size_kb": 14.8,
+      "quality": "good",
+      "has_transparency": true
+    },
+    {
+      "original_file": "JDR_Fixtures_Inc.PNG",
+      "output_file": "JDR_Fixtures_Inc.png",
+      "company_name": "JDR Fixtures Inc",
+      "dimensions": "169x87",
+      "original_format": "PNG",
+      "file_size_kb": 5.1,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "J_N_B_Services.png",
+      "output_file": "J_N_B_Services.png",
+      "company_name": "J N B Services",
+      "dimensions": "207x93",
+      "original_format": "PNG",
+      "file_size_kb": 14.8,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Jackovic_Construction.PNG",
+      "output_file": "Jackovic_Construction.png",
+      "company_name": "Jackovic Construction",
+      "dimensions": "582x123",
+      "original_format": "PNG",
+      "file_size_kb": 40.4,
+      "quality": "low_res",
+      "has_transparency": true,
+      "matched_gc": "JAC Inc"
+    },
+    {
+      "original_file": "James_J_Welch_Co_Inc.png",
+      "output_file": "James_J_Welch_Co_Inc.png",
+      "company_name": "James J Welch Co Inc",
+      "dimensions": "1873x433",
+      "original_format": "PNG",
+      "file_size_kb": 28.1,
+      "quality": "ideal",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Jeta_LLC.png",
+      "output_file": "Jeta_LLC.png",
+      "company_name": "Jeta LLC",
+      "dimensions": "300x138",
+      "original_format": "PNG",
+      "file_size_kb": 19.6,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Joe_N_Guy_Co_Inc.jpeg",
+      "output_file": "Joe_N_Guy_Co_Inc.png",
+      "company_name": "Joe N Guy Co Inc",
+      "dimensions": "200x200",
+      "original_format": "JPEG",
+      "file_size_kb": 6.5,
+      "quality": "good",
+      "has_transparency": false
+    },
+    {
+      "original_file": "LS_Black_Constructors_Inc.PNG",
+      "output_file": "LS_Black_Constructors_Inc.png",
+      "company_name": "LS Black Constructors Inc",
+      "dimensions": "250x114",
+      "original_format": "PNG",
+      "file_size_kb": 31.2,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "MGM_Development.png",
+      "output_file": "MGM_Development.png",
+      "company_name": "MGM Development",
+      "dimensions": "356x200",
+      "original_format": "PNG",
+      "file_size_kb": 22.6,
+      "quality": "good",
+      "has_transparency": true
+    },
+    {
+      "original_file": "MPS_Engineering_and_Construction.png",
+      "output_file": "MPS_Engineering_and_Construction.png",
+      "company_name": "MPS Engineering and Construction",
+      "dimensions": "600x273",
+      "original_format": "PNG",
+      "file_size_kb": 31.4,
+      "quality": "good",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Madco_Contracting_and_Consulting_Services.png",
+      "output_file": "Madco_Contracting_and_Consulting_Services.png",
+      "company_name": "Madco Contracting and Consulting Services",
+      "dimensions": "671x116",
+      "original_format": "PNG",
+      "file_size_kb": 9.1,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Management_Resource_Systems_Inc.png",
+      "output_file": "Management_Resource_Systems_Inc.png",
+      "company_name": "Management Resource Systems Inc",
+      "dimensions": "1024x1024",
+      "original_format": "PNG",
+      "file_size_kb": 616.4,
+      "quality": "ideal",
+      "has_transparency": false
+    },
+    {
+      "original_file": "Marco_Contractors_Inc.png",
+      "output_file": "Marco_Contractors_Inc.png",
+      "company_name": "Marco Contractors Inc",
+      "dimensions": "128x108",
+      "original_format": "PNG",
+      "file_size_kb": 6.4,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Maron_Construction_Co_Inc.jpg",
+      "output_file": "Maron_Construction_Co_Inc.png",
+      "company_name": "Maron Construction Co Inc",
+      "dimensions": "158x172",
+      "original_format": "JPEG",
+      "file_size_kb": 29.7,
+      "quality": "good",
+      "has_transparency": false
+    },
+    {
+      "original_file": "Mechanical_Electrical_Plumbing_Fire_Protection_2.png",
+      "output_file": "Mechanical_Electrical_Plumbing_Fire_Protection_2.png",
+      "company_name": "Mechanical Electrical Plumbing Fire Protection",
+      "dimensions": "300x80",
+      "original_format": "PNG",
+      "file_size_kb": 8.9,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Menemsha_Development_Group_Inc.webp",
+      "output_file": "Menemsha_Development_Group_Inc.png",
+      "company_name": "Menemsha Development Group Inc",
+      "dimensions": "293x50",
+      "original_format": "WEBP",
+      "file_size_kb": 2.7,
+      "quality": "low_res",
+      "has_transparency": true,
+      "matched_gc": "Menemsha Development Group, Inc"
+    },
+    {
+      "original_file": "Miano_Construction_Corp.PNG",
+      "output_file": "Miano_Construction_Corp.png",
+      "company_name": "Miano Construction Corp",
+      "dimensions": "262x119",
+      "original_format": "PNG",
+      "file_size_kb": 5.1,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Monteith_Construction_Corp.png",
+      "output_file": "Monteith_Construction_Corp.png",
+      "company_name": "Monteith Construction Corp",
+      "dimensions": "187x248",
+      "original_format": "PNG",
+      "file_size_kb": 3.7,
+      "quality": "good",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Pincus_Construction.png",
+      "output_file": "Pincus_Construction.png",
+      "company_name": "Pincus Construction",
+      "dimensions": "260x115",
+      "original_format": "PNG",
+      "file_size_kb": 3.8,
+      "quality": "low_res",
+      "has_transparency": true,
+      "matched_gc": "US Construction Group"
+    },
+    {
+      "original_file": "PlanHub_Subcontractor_Prime_Opportunity.png",
+      "output_file": "PlanHub_Subcontractor_Prime_Opportunity.png",
+      "company_name": "PlanHub Subcontractor Prime Opportunity",
+      "dimensions": "225x225",
+      "original_format": "PNG",
+      "file_size_kb": 7.3,
+      "quality": "good",
+      "has_transparency": false
+    },
+    {
+      "original_file": "Planhub.png",
+      "output_file": "Planhub.png",
+      "company_name": "Planhub",
+      "dimensions": "1725x446",
+      "original_format": "PNG",
+      "file_size_kb": 27.2,
+      "quality": "ideal",
+      "has_transparency": true,
+      "matched_gc": "PlanHub - Subcontractor Prime Opportunity"
+    },
+    {
+      "original_file": "Planhub_2.png",
+      "output_file": "Planhub_2.png",
+      "company_name": "Planhub",
+      "dimensions": "328x84",
+      "original_format": "PNG",
+      "file_size_kb": 5.0,
+      "quality": "low_res",
+      "has_transparency": true,
+      "matched_gc": "PlanHub - Subcontractor Prime Opportunity"
+    },
+    {
+      "original_file": "Pyramid_Contracting.jpg",
+      "output_file": "Pyramid_Contracting.png",
+      "company_name": "Pyramid Contracting",
+      "dimensions": "902x902",
+      "original_format": "JPEG",
+      "file_size_kb": 32.7,
+      "quality": "ideal",
+      "has_transparency": false
+    },
+    {
+      "original_file": "RCCM.png",
+      "output_file": "RCCM.png",
+      "company_name": "RCCM",
+      "dimensions": "242x71",
+      "original_format": "PNG",
+      "file_size_kb": 23.2,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Rand_Construction_Corporation.jpg",
+      "output_file": "Rand_Construction_Corporation.png",
+      "company_name": "Rand Construction Corporation",
+      "dimensions": "207x125",
+      "original_format": "JPEG",
+      "file_size_kb": 10.0,
+      "quality": "low_res",
+      "has_transparency": false
+    },
+    {
+      "original_file": "Reconn_Construction.png",
+      "output_file": "Reconn_Construction.png",
+      "company_name": "Reconn Construction",
+      "dimensions": "306x113",
+      "original_format": "PNG",
+      "file_size_kb": 12.2,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Reeves_Young_LLC.png",
+      "output_file": "Reeves_Young_LLC.png",
+      "company_name": "Reeves Young LLC",
+      "dimensions": "288x36",
+      "original_format": "PNG",
+      "file_size_kb": 7.8,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Reliant_Construction_Development_Management.png",
+      "output_file": "Reliant_Construction_Development_Management.png",
+      "company_name": "Reliant Construction Development Management",
+      "dimensions": "1568x1582",
+      "original_format": "PNG",
+      "file_size_kb": 215.0,
+      "quality": "ideal",
+      "has_transparency": false
+    },
+    {
+      "original_file": "Richardson_Turner_Construction.png",
+      "output_file": "Richardson_Turner_Construction.png",
+      "company_name": "Richardson Turner Construction",
+      "dimensions": "200x113",
+      "original_format": "PNG",
+      "file_size_kb": 23.1,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Ridge_Construction.png",
+      "output_file": "Ridge_Construction.png",
+      "company_name": "Ridge Construction",
+      "dimensions": "307x133",
+      "original_format": "PNG",
+      "file_size_kb": 15.7,
+      "quality": "low_res",
+      "has_transparency": true,
+      "matched_gc": "Boston Building and Bridge Corp"
+    },
+    {
+      "original_file": "S_N_B_Construction.PNG",
+      "output_file": "S_N_B_Construction.png",
+      "company_name": "S N B Construction",
+      "dimensions": "322x182",
+      "original_format": "PNG",
+      "file_size_kb": 101.4,
+      "quality": "good",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Salcoa_Contracting_Inc.png",
+      "output_file": "Salcoa_Contracting_Inc.png",
+      "company_name": "Salcoa Contracting Inc",
+      "dimensions": "272x119",
+      "original_format": "PNG",
+      "file_size_kb": 42.9,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Sela_Building_Corporation.jpg",
+      "output_file": "Sela_Building_Corporation.png",
+      "company_name": "Sela Building Corporation",
+      "dimensions": "180x180",
+      "original_format": "JPEG",
+      "file_size_kb": 7.7,
+      "quality": "good",
+      "has_transparency": false
+    },
+    {
+      "original_file": "Simmons_Construction.png",
+      "output_file": "Simmons_Construction.png",
+      "company_name": "Simmons Construction",
+      "dimensions": "322x119",
+      "original_format": "PNG",
+      "file_size_kb": 4.8,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Southwestern_Services.png",
+      "output_file": "Southwestern_Services.png",
+      "company_name": "Southwestern Services",
+      "dimensions": "300x57",
+      "original_format": "PNG",
+      "file_size_kb": 31.8,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Stillwater_Construction_Inc.PNG",
+      "output_file": "Stillwater_Construction_Inc.png",
+      "company_name": "Stillwater Construction Inc",
+      "dimensions": "182x87",
+      "original_format": "PNG",
+      "file_size_kb": 8.9,
+      "quality": "low_res",
+      "has_transparency": true,
+      "matched_gc": "Stillwater Construction, Inc."
+    },
+    {
+      "original_file": "Storecrafters_Construction.png",
+      "output_file": "Storecrafters_Construction.png",
+      "company_name": "Storecrafters Construction",
+      "dimensions": "335x263",
+      "original_format": "PNG",
+      "file_size_kb": 46.4,
+      "quality": "good",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Summit_General_Contractors_Inc.jpg",
+      "output_file": "Summit_General_Contractors_Inc.png",
+      "company_name": "Summit General Contractors Inc",
+      "dimensions": "1338x1328",
+      "original_format": "JPEG",
+      "file_size_kb": 133.7,
+      "quality": "ideal",
+      "has_transparency": false
+    },
+    {
+      "original_file": "Sun_Industrial_Inc.png",
+      "output_file": "Sun_Industrial_Inc.png",
+      "company_name": "Sun Industrial Inc",
+      "dimensions": "385x131",
+      "original_format": "PNG",
+      "file_size_kb": 6.9,
+      "quality": "low_res",
+      "has_transparency": false,
+      "matched_gc": "US Construction Group"
+    },
+    {
+      "original_file": "Swan_Contracting.png",
+      "output_file": "Swan_Contracting.png",
+      "company_name": "Swan Contracting",
+      "dimensions": "205x75",
+      "original_format": "PNG",
+      "file_size_kb": 22.0,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "TDS_Construction_Inc.PNG",
+      "output_file": "TDS_Construction_Inc.png",
+      "company_name": "TDS Construction Inc",
+      "dimensions": "542x84",
+      "original_format": "PNG",
+      "file_size_kb": 19.9,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "TGC_Construction_Group.png",
+      "output_file": "TGC_Construction_Group.png",
+      "company_name": "TGC Construction Group",
+      "dimensions": "327x80",
+      "original_format": "PNG",
+      "file_size_kb": 6.2,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "The_Hatch_Group.jpg",
+      "output_file": "The_Hatch_Group.png",
+      "company_name": "The Hatch Group",
+      "dimensions": "293x293",
+      "original_format": "JPEG",
+      "file_size_kb": 11.1,
+      "quality": "good",
+      "has_transparency": false
+    },
+    {
+      "original_file": "The_Nutmeg_Companies_Inc.jpg",
+      "output_file": "The_Nutmeg_Companies_Inc.png",
+      "company_name": "The Nutmeg Companies Inc",
+      "dimensions": "823x575",
+      "original_format": "JPEG",
+      "file_size_kb": 166.7,
+      "quality": "ideal",
+      "has_transparency": false
+    },
+    {
+      "original_file": "Thomas_Windows.png",
+      "output_file": "Thomas_Windows.png",
+      "company_name": "Thomas Windows",
+      "dimensions": "141x135",
+      "original_format": "PNG",
+      "file_size_kb": 23.3,
+      "quality": "low_res",
+      "has_transparency": false
+    },
+    {
+      "original_file": "Timberline_Constructiob.png",
+      "output_file": "Timberline_Constructiob.png",
+      "company_name": "Timberline Constructiob",
+      "dimensions": "230x95",
+      "original_format": "PNG",
+      "file_size_kb": 20.7,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Titan_North_America.png",
+      "output_file": "Titan_North_America.png",
+      "company_name": "Titan North America",
+      "dimensions": "161x187",
+      "original_format": "PNG",
+      "file_size_kb": 52.4,
+      "quality": "good",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Tom_Rectenwald_Construction_Inc.jpg",
+      "output_file": "Tom_Rectenwald_Construction_Inc.png",
+      "company_name": "Tom Rectenwald Construction Inc",
+      "dimensions": "1091x766",
+      "original_format": "JPEG",
+      "file_size_kb": 139.2,
+      "quality": "ideal",
+      "has_transparency": false
+    },
+    {
+      "original_file": "Trainor_Commercial_Construction_Inc.webp",
+      "output_file": "Trainor_Commercial_Construction_Inc.png",
+      "company_name": "Trainor Commercial Construction Inc",
+      "dimensions": "1389x580",
+      "original_format": "WEBP",
+      "file_size_kb": 16.3,
+      "quality": "ideal",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Trident_Construction_Group.png",
+      "output_file": "Trident_Construction_Group.png",
+      "company_name": "Trident Construction Group",
+      "dimensions": "322x74",
+      "original_format": "PNG",
+      "file_size_kb": 15.7,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Tyler_Construction_Group_Inc.png",
+      "output_file": "Tyler_Construction_Group_Inc.png",
+      "company_name": "Tyler Construction Group Inc",
+      "dimensions": "1178x550",
+      "original_format": "PNG",
+      "file_size_kb": 192.0,
+      "quality": "ideal",
+      "has_transparency": true
+    },
+    {
+      "original_file": "U_S_General_Construction.png",
+      "output_file": "U_S_General_Construction.png",
+      "company_name": "U S General Construction",
+      "dimensions": "327x154",
+      "original_format": "PNG",
+      "file_size_kb": 5.1,
+      "quality": "good",
+      "has_transparency": false
+    },
+    {
+      "original_file": "Vanguard_Construction.PNG",
+      "output_file": "Vanguard_Construction.png",
+      "company_name": "Vanguard Construction",
+      "dimensions": "275x83",
+      "original_format": "PNG",
+      "file_size_kb": 14.2,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Visible_Construction_Corp.png",
+      "output_file": "Visible_Construction_Corp.png",
+      "company_name": "Visible Construction Corp",
+      "dimensions": "264x45",
+      "original_format": "PNG",
+      "file_size_kb": 17.0,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Vision_General_Contractors_of_GA.png",
+      "output_file": "Vision_General_Contractors_of_GA.png",
+      "company_name": "Vision General Contractors of GA",
+      "dimensions": "336x111",
+      "original_format": "PNG",
+      "file_size_kb": 16.7,
+      "quality": "low_res",
+      "has_transparency": true
+    },
+    {
+      "original_file": "W_J_Mountford_Co.PNG",
+      "output_file": "W_J_Mountford_Co.png",
+      "company_name": "W J Mountford Co",
+      "dimensions": "736x280",
+      "original_format": "PNG",
+      "file_size_kb": 23.1,
+      "quality": "good",
+      "has_transparency": true
+    },
+    {
+      "original_file": "Weathers_Contracting.jpg",
+      "output_file": "Weathers_Contracting.png",
+      "company_name": "Weathers Contracting",
+      "dimensions": "1426x385",
+      "original_format": "JPEG",
+      "file_size_kb": 92.2,
+      "quality": "ideal",
+      "has_transparency": false
+    },
+    {
+      "original_file": "Wesfield_Construction_Co_Inc.png",
+      "output_file": "Wesfield_Construction_Co_Inc.png",
+      "company_name": "Wesfield Construction Co Inc",
+      "dimensions": "1408x768",
+      "original_format": "PNG",
+      "file_size_kb": 612.1,
+      "quality": "ideal",
+      "has_transparency": false
+    },
+    {
+      "original_file": "Wimco_Corp.png",
+      "output_file": "Wimco_Corp.png",
+      "company_name": "Wimco Corp",
+      "dimensions": "1342x578",
+      "original_format": "PNG",
+      "file_size_kb": 32.2,
+      "quality": "ideal",
+      "has_transparency": true
+    },
+    {
+      "original_file": "metric.jpg",
+      "output_file": "metric.png",
+      "company_name": "metric",
+      "dimensions": "340x85",
+      "original_format": "JPEG",
+      "file_size_kb": 9.1,
+      "quality": "low_res",
+      "has_transparency": false
+    }
+  ]
+}

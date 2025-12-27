@@ -1,0 +1,104 @@
+{
+  "name": "Kaplan Construction",
+  "website": "https://www.kaplanconstructs.com",
+  "founded": 1976,
+  "headquarters": "116 Harvard Street, Brookline, MA 02446",
+  "phone": "617-232-3300",
+  "email": null,
+  "employee_count": "21-45",
+  "description": "Family-owned general contractor and construction management firm specializing in historic rehabilitation and adaptive reuse",
+  "certifications": ["WBE", "LEED", "ABC Accredited Quality Contractor"],
+  "leadership": {
+    "chairman": {"name": "Ken Kaplan", "title": "Founder, Chairman of the Board"},
+    "president": {"name": "Nathan Peck, LEED AP", "title": "President"},
+    "coo": {"name": "Jane Kaplan Peck, LEED AP", "title": "Chief Operating Officer"},
+    "treasurer": {"name": "Cathy Kaplan", "title": "Treasurer"}
+  },
+  "estimators": [
+    {"name": "John Chereski, LEED AP", "title": "Chief Estimator & Project Developer"}
+  ],
+  "project_managers": [
+    {"name": "Sean Lepore", "title": "Senior Project Manager"},
+    {"name": "Rachael Montosi", "title": "Senior Project Manager"},
+    {"name": "Benjamin Hamm, CPHB", "title": "Project Manager"},
+    {"name": "Jacqueline Maloney, CPHB", "title": "Project Manager"},
+    {"name": "Becky Yang, CPHB", "title": "Project Manager"}
+  ],
+  "superintendents": [
+    {"name": "Evan Jobst", "title": "Superintendent"},
+    {"name": "Evan Markham", "title": "Superintendent"},
+    {"name": "Paul Pavao, LEED GA", "title": "Superintendent"},
+    {"name": "Thomas Pontes", "title": "Superintendent"},
+    {"name": "Ashenafi Woldegiorgis", "title": "Superintendent"},
+    {"name": "Erick Martinez", "title": "Superintendent"},
+    {"name": "Mauricio Reyes", "title": "Superintendent"},
+    {"name": "Luis Rodriguez", "title": "Superintendent"},
+    {"name": "Connor Lepore", "title": "Superintendent"},
+    {"name": "Shaun Winner", "title": "Superintendent"}
+  ],
+  "other_staff": [
+    {"name": "William Slaney, CPHB", "title": "Operations Manager"},
+    {"name": "Anne Sequeira, LEED GA", "title": "Scheduling Manager"},
+    {"name": "Melissa Bullock, CPSM", "title": "Marketing Manager"},
+    {"name": "Emily Bergin", "title": "Accounting Manager"},
+    {"name": "Rachael Turner", "title": "Office Administrator & Client/Compliance Coordinator"}
+  ],
+  "services": [
+    "Preconstruction",
+    "General Contracting",
+    "Construction Management",
+    "Design/Build",
+    "Lean & Green Construction"
+  ],
+  "portfolio": [
+    {"name": "First Parish in Cambridge", "type": "Historic Rehab", "size": null},
+    {"name": "2147 Washington Street", "type": "Multi-Family", "size": "99,600 SF"},
+    {"name": "Trust Early Learners", "type": "Institutional", "size": "20,000 SF"},
+    {"name": "CALA", "type": "Adaptive Reuse", "size": "91,000 SF"},
+    {"name": "Peabody Family Health Center", "type": "Healthcare", "size": "5,500 SF"},
+    {"name": "Sportsmen's Tennis and Enrichment Center", "type": "Recreational", "size": "24,000 SF"},
+    {"name": "Pierce Building", "type": "Historic Commercial", "size": "25,000 SF"},
+    {"name": "Edgerley Family Horizons Center", "type": "Institutional", "size": "45,000 SF"}
+  ],
+  "awards": [
+    "ABC National Excellence in Construction Eagle Award 2024 (Trust Early Learners)",
+    "ABC Accredited Quality Contractor (26 consecutive years)",
+    "ABC Top Performers 2025",
+    "ABC Excellence in Construction - Edgerley Family Horizons Center",
+    "ABC Excellence in Construction - Revolution Hotel",
+    "ABC Excellence in Construction - Congregation Kehillath Israel",
+    "Boston Preservation Alliance Award - Pierce Building",
+    "ENR Top 20 Under 40 (Nathan Peck, 2018)",
+    "Boston Business Journal - Top 35 Women-Owned Businesses (#12, 2022)"
+  ],
+  "legal_issues": [
+    {
+      "case_name": "Marius, Clarina vs. Kaplan Construction et al",
+      "case_number": "2584CV00577",
+      "court": "Suffolk County Superior Courts, Massachusetts",
+      "document": "Complaint electronically filed",
+      "status": "Unknown",
+      "url": "https://trellis.law/case/25025/2584cv00577/marius-clarina-vs-kaplan-construction-et-al"
+    }
+  ],
+  "social_links": {
+    "linkedin": "https://www.linkedin.com/company/kaplan-construction",
+    "facebook": "https://www.facebook.com/kaplanconstruction",
+    "instagram": "https://www.instagram.com/kaplanconstruction",
+    "twitter": null
+  },
+  "ratings": {
+    "bbb": "A+",
+    "google_reviews": null
+  },
+  "research_metadata": {
+    "date": "2025-12-16",
+    "sources": [
+      "https://www.kaplanconstructs.com",
+      "https://www.kaplanconstructs.com/team",
+      "https://www.linkedin.com/company/kaplan-construction",
+      "https://www.bbb.org/us/ma/brookline/profile/general-contractor/kaplan-construction-0021-58693",
+      "https://trellis.law/case/25025/2584cv00577/marius-clarina-vs-kaplan-construction-et-al"
+    ]
+  }
+}

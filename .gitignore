@@ -1,0 +1,47 @@
+# Environment files (contain secrets)
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# macOS
+.DS_Store
+
+# Data files (generated at runtime)
+static/data/*.json
+
+# Databases (contain local data)
+*.db
+*.sqlite
+planhub.db
+govwin.db
+
+# WebDriver
+chromedriver*
+
+# Session files
+session/
+modules/planhub_scraper/session/
+
+# Debug artifacts
+debug_screenshots/
+modules/planhub_scraper/debug_screenshots/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Temp files
+*.tmp
+*.tmp.*
+*~
+
+# Windows reserved names
+nul

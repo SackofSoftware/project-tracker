@@ -1,0 +1,241 @@
+/* Global Status Footer Styles */
+
+.global-status-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: var(--bg-primary, #1a1a2e);
+    border-top: 2px solid var(--border, #333);
+    z-index: 9999;
+    font-family: var(--font-mono, 'IBM Plex Mono', monospace);
+    font-size: 0.75rem;
+    transition: height 0.3s ease;
+    overflow: hidden;
+}
+
+.global-status-footer.expanded {
+    height: 240px;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 1rem;
+    gap: 1rem;
+}
+
+/* Status Indicator (pulsing dot) */
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--text-muted, #666);
+}
+
+.status-indicator.idle {
+    background: var(--text-muted, #666);
+}
+
+.status-indicator.running {
+    background: var(--accent-success, #4caf50);
+    animation: pulse 1.5s infinite;
+}
+
+.status-indicator.error {
+    background: var(--accent-danger, #f44336);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(76, 175, 80, 0); }
+}
+
+/* Job Status Info */
+.footer-job-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 150px;
+}
+
+.job-task {
+    color: var(--text-primary, #fff);
+    font-weight: 600;
+}
+
+.job-project {
+    color: var(--text-secondary, #aaa);
+    font-size: 0.7rem;
+}
+
+/* Progress Bar */
+.footer-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    max-width: 300px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-secondary, #2a2a4a);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-primary, #00b894), var(--accent-secondary, #00cec9));
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    color: var(--text-secondary, #aaa);
+    font-size: 0.7rem;
+    min-width: 35px;
+    text-align: right;
+}
+
+/* Phase/Message */
+.footer-message {
+    color: var(--text-secondary, #aaa);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Queue Depth */
+.footer-queue {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background: var(--bg-secondary, #2a2a4a);
+    border-radius: 4px;
+}
+
+.queue-count {
+    color: var(--accent-warning, #ffab40);
+    font-weight: 700;
+}
+
+.queue-label {
+    color: var(--text-muted, #666);
+}
+
+/* Expand Button */
+.footer-expand {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary, #aaa);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: background 0.2s, transform 0.3s;
+}
+
+.footer-expand:hover {
+    background: var(--bg-secondary, #2a2a4a);
+    color: var(--text-primary, #fff);
+}
+
+.global-status-footer.expanded .footer-expand {
+    transform: rotate(180deg);
+}
+
+/* Expanded Details Panel */
+.footer-details {
+    display: none;
+    flex-direction: column;
+    height: calc(100% - 40px);
+    padding: 0 1rem 0.5rem;
+}
+
+.global-status-footer.expanded .footer-details {
+    display: flex;
+}
+
+.details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border, #333);
+    color: var(--text-secondary, #aaa);
+    font-weight: 600;
+}
+
+.clear-logs-btn {
+    background: transparent;
+    border: 1px solid var(--border, #333);
+    color: var(--text-muted, #666);
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.65rem;
+}
+
+.clear-logs-btn:hover {
+    border-color: var(--accent-danger, #f44336);
+    color: var(--accent-danger, #f44336);
+}
+
+.details-logs {
+    flex: 1;
+    overflow-y: auto;
+    font-size: 0.7rem;
+    line-height: 1.4;
+}
+
+.log-entry {
+    padding: 0.25rem 0;
+    border-bottom: 1px solid var(--bg-secondary, #2a2a4a);
+    display: flex;
+    gap: 0.5rem;
+}
+
+.log-time {
+    color: var(--text-muted, #666);
+    flex-shrink: 0;
+}
+
+.log-message {
+    color: var(--text-secondary, #aaa);
+}
+
+.log-entry.info .log-message { color: var(--text-secondary, #aaa); }
+.log-entry.success .log-message { color: var(--accent-success, #4caf50); }
+.log-entry.warning .log-message { color: var(--accent-warning, #ffab40); }
+.log-entry.error .log-message { color: var(--accent-danger, #f44336); }
+
+/* Add padding to main content to account for footer */
+body.has-global-footer {
+    padding-bottom: 50px;
+}
+
+/* Scrollbar styling for logs */
+.details-logs::-webkit-scrollbar {
+    width: 6px;
+}
+
+.details-logs::-webkit-scrollbar-track {
+    background: var(--bg-secondary, #2a2a4a);
+}
+
+.details-logs::-webkit-scrollbar-thumb {
+    background: var(--border, #333);
+    border-radius: 3px;
+}
+
+.details-logs::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted, #666);
+}

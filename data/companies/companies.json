@@ -1,0 +1,141 @@
+{
+  "contractors": {
+    "Stillwater Construction, Inc.": {
+      "logo": "Stillwater_Construction_Inc.png",
+      "phone": "(401) 227-9032",
+      "email": "dkenney@stillwaterconst.com",
+      "website": null
+    },
+    "Boston 5 Star Contractors Inc.": {
+      "logo": "Boston_5_Star_Contractors_Inc.png",
+      "phone": null,
+      "email": null,
+      "website": null
+    },
+    "Boston Building and Bridge Corp": {
+      "logo": "Boston_Building_and_Bridge_Corp.PNG",
+      "phone": null,
+      "email": null,
+      "website": null
+    },
+    "D.F. Pray General Contractors": {
+      "logo": "DF_Pray_General_Contractors.PNG",
+      "phone": null,
+      "email": null,
+      "website": null
+    },
+    "Embree Construction Group.": {
+      "logo": "Embree_Group.png",
+      "phone": null,
+      "email": null,
+      "website": null
+    },
+    "FRG Contractor Corporation": {
+      "logo": "FRG_Contractor_Corporation.png",
+      "phone": "(781) 851-4202",
+      "email": null,
+      "website": "https://www.frgcontractor.com/"
+    },
+    "G.V.W., Inc.": {
+      "logo": "GVW_Construction.png",
+      "phone": null,
+      "email": null,
+      "website": null
+    },
+    "Henry General Contractors, Inc.": {
+      "logo": null,
+      "phone": "(413) 301-5655",
+      "email": null,
+      "website": "https://www.henrygeneralcontractors.com/"
+    },
+    "JAC Inc": {
+      "logo": "JAC_Inc.png",
+      "phone": null,
+      "email": null,
+      "website": null
+    },
+    "Loureiro": {
+      "logo": "Loureiro.svg",
+      "phone": "(203) 600-8156",
+      "email": "jcperry@loureiro.com",
+      "website": "https://www.loureiro.com/"
+    },
+    "Massey Construction Corp.": {
+      "logo": "Massey_Construction_Corp.PNG",
+      "phone": null,
+      "email": null,
+      "website": null
+    },
+    "Menemsha Development Group, Inc": {
+      "logo": "Menemsha_Development_Group_Inc.png",
+      "phone": null,
+      "email": null,
+      "website": null
+    },
+    "NEL Corporation": {
+      "logo": "NEL_Corporation.png",
+      "phone": "(603) 231-7051",
+      "email": null,
+      "website": "https://nelcorporation.com/"
+    },
+    "P & S Construction": {
+      "logo": "P_S_Construction.png",
+      "phone": null,
+      "email": null,
+      "website": "https://www.psconstruction.net/"
+    },
+    "Rinaldi, Inc.": {
+      "logo": "Rinaldi_Inc.PNG",
+      "phone": null,
+      "email": null,
+      "website": null
+    },
+    "South Coast Improvement": {
+      "logo": "South_Coast_Improvement.png",
+      "phone": "(508) 748-6545",
+      "email": null,
+      "website": "https://southcoastimprovement.com/"
+    },
+    "Synergy Contracting Inc": {
+      "logo": "Synergy_Contracting_Inc.svg",
+      "phone": "(978) 307-2200",
+      "email": null,
+      "website": "https://www.synergycoinc.com/"
+    },
+    "Thomas E. Snowden, Inc.": {
+      "logo": "Thomas_E_Snowden_Inc.png",
+      "phone": null,
+      "email": null,
+      "website": "https://tesnowden.com/"
+    },
+    "US Construction Group": {
+      "logo": "US_Construction_Group.jpg",
+      "phone": null,
+      "email": null,
+      "website": null
+    },
+    "Vareika Construction": {
+      "logo": "Vareika_Construction.jpg",
+      "phone": null,
+      "email": null,
+      "website": null
+    },
+    "Yorkshire Industries": {
+      "logo": "Yorkshire_Industries.png",
+      "phone": "(929) 476-4138",
+      "email": null,
+      "website": "https://yorkshireindustries.com/"
+    }
+  },
+  "vendors": {
+    "Thomas Windows": {
+      "logo": "Thomas_Windows.png",
+      "phone": null,
+      "email": null,
+      "website": null,
+      "type": "window supplier"
+    }
+  },
+  "architects": {},
+  "owners": {}
+}

@@ -1,0 +1,3841 @@
+{% extends "base.html" %}
+{% block title %}{{ project.title or project.folder }} - Project Tracker{% endblock %}
+{% block head %}
+    <style>
+        body {
+            overflow-x: hidden;
+        }
+        .detail-header {
+            background: var(--accent-blue);
+            border-bottom: var(--border-width) solid var(--border);
+            padding: 1.5rem 2rem;
+        }
+        .detail-header-content {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .back-link {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+            background: var(--card-bg);
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border);
+            box-shadow: 3px 3px 0px #000000;
+        }
+        .back-link:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0px #000000;
+        }
+        .detail-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+        }
+        .detail-badges {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        .detail-meta {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            color: var(--text);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .detail-content {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+        @media (max-width: 900px) {
+            .detail-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            .detail-header {
+                padding: 1rem;
+            }
+            .detail-title {
+                font-size: 1.35rem;
+                line-height: 1.3;
+            }
+            .detail-meta {
+                gap: 0.75rem;
+            }
+            .detail-content {
+                padding: 1rem;
+                gap: 1.25rem;
+            }
+            .info-row {
+                flex-direction: column;
+                gap: 0.35rem;
+            }
+            .info-label {
+                width: 100%;
+            }
+            .action-buttons {
+                flex-wrap: wrap;
+            }
+            .action-buttons .btn {
+                flex: 1 1 calc(50% - 0.5rem);
+            }
+        }
+        .detail-main {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .detail-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .detail-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            border: var(--border-width) solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        .detail-card-header {
+            padding: 1rem 1.25rem;
+            border-bottom: var(--border-width) solid var(--border);
+            font-weight: 700;
+            font-size: 0.9375rem;
+            text-transform: uppercase;
+            background: var(--accent-yellow);
+        }
+        .detail-card-body {
+            padding: 1.25rem;
+        }
+        .info-row {
+            display: flex;
+            padding: 0.625rem 0;
+            border-bottom: 2px solid var(--border);
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            width: 140px;
+            font-weight: 700;
+            color: var(--text);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+        .info-value {
+            flex: 1;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .scope-section {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: var(--bg);
+            border: 2px solid var(--border);
+        }
+        .scope-section:last-child {
+            margin-bottom: 0;
+        }
+        .scope-title {
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+        .scope-content {
+            font-size: 0.875rem;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+        .scope-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .scope-list li {
+            padding: 0.25rem 0;
+            font-size: 0.8125rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+        .status-form .form-group {
+            margin-bottom: 1rem;
+        }
+        .status-form label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 0.375rem;
+            color: var(--text);
+            text-transform: uppercase;
+        }
+        .status-form select,
+        .status-form input[type="text"],
+        .status-form input[type="number"],
+        .status-form textarea {
+            width: 100%;
+            padding: 0.625rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-family: inherit;
+        }
+        .status-form select:focus,
+        .status-form input:focus,
+        .status-form textarea:focus {
+            outline: none;
+            box-shadow: 3px 3px 0px #000000;
+        }
+        .status-form textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .checkbox-label input {
+            width: 18px;
+            height: 18px;
+        }
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem;
+            margin-top: 0.5rem;
+        }
+        .tag-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            background: var(--accent-yellow);
+            padding: 0.25rem 0.5rem;
+            border: 2px solid var(--border);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .tag-item button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text);
+            font-size: 1rem;
+            line-height: 1;
+            padding: 0;
+            font-weight: 700;
+        }
+        .tag-item button:hover {
+            color: var(--danger);
+        }
+        .tag-input-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .tag-input-row input {
+            flex: 1;
+        }
+        .notes-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .note-item {
+            padding: 0.75rem;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            margin-bottom: 0.5rem;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+        .note-item:last-child {
+            margin-bottom: 0;
+        }
+        .note-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+            font-weight: 600;
+        }
+        .empty-state {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-style: normal;
+            font-weight: 500;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        .needs-extraction-banner {
+            background: var(--accent-orange);
+            border: var(--border-width) solid var(--border);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: var(--shadow);
+        }
+        .needs-extraction-banner .icon {
+            font-size: 1.5rem;
+        }
+        .needs-extraction-banner .text {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .needs-extraction-banner strong {
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        .quote-comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+        .quote-comparison-table th {
+            padding: 0.5rem;
+            text-align: right;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: var(--bg);
+            border: 2px solid var(--border);
+        }
+        .quote-comparison-table th:first-child {
+            text-align: left;
+        }
+        .quote-comparison-table td {
+            padding: 0.5rem;
+            border: 2px solid var(--border);
+            text-align: right;
+        }
+        .quote-comparison-table td:first-child {
+            text-align: left;
+            font-weight: 600;
+        }
+        .quote-comparison-table tr.totals-row {
+            background: var(--accent-yellow);
+            font-weight: 700;
+            border-top: 3px solid var(--border);
+        }
+        .vendor-summary-card {
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            background: var(--card-bg);
+            box-shadow: 3px 3px 0px #000000;
+            min-width: 150px;
+        }
+        /* Pipeline Stage Indicators */
+        .stage-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border: 2px solid var(--border);
+            background: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .stage-icon {
+            font-size: 1rem;
+        }
+        .stage-name {
+            flex: 1;
+        }
+        .stage-status {
+            font-size: 1rem;
+        }
+        </style>
+{% endblock %}
+
+{% block body %}
+    <header class="detail-header">
+        <div class="detail-header-content">
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                <a href="/" class="back-link">&larr; Back to Dashboard</a>
+                <a href="/settings" class="back-link">Settings</a>
+            </div>
+            <h1 class="detail-title">{{ project.title or project.folder }}</h1>
+            <div class="detail-badges">
+                {% if project.source == 'projectdog' %}
+                <span class="source-badge projectdog">ProjectDog</span>
+                {% elif project.source == 'planhub' %}
+                <span class="source-badge planhub">PlanHub</span>
+                {% else %}
+                <span class="source-badge local">Local</span>
+                {% endif %}
+                {% if project.is_dcam %}
+                <span class="type-badge dcam">DCAM</span>
+                {% endif %}
+                {% if project.is_rfq %}
+                <span class="type-badge rfq">RFQ</span>
+                {% endif %}
+                {% if project.bid_decision == 'bid' %}
+                <span class="decision-badge bid">Bidding</span>
+                {% elif project.bid_decision == 'no_bid' %}
+                <span class="decision-badge no-bid">No Bid</span>
+                {% elif project.bid_decision == 'gc_awarded' %}
+                <span class="decision-badge gc-awarded">GC Awarded</span>
+                {% elif project.bid_decision == 'awarded' %}
+                <span class="decision-badge awarded">AWARDED</span>
+                {% elif project.bid_decision == 'lost' %}
+                <span class="decision-badge lost">Lost</span>
+                {% endif %}
+                {% if project.needs_extraction %}
+                <span class="type-badge prequal">Needs Data</span>
+                {% endif %}
+            </div>
+            <div class="detail-meta">
+                {% if project.location %}
+                    {% if project.location.city %}
+                    <span>{{ project.location.city }}{% if project.location.state %}, {{ project.location.state }}{% endif %}</span>
+                    {% elif project.location.raw %}
+                    <span>{{ project.location.raw }}</span>
+                    {% endif %}
+                {% endif %}
+                {% if project.bid_date %}
+                <span>Bid Date: <strong>{{ project.bid_date | format_date }}</strong></span>
+                {% endif %}
+                {% if project.folder %}
+                <span>Folder: {{ project.folder }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <div class="detail-content">
+        <div class="detail-main">
+            {% if project.needs_extraction or project.source == 'local_folder' %}
+            <div class="needs-extraction-banner">
+                <span class="icon">&#9888;</span>
+                <div class="text">
+                    <strong>Data Extraction Available</strong><br>
+                    Run AI extraction to populate project details from bid documents.
+                </div>
+                <button class="btn btn-primary" onclick="startExtraction()" id="extractBtn">
+                    Extract Data
+                </button>
+            </div>
+            {% endif %}
+
+            <!-- Master Pipeline Banner -->
+            <div class="pipeline-banner" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: 3px solid var(--border); padding: 1rem 1.25rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                <span style="font-size: 1.5rem;">🔬</span>
+                <div style="flex: 1; min-width: 200px;">
+                    <strong style="color: white;">Master Analysis Pipeline</strong><br>
+                    <span style="color: rgba(255,255,255,0.8); font-size: 0.8rem;">AI-powered document analysis: rename, organize, split, analyze schedules, highlight, parse quotes</span>
+                </div>
+                <button class="btn btn-primary" onclick="runPipeline()" id="pipelineBtn" style="background: white; color: #667eea; border: 2px solid white;">
+                    Run Full Analysis
+                </button>
+            </div>
+
+            <!-- Pipeline Progress -->
+            <div id="pipelineProgress" style="display: none;" class="detail-card">
+                <div class="detail-card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">Pipeline Progress</div>
+                <div class="detail-card-body">
+                    <div id="pipelineStages" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.5rem; margin-bottom: 1rem;">
+                        <div class="stage-item" data-stage="rename">
+                            <span class="stage-icon">📝</span>
+                            <span class="stage-name">Rename</span>
+                            <span class="stage-status">⏳</span>
+                        </div>
+                        <div class="stage-item" data-stage="organize">
+                            <span class="stage-icon">📁</span>
+                            <span class="stage-name">Organize</span>
+                            <span class="stage-status">⏳</span>
+                        </div>
+                        <div class="stage-item" data-stage="split_specs">
+                            <span class="stage-icon">📋</span>
+                            <span class="stage-name">Split Specs</span>
+                            <span class="stage-status">⏳</span>
+                        </div>
+                        <div class="stage-item" data-stage="split_drawings">
+                            <span class="stage-icon">📐</span>
+                            <span class="stage-name">Split Drawings</span>
+                            <span class="stage-status">⏳</span>
+                        </div>
+                        <div class="stage-item" data-stage="ai_analysis">
+                            <span class="stage-icon">🤖</span>
+                            <span class="stage-name">AI Analysis</span>
+                            <span class="stage-status">⏳</span>
+                        </div>
+                        <div class="stage-item" data-stage="schedule_parse">
+                            <span class="stage-icon">📊</span>
+                            <span class="stage-name">Parse Schedules</span>
+                            <span class="stage-status">⏳</span>
+                        </div>
+                        <div class="stage-item" data-stage="highlight">
+                            <span class="stage-icon">🖍️</span>
+                            <span class="stage-name">Highlight PDFs</span>
+                            <span class="stage-status">⏳</span>
+                        </div>
+                        <div class="stage-item" data-stage="quotes">
+                            <span class="stage-icon">💰</span>
+                            <span class="stage-name">Quote Analysis</span>
+                            <span class="stage-status">⏳</span>
+                        </div>
+                    </div>
+                    <div id="pipelineMessages" style="max-height: 150px; overflow-y: auto; font-family: monospace; font-size: 0.75rem; background: var(--bg); padding: 0.5rem; border: 1px solid var(--border);">
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <progress id="pipelineProgressBar" value="0" max="100" style="width: 100%; height: 20px;"></progress>
+                        <div id="pipelineStatus" style="text-align: center; margin-top: 0.5rem; font-weight: 600;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Extraction Progress -->
+            <div id="extractionProgress" style="display: none;" class="detail-card">
+                <div class="detail-card-header" style="background: var(--accent-orange);">Extraction In Progress</div>
+                <div class="detail-card-body">
+                    <div id="extractionMessages" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.8rem;">
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <progress id="extractionProgressBar" value="0" max="100" style="width: 100%; height: 20px;"></progress>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Info -->
+            <div class="detail-card">
+                <div class="detail-card-header">Project Information</div>
+                <div class="detail-card-body">
+                    <div class="info-row">
+                        <div class="info-label">Project Name</div>
+                        <div class="info-value">{{ project.title or project.folder or 'Unknown' }}</div>
+                    </div>
+                    {% if project.owner %}
+                    <div class="info-row">
+                        <div class="info-label">Owner</div>
+                        <div class="info-value">{{ project.owner }}</div>
+                    </div>
+                    {% endif %}
+                    {% if project.architect %}
+                    <div class="info-row">
+                        <div class="info-label">Architect</div>
+                        <div class="info-value">{{ project.architect }}</div>
+                    </div>
+                    {% endif %}
+                    {% if project.location %}
+                    <div class="info-row">
+                        <div class="info-label">Location</div>
+                        <div class="info-value">
+                            {% if project.location.address %}{{ project.location.address }}<br>{% endif %}
+                            {% if project.location.city %}{{ project.location.city }}{% if project.location.state %}, {{ project.location.state }}{% endif %}
+                            {% elif project.location.raw %}{{ project.location.raw }}{% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if project.bid_date %}
+                    <div class="info-row">
+                        <div class="info-label">Bid Date</div>
+                        <div class="info-value">{{ project.bid_date | format_date }}{% if project.bid_certainty %} <em>({{ project.bid_certainty }})</em>{% endif %}</div>
+                    </div>
+                    {% endif %}
+                    {% if project.contract_value %}
+                    <div class="info-row">
+                        <div class="info-label">Est. Value</div>
+                        <div class="info-value" style="color: var(--success); font-weight: 500;">{{ project.contract_value }}</div>
+                    </div>
+                    {% endif %}
+                    {% if project.url %}
+                    <div class="info-row">
+                        <div class="info-label">External Link</div>
+                        <div class="info-value"><a href="{{ project.url }}" target="_blank">View on ProjectDog</a></div>
+                    </div>
+                    {% endif %}
+                    <div class="info-row">
+                        <div class="info-label">Source</div>
+                        <div class="info-value">{{ project.source or 'local' }} {% if project.source_file %}({{ project.source_file }}){% endif %}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estimate Summary Card -->
+            <div class="detail-card" id="estimateSummaryCard" style="display: none;">
+                <div class="detail-card-header" style="background: var(--accent-green);">
+                    <span>Estimate Summary</span>
+                </div>
+                <div class="detail-card-body">
+                    <div id="estimateSummaryContent">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                            <div class="estimate-stat">
+                                <div class="estimate-stat-value" id="est-doors">-</div>
+                                <div class="estimate-stat-label">Doors</div>
+                            </div>
+                            <div class="estimate-stat">
+                                <div class="estimate-stat-value" id="est-windows">-</div>
+                                <div class="estimate-stat-label">Windows</div>
+                            </div>
+                            <div class="estimate-stat">
+                                <div class="estimate-stat-value" id="est-storefront">-</div>
+                                <div class="estimate-stat-label">Storefront</div>
+                            </div>
+                            <div class="estimate-stat">
+                                <div class="estimate-stat-value" id="est-glazing">-</div>
+                                <div class="estimate-stat-label">Glazing</div>
+                            </div>
+                        </div>
+                        <div id="estimateSource" style="font-size: 0.75rem; color: var(--text-muted);"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email Communications -->
+            {% if project.email_linked or project.source == 'email_monitor' %}
+            <div class="detail-card" id="emailsCard">
+                <div class="detail-card-header" style="display: flex; justify-content: space-between; align-items: center; background: #9c27b0;">
+                    <span>📧 Email Communications</span>
+                    <span class="badge" style="background: rgba(255,255,255,0.2); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;" id="emailCount">{{ project.email_count or 0 }}</span>
+                </div>
+                <div class="detail-card-body" id="emailsBody" style="max-height: 400px; overflow-y: auto;">
+                    <div id="emailsList" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div style="text-align: center; padding: 1rem; color: var(--text-muted);">Loading emails...</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Email Viewer Modal -->
+            <div id="emailViewerModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 9999; padding: 2rem;">
+                <div style="background: var(--bg-card); border-radius: 8px; max-width: 900px; max-height: 90vh; margin: auto; display: flex; flex-direction: column; overflow: hidden;">
+                    <div style="padding: 1rem; background: #9c27b0; color: white; display: flex; justify-content: space-between; align-items: center;">
+                        <span id="emailViewerSubject">Email</span>
+                        <button onclick="closeEmailViewer()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                    </div>
+                    <div style="padding: 0.75rem; background: var(--bg-secondary); border-bottom: 1px solid var(--border); font-size: 0.875rem;">
+                        <div><strong>From:</strong> <span id="emailViewerFrom"></span></div>
+                        <div><strong>Date:</strong> <span id="emailViewerDate"></span></div>
+                        <div id="emailViewerAttachmentsRow" style="display: none; margin-top: 0.5rem;">
+                            <strong>Attachments:</strong> <span id="emailViewerAttachments"></span>
+                        </div>
+                    </div>
+                    <iframe id="emailViewerFrame" style="flex: 1; border: none; background: white;" sandbox="allow-same-origin"></iframe>
+                    <div style="padding: 0.75rem; background: var(--bg-secondary); border-top: 1px solid var(--border); display: flex; gap: 0.5rem;">
+                        <button class="btn btn-secondary" onclick="closeEmailViewer()" style="flex: 1;">Close</button>
+                        <button class="btn btn-primary" onclick="openEmailFolder()" style="flex: 1;">Open in Finder</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Division 8 Scope - Expandable -->
+            <div class="detail-card">
+                <div class="detail-card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Division 8 Scope</span>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-primary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;"
+                                onclick="scanProjectSpecs()" id="scanSpecsBtn">
+                            <span id="scanSpecsBtnText">Scan Specs</span>
+                        </button>
+                        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; background: var(--accent-green); color: var(--text); font-weight: bold;" onclick="runScopeTakeoff()" id="scopeTakeoffBtn">
+                            Scope Takeoff
+                        </button>
+                        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; background: var(--accent-blue); color: white;" onclick="runCSIAnalysis()" id="csiAnalysisBtn">
+                            CSI Analysis
+                        </button>
+                        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="loadAllOpenings()" id="loadAllBtn">
+                            Load Schedule Data
+                        </button>
+                    </div>
+                </div>
+                <div class="detail-card-body" id="div8ScopeBody">
+                    <!-- CSI Scope Tags - Always visible at top -->
+                    <div id="scopeTagsSection" class="scope-tags-container" style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border);">
+                        {% if project.status and project.status.csi_tags %}
+                        <div class="scope-tags">
+                            {% for tag in project.status.csi_tags %}
+                            <span class="scope-tag {{ tag|tag_category }}">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="scope-tags-empty" style="text-align: center; padding: 1rem; background: var(--bg); border-radius: var(--border-radius-sm, 4px);">
+                            <span style="color: var(--text-muted); font-size: 0.85rem;">
+                                No scope tags yet. Click "Scan Specs" to analyze project specifications.
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Scan Progress (hidden until scanning) -->
+                    <div id="scanProgress" style="display: none; background: var(--accent-blue); color: white; padding: 1rem; border-radius: var(--border-radius-sm, 4px); margin-bottom: 1rem;">
+                        <div class="progress-status">
+                            <span id="scanStatusText">Analyzing specifications...</span>
+                            <progress id="scanProgressBar" value="0" max="100" style="width: 100%; height: 8px; margin-top: 0.5rem;"></progress>
+                        </div>
+                    </div>
+
+                    <!-- CSI Masterformat Analysis Panel (hidden by default) -->
+                    <div id="csiAnalysisPanel" style="display: none; margin-bottom: 1rem;">
+                        <div class="scope-section" style="background: var(--accent-blue); color: white; border-radius: var(--border-radius-sm, 4px);">
+                            <div class="scope-title" style="color: white; border-bottom: 1px solid rgba(255,255,255,0.3);">CSI Masterformat Sections</div>
+                            <div id="csiSectionsList" style="padding: 0.5rem;"></div>
+                        </div>
+                        <div id="csiManufacturersPanel" class="scope-section" style="background: var(--accent-orange); margin-top: 0.5rem; border-radius: var(--border-radius-sm, 4px); display: none;">
+                            <div class="scope-title" style="border-bottom: 1px solid rgba(0,0,0,0.2);">Manufacturers Detected</div>
+                            <div id="csiManufacturersList" style="padding: 0.5rem;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Scope Takeoff Results Panel (hidden by default) -->
+                    <div id="fullParsePanel" style="display: none; margin-bottom: 1rem;">
+                        <!-- Progress Section -->
+                        <div id="takeoffProgress" class="scope-section" style="background: var(--accent-green); color: var(--text); border-radius: var(--border-radius-sm, 4px); margin-bottom: 0.75rem;">
+                            <div class="scope-title" style="color: var(--text); border-bottom: 1px solid rgba(0,0,0,0.2);">Scope Takeoff Progress</div>
+                            <div id="fullParseStatus" style="padding: 0.5rem;"></div>
+                        </div>
+
+                        <!-- Step Cards Container -->
+                        <div id="takeoffSteps" style="display: none;">
+                            <!-- Step 1: Documents Identified -->
+                            <div class="takeoff-step" data-step="1">
+                                <div class="step-header" onclick="toggleStep(1)">
+                                    <span class="step-icon">1</span>
+                                    <span class="step-title">Documents Identified</span>
+                                    <span class="step-count" id="step1-count">-</span>
+                                    <span class="step-arrow">▶</span>
+                                </div>
+                                <div class="step-content" id="step1-content" style="display: none;"></div>
+                            </div>
+
+                            <!-- Step 2: Division 8 Specs -->
+                            <div class="takeoff-step" data-step="2">
+                                <div class="step-header" onclick="toggleStep(2)">
+                                    <span class="step-icon">2</span>
+                                    <span class="step-title">Division 8 Spec Sections</span>
+                                    <span class="step-count" id="step2-count">-</span>
+                                    <span class="step-arrow">▶</span>
+                                </div>
+                                <div class="step-content" id="step2-content" style="display: none;"></div>
+                            </div>
+
+                            <!-- Step 3: Schedules Extracted -->
+                            <div class="takeoff-step" data-step="3">
+                                <div class="step-header" onclick="toggleStep(3)">
+                                    <span class="step-icon">3</span>
+                                    <span class="step-title">Schedules Extracted</span>
+                                    <span class="step-count" id="step3-count">-</span>
+                                    <span class="step-arrow">▶</span>
+                                </div>
+                                <div class="step-content" id="step3-content" style="display: none;">
+                                    <!-- Editable Counts -->
+                                    <div class="editable-counts">
+                                        <div class="count-row">
+                                            <label>Door Count:</label>
+                                            <input type="number" id="edit-door-count" class="count-input" min="0">
+                                            <span class="ai-value" id="ai-door-count"></span>
+                                        </div>
+                                        <div class="count-row">
+                                            <label>Window Count:</label>
+                                            <input type="number" id="edit-window-count" class="count-input" min="0">
+                                            <span class="ai-value" id="ai-window-count"></span>
+                                        </div>
+                                        <button class="btn-save-corrections" onclick="saveCorrections()">Save Corrections</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 4: Elevations Analyzed -->
+                            <div class="takeoff-step" data-step="4">
+                                <div class="step-header" onclick="toggleStep(4)">
+                                    <span class="step-icon">4</span>
+                                    <span class="step-title">Elevations Analyzed</span>
+                                    <span class="step-count" id="step4-count">-</span>
+                                    <span class="step-arrow">▶</span>
+                                </div>
+                                <div class="step-content" id="step4-content" style="display: none;"></div>
+                            </div>
+
+                            <!-- Step 5: Highlighted PDF -->
+                            <div class="takeoff-step" data-step="5">
+                                <div class="step-header" onclick="toggleStep(5)">
+                                    <span class="step-icon">5</span>
+                                    <span class="step-title">Verification Ready</span>
+                                    <span class="step-count" id="step5-count">-</span>
+                                    <span class="step-arrow">▶</span>
+                                </div>
+                                <div class="step-content" id="step5-content" style="display: none;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Errors/Warnings -->
+                        <div id="takeoffErrors" style="display: none; margin-top: 0.5rem; padding: 0.5rem; background: var(--bg-error, #fee2e2); border: 2px solid var(--danger); border-radius: var(--border-radius-sm, 4px);">
+                            <div style="font-weight: bold; color: var(--danger); margin-bottom: 0.25rem;">Warnings</div>
+                            <div id="takeoffErrorsList" style="font-size: 0.8rem; color: var(--danger);"></div>
+                        </div>
+                    </div>
+                    {% set has_data = false %}
+
+                    <!-- RAG Analysis Section -->
+                    <div id="rag-analysis-container">
+                        <!-- Analyzing indicator (hidden by default) -->
+                        <div id="rag-analyzing" class="rag-analyzing-indicator" style="display: none;">
+                            <span class="spinner"></span>
+                            <span>Analyzing project documents...</span>
+                        </div>
+
+                        <!-- Large project warning (hidden by default) -->
+                        <div id="rag-large-warning" class="rag-large-project-warning" style="display: none;">
+                            <span class="warning-text">Large project detected. Manual analysis recommended.</span>
+                            <button class="btn btn-primary" onclick="triggerRagAnalysis(true)" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">
+                                Analyze Anyway
+                            </button>
+                        </div>
+
+                        {% if project.has_rag_analysis %}
+                        <div class="rag-analysis-card">
+                            <div class="rag-analysis-header">
+                                <div class="rag-analysis-header-title">
+                                    <span>AI RAG Analysis</span>
+                                    {% if project.rag_analyzed_at %}
+                                    <span style="font-size: 0.7rem; font-weight: normal; opacity: 0.7;">{{ project.rag_analyzed_at[:10] }}</span>
+                                    {% endif %}
+                                </div>
+                                {% if project.rag_analysis.confidence %}
+                                <span class="rag-confidence-badge {{ project.rag_analysis.confidence }}">
+                                    {{ project.rag_analysis.confidence }}
+                                </span>
+                                {% endif %}
+                            </div>
+
+                            <div class="rag-analysis-body">
+                                <!-- Scope Summary -->
+                                <div class="rag-scope-summary">
+                                    {{ project.rag_analysis.scope_summary if project.rag_analysis else project.division_8.scope_summary }}
+                                </div>
+
+                                <!-- RAG Details Grid -->
+                                <div class="rag-categories-grid">
+                                    <!-- Windows -->
+                                    {% if project.rag_analysis.windows and (project.rag_analysis.windows.types or project.rag_analysis.windows.count) %}
+                                    <div class="rag-category-card">
+                                        <div class="rag-category-header windows">Windows</div>
+                                        <div class="rag-category-body">
+                                            {% if project.rag_analysis.windows.count %}
+                                            <div><strong>Count:</strong> {{ project.rag_analysis.windows.count }}</div>
+                                            {% endif %}
+                                            {% if project.rag_analysis.windows.types %}
+                                            <div><strong>Types:</strong> {{ project.rag_analysis.windows.types|safe_join(', ') }}</div>
+                                            {% endif %}
+                                            {% if project.rag_analysis.windows.notes %}
+                                            <div class="rag-notes">{{ project.rag_analysis.windows.notes|truncate(150) }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- Doors -->
+                                    {% if project.rag_analysis.doors and (project.rag_analysis.doors.metal_count or project.rag_analysis.doors.notes) %}
+                                    <div class="rag-category-card">
+                                        <div class="rag-category-header doors">Doors</div>
+                                        <div class="rag-category-body">
+                                            {% if project.rag_analysis.doors.metal_count %}
+                                            <div><strong>Metal:</strong> {{ project.rag_analysis.doors.metal_count }}</div>
+                                            {% endif %}
+                                            {% if project.rag_analysis.doors.wood_count_excluded %}
+                                            <div style="opacity: 0.7;"><strong>Wood (excl):</strong> {{ project.rag_analysis.doors.wood_count_excluded }}</div>
+                                            {% endif %}
+                                            {% if project.rag_analysis.doors.notes %}
+                                            <div class="rag-notes">{{ project.rag_analysis.doors.notes|truncate(150) }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- Storefront -->
+                                    {% if project.rag_analysis.storefront and (project.rag_analysis.storefront.description or project.rag_analysis.storefront.sf_estimate) %}
+                                    <div class="rag-category-card">
+                                        <div class="rag-category-header storefront">Storefront</div>
+                                        <div class="rag-category-body">
+                                            {% if project.rag_analysis.storefront.sf_estimate is not none %}
+                                            {% set sf_val = project.rag_analysis.storefront.sf_estimate %}
+                                            <div><strong>Est. SF:</strong>
+                                                {% if sf_val is string %}
+                                                    {{ sf_val }}
+                                                {% else %}
+                                                    {{ (sf_val | float) | round(0) | int }}
+                                                {% endif %}
+                                                SF
+                                            </div>
+                                            {% endif %}
+                                            {% if project.rag_analysis.storefront.description %}
+                                            <div class="rag-notes">{{ project.rag_analysis.storefront.description|truncate(150) }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- Hardware -->
+                                    {% if project.rag_analysis.hardware and (project.rag_analysis.hardware.groups or project.rag_analysis.hardware.manufacturers) %}
+                                    <div class="rag-category-card">
+                                        <div class="rag-category-header hardware">Hardware</div>
+                                        <div class="rag-category-body">
+                                            {% if project.rag_analysis.hardware.groups %}
+                                            <div><strong>Groups:</strong> {{ project.rag_analysis.hardware.groups|safe_join(', ')|truncate(100) }}</div>
+                                            {% endif %}
+                                            {% if project.rag_analysis.hardware.manufacturers %}
+                                            <div><strong>Mfrs:</strong> {{ project.rag_analysis.hardware.manufacturers|safe_join(', ')|truncate(100) }}</div>
+                                            {% endif %}
+                                            {% if project.rag_analysis.hardware.notes %}
+                                            <div class="rag-notes">{{ project.rag_analysis.hardware.notes|truncate(100) }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- Glass -->
+                                    {% if project.rag_analysis.glass and (project.rag_analysis.glass.specs or project.rag_analysis.glass.notes) %}
+                                    <div class="rag-category-card">
+                                        <div class="rag-category-header glass">Glass/Glazing</div>
+                                        <div class="rag-category-body">
+                                            {% if project.rag_analysis.glass.specs %}
+                                            <div>{{ project.rag_analysis.glass.specs|safe_join('; ')|truncate(150) }}</div>
+                                            {% endif %}
+                                            {% if project.rag_analysis.glass.notes %}
+                                            <div class="rag-notes">{{ project.rag_analysis.glass.notes|truncate(100) }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Exclusions -->
+                                {% if project.rag_analysis.exclusions and project.rag_analysis.exclusions|length > 0 %}
+                                <div class="rag-exclusions">
+                                    <div class="rag-exclusions-header">Exclusions</div>
+                                    <ul>
+                                        {% for excl in project.rag_analysis.exclusions[:5] %}
+                                        <li>{{ excl }}</li>
+                                        {% endfor %}
+                                        {% if project.rag_analysis.exclusions|length > 5 %}
+                                        <li style="opacity: 0.6;">...and {{ project.rag_analysis.exclusions|length - 5 }} more</li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+
+                                <!-- RAG Metadata -->
+                                {% if project.rag_analysis._rag_metadata %}
+                                <div class="rag-metadata">
+                                    {% if project.rag_analysis._rag_metadata.generator %}
+                                    <span><strong>Model:</strong> {{ project.rag_analysis._rag_metadata.generator }}</span>
+                                    {% endif %}
+                                    {% if project.rag_analysis._rag_metadata.embedder %}
+                                    <span><strong>Embedder:</strong> {{ project.rag_analysis._rag_metadata.embedder }}</span>
+                                    {% endif %}
+                                    {% if project.rag_analysis._rag_metadata.chunks_analyzed %}
+                                    <span><strong>Chunks:</strong> {{ project.rag_analysis._rag_metadata.chunks_analyzed }}</span>
+                                    {% endif %}
+                                    {% if project.rag_analysis._rag_metadata.tokens_used %}
+                                    <span><strong>Tokens:</strong> {{ project.rag_analysis._rag_metadata.tokens_used|int }}</span>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% set has_data = true %}
+                        {% endif %}
+                    </div>
+
+                    {% if not project.has_rag_analysis and project.division_8 and project.division_8.scope_summary %}
+                    {% set has_data = true %}
+                    <div class="scope-section">
+                        <div class="scope-title">Summary</div>
+                        <div class="scope-content">{{ project.division_8.scope_summary }}</div>
+                    </div>
+                    {% endif %}
+
+                    {% if project.division_8 and project.division_8.spec_sections %}
+                    {% set has_data = true %}
+                    <div class="scope-section">
+                        <div class="scope-title">Spec Sections</div>
+                        <ul class="scope-list">
+                            {% for section in project.division_8.spec_sections %}
+                            {% if section is mapping %}
+                            <li>{{ section.section }} - {{ section.title }}</li>
+                            {% else %}
+                            <li>{{ section }}</li>
+                            {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <!-- Expandable Door Section -->
+                    <div class="scope-section expandable-scope" data-type="door">
+                        <div class="scope-title clickable" onclick="toggleScopeSection('door')" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                            <span>
+                                <span class="expand-icon" id="icon-door">▶</span>
+                                Doors
+                            </span>
+                            {% if project.division_8 and project.division_8.doors and (project.division_8.doors.count or project.division_8.doors.total_openings) %}
+                            <span class="scope-badge" style="background: var(--success); color: white; padding: 0.1rem 0.5rem; border-radius: var(--border-radius-sm, 3px); font-size: 0.75rem;">
+                                {{ project.division_8.doors.count or project.division_8.doors.total_openings }}
+                            </span>
+                            {% else %}
+                            <span class="scope-badge" id="badge-door" style="display: none; background: var(--success); color: white; padding: 0.1rem 0.5rem; border-radius: var(--border-radius-sm, 3px); font-size: 0.75rem;"></span>
+                            {% endif %}
+                        </div>
+                        <div class="scope-details" id="details-door" style="display: none; margin-top: 0.5rem;">
+                            <div class="loading-indicator" style="display: none; color: var(--accent-orange); font-size: 0.8rem;">Loading...</div>
+                            <div class="schedule-table"></div>
+                        </div>
+                    </div>
+
+                    <!-- Expandable Windows Section -->
+                    <div class="scope-section expandable-scope" data-type="window">
+                        <div class="scope-title clickable" onclick="toggleScopeSection('window')" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                            <span>
+                                <span class="expand-icon" id="icon-window">▶</span>
+                                Windows
+                            </span>
+                            {% if project.division_8 and project.division_8.windows and project.division_8.windows.count %}
+                            <span class="scope-badge" style="background: var(--accent-blue); color: white; padding: 0.1rem 0.5rem; border-radius: var(--border-radius-sm, 3px); font-size: 0.75rem;">
+                                {{ project.division_8.windows.count }}
+                            </span>
+                            {% else %}
+                            <span class="scope-badge" id="badge-window" style="display: none; background: var(--accent-blue); color: white; padding: 0.1rem 0.5rem; border-radius: var(--border-radius-sm, 3px); font-size: 0.75rem;"></span>
+                            {% endif %}
+                        </div>
+                        <div class="scope-details" id="details-window" style="display: none; margin-top: 0.5rem;">
+                            <div class="loading-indicator" style="display: none; color: var(--accent-orange); font-size: 0.8rem;">Loading...</div>
+                            <div class="schedule-table"></div>
+                        </div>
+                    </div>
+
+                    <!-- Expandable Storefront Section -->
+                    <div class="scope-section expandable-scope" data-type="storefront">
+                        <div class="scope-title clickable" onclick="toggleScopeSection('storefront')" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                            <span>
+                                <span class="expand-icon" id="icon-storefront">▶</span>
+                                Storefront / Curtain Wall
+                            </span>
+                            {% if project.division_8 and project.division_8.storefront and project.division_8.storefront.count %}
+                            <span class="scope-badge" style="background: var(--accent-orange); color: white; padding: 0.1rem 0.5rem; border-radius: var(--border-radius-sm, 3px); font-size: 0.75rem;">
+                                {{ project.division_8.storefront.count }}
+                            </span>
+                            {% else %}
+                            <span class="scope-badge" id="badge-storefront" style="display: none; background: var(--accent-orange); color: white; padding: 0.1rem 0.5rem; border-radius: var(--border-radius-sm, 3px); font-size: 0.75rem;"></span>
+                            {% endif %}
+                        </div>
+                        <div class="scope-details" id="details-storefront" style="display: none; margin-top: 0.5rem;">
+                            <div class="loading-indicator" style="display: none; color: var(--accent-orange); font-size: 0.8rem;">Loading...</div>
+                            <div class="schedule-table"></div>
+                        </div>
+                    </div>
+
+                    <!-- Expandable Glazing Section -->
+                    <div class="scope-section expandable-scope" data-type="glazing">
+                        <div class="scope-title clickable" onclick="toggleScopeSection('glazing')" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                            <span>
+                                <span class="expand-icon" id="icon-glazing">▶</span>
+                                Glazing
+                            </span>
+                            {% if project.division_8 and project.division_8.glazing and project.division_8.glazing.total_units %}
+                            <span class="scope-badge" style="background: #00BCD4; color: white; padding: 0.1rem 0.5rem; border-radius: var(--border-radius-sm, 3px); font-size: 0.75rem;">
+                                {{ project.division_8.glazing.total_units }}
+                            </span>
+                            {% else %}
+                            <span class="scope-badge" id="badge-glazing" style="display: none; background: #00BCD4; color: white; padding: 0.1rem 0.5rem; border-radius: var(--border-radius-sm, 3px); font-size: 0.75rem;"></span>
+                            {% endif %}
+                        </div>
+                        <div class="scope-details" id="details-glazing" style="display: none; margin-top: 0.5rem;">
+                            <div class="loading-indicator" style="display: none; color: var(--accent-orange); font-size: 0.8rem;">Loading...</div>
+                            <div class="schedule-table"></div>
+                        </div>
+                    </div>
+
+                    {% if project.division_8 and project.division_8.hardware and (project.division_8.hardware.manufacturers or project.division_8.hardware.key_manufacturers) %}
+                    <div class="scope-section">
+                        <div class="scope-title">Hardware</div>
+                        <div class="scope-content">
+                            Manufacturers: {{ (project.division_8.hardware.manufacturers or project.division_8.hardware.key_manufacturers)|safe_join(', ') }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Status message -->
+                    <div id="scheduleStatus" style="margin-top: 1rem; padding: 0.5rem; font-size: 0.8rem; color: var(--text-secondary); display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Vendor Quotes -->
+            <div class="detail-card">
+                <div class="detail-card-header" style="display: flex; justify-content: space-between; align-items: center; background: var(--accent-orange);">
+                    <span>Vendor Quotes</span>
+                    <button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="loadQuotes()" id="loadQuotesBtn">
+                        Load Quotes
+                    </button>
+                </div>
+                <div class="detail-card-body" id="quotesBody">
+                    <div id="quotesLoading" style="display: none; text-align: center; padding: 1rem; color: var(--accent-orange);">
+                        Loading vendor quotes...
+                    </div>
+                    <div id="quotesContent" style="display: none;">
+                        <!-- Quote comparison table will be inserted here -->
+                    </div>
+                    <div id="quotesEmpty" style="color: var(--text-muted); font-size: 0.875rem; padding: 1rem;">
+                        Click "Load Quotes" to analyze vendor pricing documents
+                    </div>
+                    <div id="quotesError" style="display: none; color: var(--danger); padding: 1rem;"></div>
+                </div>
+            </div>
+
+            <!-- ProjectDog Features -->
+            {% if project.source == 'projectdog' %}
+            <div class="detail-card">
+                <div class="detail-card-header">ProjectDog Details</div>
+                <div class="detail-card-body">
+                    <div class="info-row">
+                        <div class="info-label">Project Code</div>
+                        <div class="info-value">{{ project.project_code or 'N/A' }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Estimated Value</div>
+                        <div class="info-value">{{ project.estimated_value or project.contract_value or 'N/A' }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Sub Bid Date</div>
+                        <div class="info-value">{{ project.sub_bid_date | format_date if project.sub_bid_date else 'N/A' }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Document Status</div>
+                        <div class="info-value">
+                            {% if project.has_documents %}
+                                {% if project.documents_acquired %}
+                                <span style="color: #28a745;">Downloaded</span>
+                                {% else %}
+                                <span style="color: #17a2b8;">Available</span>
+                                {% endif %}
+                            {% else %}
+                            <span style="color: #6c757d;">Not Hosted (GO)</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">E-Bid</div>
+                        <div class="info-value">
+                            {% if project.has_ebid or project.gc_ebid_available or project.sub_ebid_available %}
+                            <span style="color: #28a745;">Available</span>
+                            {% if project.gc_ebid_available %}<small>(GC)</small>{% endif %}
+                            {% if project.sub_ebid_available %}<small>(Sub)</small>{% endif %}
+                            {% else %}
+                            <span style="color: #6c757d;">Not Available</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if project.prequalification_required %}
+                    <div class="info-row">
+                        <div class="info-label">Prequalification</div>
+                        <div class="info-value" style="color: var(--warning);">Required</div>
+                    </div>
+                    {% endif %}
+                    {% if project.documents_folder %}
+                    <div class="info-row">
+                        <div class="info-label">Local Folder</div>
+                        <div class="info-value" style="font-size: 0.75rem;">{{ project.documents_folder }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- ProjectDog Documents -->
+            {% if project.has_documents %}
+            <div class="detail-card">
+                <div class="detail-card-header">
+                    ProjectDog Documents
+                    {% if not project.documents_acquired and project.project_code %}
+                    <button class="btn btn-sm btn-download" onclick="downloadProjectDogDocs('{{ project.project_code }}')" style="float: right; margin-top: -4px;">Download All</button>
+                    {% endif %}
+                </div>
+                <div class="detail-card-body">
+                    {% if project.documents and project.documents|length > 0 %}
+                    <div class="projectdog-docs-list">
+                        {% set specs = project.documents|selectattr('type', 'eq', 'Specifications')|list %}
+                        {% set addenda = project.documents|selectattr('type', 'eq', 'Addenda')|list %}
+
+                        {% if specs %}
+                        <div class="doc-section">
+                            <div class="doc-section-header" onclick="toggleDocSection(this)">
+                                Specifications ({{ specs|length }})
+                                <span class="toggle-icon">+</span>
+                            </div>
+                            <div class="doc-section-body" style="display: none;">
+                                {% for doc in specs %}
+                                <div class="doc-item">
+                                    <span class="doc-name">{{ doc.description }}</span>
+                                    {% if doc.downloaded and doc.filename %}
+                                    <span class="doc-status downloaded">Downloaded</span>
+                                    {% else %}
+                                    <a href="{{ doc.url }}" target="_blank" class="doc-link">Download</a>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if addenda %}
+                        <div class="doc-section">
+                            <div class="doc-section-header" onclick="toggleDocSection(this)">
+                                Addenda ({{ addenda|length }})
+                                <span class="toggle-icon">+</span>
+                            </div>
+                            <div class="doc-section-body" style="display: none;">
+                                {% for doc in addenda %}
+                                <div class="doc-item">
+                                    <span class="doc-name">{{ doc.description }}</span>
+                                    {% if doc.downloaded and doc.filename %}
+                                    <span class="doc-status downloaded">Downloaded</span>
+                                    {% else %}
+                                    <a href="{{ doc.url }}" target="_blank" class="doc-link">Download</a>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <p style="color: var(--text-muted); font-size: 0.875rem;">
+                        Documents available. Click "Download All" to fetch them.
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Document Recipients -->
+            {% if project.document_recipients and project.document_recipients|length > 0 %}
+            <div class="detail-card">
+                <div class="detail-card-header" onclick="toggleDocSection(this.parentElement.querySelector('.detail-card-body'))">
+                    Document Recipients ({{ project.document_recipients|length }})
+                    <span class="toggle-icon" style="float: right;">+</span>
+                </div>
+                <div class="detail-card-body recipients-list" style="display: none;">
+                    {% for recipient in project.document_recipients[:20] %}
+                    <div class="recipient-item">
+                        <div class="recipient-company">{{ recipient.company }}</div>
+                        {% if recipient.contact_name %}
+                        <div class="recipient-contact">{{ recipient.contact_name }}</div>
+                        {% endif %}
+                        {% if recipient.city or recipient.state %}
+                        <div class="recipient-location">{{ recipient.city }}{% if recipient.city and recipient.state %}, {% endif %}{{ recipient.state }}</div>
+                        {% endif %}
+                        {% if recipient.type %}
+                        <div class="recipient-type">{{ recipient.type }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    {% if project.document_recipients|length > 20 %}
+                    <div class="recipients-more">+{{ project.document_recipients|length - 20 }} more...</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            {% endif %}
+
+            <!-- Document Viewer -->
+            {% if project.source in ['local_folder', 'local_extracted', 'local_bidding'] %}
+            <div class="detail-card document-viewer-card">
+                <div class="detail-card-header">
+                    Project Documents
+                    <button class="btn btn-sm" onclick="loadProjectFiles()" id="loadFilesBtn" style="float: right; margin-top: -4px;">Load Files</button>
+                </div>
+                <div class="detail-card-body">
+                    <div id="docViewerTabs" class="doc-viewer-tabs" style="display: none;">
+                        <button class="doc-tab active" onclick="switchDocTab('drawings')">Drawings <span id="drawingsCount">(0)</span></button>
+                        <button class="doc-tab" onclick="switchDocTab('specs')">Specs <span id="specsCount">(0)</span></button>
+                        <button class="doc-tab" onclick="switchDocTab('other')">Other <span id="otherCount">(0)</span></button>
+                    </div>
+                    <div id="docViewerContent">
+                        <div id="docLoading" style="display: none; text-align: center; padding: 1rem;">
+                            <span class="spinner"></span> Loading files...
+                        </div>
+                        <div id="docEmpty" style="color: var(--text-muted); font-size: 0.875rem; padding: 1rem;">
+                            Click "Load Files" to see available drawings and specs
+                        </div>
+                        <div id="docFileList" style="display: none;">
+                            <div id="drawingsList" class="doc-file-list"></div>
+                            <div id="specsList" class="doc-file-list" style="display: none;"></div>
+                            <div id="otherList" class="doc-file-list" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="detail-sidebar">
+            <!-- Smart Review Card -->
+            {% if project.source in ['local_folder', 'local_extracted', 'local_bidding'] %}
+            <div class="detail-card smart-review-card">
+                <div class="detail-card-header" style="background: linear-gradient(135deg, #e94560 0%, #0f3460 100%); color: white;">
+                    Smart Review
+                    <span style="font-size: 0.7rem; margin-left: 0.5rem; opacity: 0.9;">Verify quantities</span>
+                </div>
+                <div class="detail-card-body">
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 0.75rem 0;">
+                        Visually mark and confirm window/door tag counts on drawings. Vision models struggle with quantities - use this to verify.
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <a href="/project/{{ project.id or project.folder }}/validate" class="btn btn-primary" style="flex: 1; text-align: center; min-width: 120px;">
+                            Quantity Validator
+                        </a>
+                        <a href="/project/{{ project.id or project.folder }}/annotate" class="btn btn-secondary" style="flex: 1; text-align: center; min-width: 120px;">
+                            Annotation Tool
+                        </a>
+                        <a href="/project/{{ project.id or project.folder }}/crossref" class="btn btn-secondary" style="flex: 1; text-align: center; min-width: 120px;">
+                            Cross-Reference
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if project.planhub_urls %}
+            <!-- PlanHub Links -->
+            <div class="detail-card planhub-links-card">
+                <div class="detail-card-header" style="background: #4A90A4; color: white;">PlanHub Links</div>
+                <div class="detail-card-body">
+                    <div class="planhub-btn-group">
+                        {% if project.planhub_urls.project_info %}
+                        <a href="{{ project.planhub_urls.project_info }}" target="_blank" class="btn btn-secondary planhub-link">
+                            Project Info
+                        </a>
+                        {% endif %}
+                        {% if project.planhub_urls.project_files %}
+                        <a href="{{ project.planhub_urls.project_files }}" target="_blank" class="btn btn-secondary planhub-link">
+                            Files
+                        </a>
+                        {% endif %}
+                        {% if project.planhub_urls.general_contractors %}
+                        <a href="{{ project.planhub_urls.general_contractors }}" target="_blank" class="btn btn-secondary planhub-link">
+                            GCs
+                        </a>
+                        {% endif %}
+                        {% if project.planhub_urls.market_intelligence %}
+                        <a href="{{ project.planhub_urls.market_intelligence }}" target="_blank" class="btn btn-secondary planhub-link">
+                            Market Intel
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% if project.matching_trades %}
+                    <div class="matching-trades" style="margin-top: 1rem;">
+                        <strong style="font-size: 0.8rem; text-transform: uppercase;">Matching Trades:</strong>
+                        <div style="margin-top: 0.5rem;">
+                            {% for trade in project.matching_trades %}
+                            <span class="trade-tag">{{ trade }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if project.source in ['local_folder', 'local_extracted', 'local_bidding'] and not project.planhub_urls %}
+            <!-- PlanHub Linking Card (for local projects without PlanHub data) -->
+            <div class="detail-card planhub-link-card">
+                <div class="detail-card-header" style="background: #4A90A4; color: white;">
+                    Link to PlanHub
+                    <span style="font-size: 0.7rem; margin-left: 0.5rem; opacity: 0.9;">GC contacts & docs</span>
+                </div>
+                <div class="detail-card-body">
+                    <div id="planhubLinkStatus">
+                        <button class="btn btn-secondary" onclick="loadPlanHubSuggestions()" style="width: 100%;">
+                            Find Matching PlanHub Projects
+                        </button>
+                    </div>
+                    <div id="planhubSuggestions" style="display: none; margin-top: 1rem;">
+                        <div id="planhubSuggestionsList"></div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Linked Sources Card -->
+            <div class="detail-card linked-sources-card">
+                <div class="detail-card-header" style="background: var(--accent-blue);">
+                    Linked Sources
+                    <span style="font-size: 0.7rem; margin-left: 0.5rem; opacity: 0.9;">Multi-source sync</span>
+                </div>
+                <div class="detail-card-body">
+                    <!-- Automatic Matches Section -->
+                    <div id="linkedSourcesAutomatic" style="margin-bottom: 1rem;">
+                        <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem; color: var(--text-muted);">
+                            Automatic Matches
+                        </div>
+                        <div id="automaticMatchesList">
+                            <span style="color: var(--text-muted); font-size: 0.875rem;">Loading...</span>
+                        </div>
+                    </div>
+
+                    <!-- Manual Linking Section -->
+                    <details style="border-top: 2px solid var(--border); padding-top: 1rem;">
+                        <summary style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; cursor: pointer; color: var(--text); user-select: none;">
+                            Manual Linking
+                        </summary>
+                        <div style="margin-top: 1rem;">
+                            <!-- Filter Options -->
+                            <div class="form-group" style="margin-bottom: 0.75rem;">
+                                <label style="display: block; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.375rem; color: var(--text); text-transform: uppercase;">
+                                    Filter by Source
+                                </label>
+                                <select id="linkSourceFilter" onchange="filterLinkableProjects()" style="width: 100%; padding: 0.5rem; border: 2px solid var(--border); border-radius: var(--radius); font-size: 0.875rem; font-family: inherit;">
+                                    <option value="all">All Projects</option>
+                                    <option value="local">Local Only</option>
+                                    <option value="projectdog">ProjectDog Only</option>
+                                    <option value="planhub">PlanHub Only</option>
+                                    <option value="email">Email Only</option>
+                                </select>
+                            </div>
+
+                            <!-- Search Input -->
+                            <div class="form-group" style="margin-bottom: 0.75rem;">
+                                <label style="display: block; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.375rem; color: var(--text); text-transform: uppercase;">
+                                    Search Projects
+                                </label>
+                                <input type="text" id="linkProjectSearch" oninput="filterLinkableProjects()" placeholder="Type to search..." style="width: 100%; padding: 0.5rem; border: 2px solid var(--border); border-radius: var(--radius); font-size: 0.875rem; font-family: inherit;">
+                            </div>
+
+                            <!-- Project Dropdown -->
+                            <div class="form-group" style="margin-bottom: 0.75rem;">
+                                <label style="display: block; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.375rem; color: var(--text); text-transform: uppercase;">
+                                    Select Project to Link
+                                </label>
+                                <select id="linkProjectSelect" size="8" style="width: 100%; padding: 0.5rem; border: 2px solid var(--border); border-radius: var(--radius); font-size: 0.75rem; font-family: inherit; max-height: 250px; overflow-y: auto;">
+                                    <option value="" disabled selected>Loading projects...</option>
+                                </select>
+                            </div>
+
+                            <!-- Link Button -->
+                            <button class="btn btn-primary" onclick="linkSelectedProject()" id="linkProjectBtn" style="width: 100%;">
+                                Link Selected Project
+                            </button>
+
+                            <div id="manualLinkStatus" style="margin-top: 0.75rem; font-size: 0.875rem;"></div>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            {% if project.general_contractors %}
+            <!-- General Contractors -->
+            <div class="detail-card gc-contacts-card">
+                <div class="detail-card-header" style="background: #4A90A4; color: white;">General Contractors</div>
+                <div class="detail-card-body">
+                    {% for gc in project.general_contractors %}
+                    <div class="gc-card">
+                        {% if gc.logo_url %}
+                        <img src="{{ gc.logo_url }}" alt="{{ gc.name }}" class="gc-logo">
+                        {% else %}
+                        <div class="gc-logo-placeholder">{{ gc.name[:2]|upper }}</div>
+                        {% endif %}
+                        <div class="gc-info">
+                            <strong>{{ gc.name }}</strong>
+                            {% if gc.phone %}
+                            <br><a href="tel:{{ gc.phone }}" style="color: #4A90A4;">{{ gc.phone }}</a>
+                            {% endif %}
+                            {% if gc.email %}
+                            <br><a href="mailto:{{ gc.email }}" style="color: #4A90A4; font-size: 0.85rem; word-break: break-all;">{{ gc.email }}</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Status & Tracking -->
+            <div class="detail-card">
+                <div class="detail-card-header">Status & Tracking</div>
+                <div class="detail-card-body">
+                    <form class="status-form" id="statusForm">
+                        <div class="form-group">
+                            <label>Bid Decision</label>
+                            <select id="bidDecision" name="bid_decision">
+                                <option value="">-- Select --</option>
+                                <option value="pending" {% if status and status.bid_decision == 'pending' %}selected{% endif %}>Pending Review</option>
+                                <option value="bid" {% if status and status.bid_decision == 'bid' %}selected{% endif %}>We're Bidding</option>
+                                <option value="no_bid" {% if status and status.bid_decision == 'no_bid' %}selected{% endif %}>No Bid</option>
+                                <option value="gc_awarded" {% if status and status.bid_decision == 'gc_awarded' %}selected{% endif %}>GC Awarded (Hot!)</option>
+                                <option value="awarded" {% if status and status.bid_decision == 'awarded' %}selected{% endif %}>AWARDED / WON</option>
+                                <option value="lost" {% if status and status.bid_decision == 'lost' %}selected{% endif %}>Lost</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Decision Reason</label>
+                            <input type="text" id="decisionReason" name="decision_reason"
+                                   value="{{ status.bid_decision_reason if status else '' }}"
+                                   placeholder="Optional reason...">
+                        </div>
+
+                        <hr style="border: none; border-top: 1px solid var(--border); margin: 1rem 0;">
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="proposalGenerated" name="proposal_generated"
+                                       {% if status and status.proposal and status.proposal.generated %}checked{% endif %}>
+                                Proposal Generated
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="proposalSubmitted" name="proposal_submitted"
+                                       {% if status and status.proposal and status.proposal.submitted %}checked{% endif %}>
+                                Proposal Submitted
+                            </label>
+                        </div>
+
+                        <hr style="border: none; border-top: 1px solid var(--border); margin: 1rem 0;">
+
+                        <div class="form-group">
+                            <label>Estimate Total ($)</label>
+                            <input type="number" id="estimateTotal" name="estimate_total"
+                                   value="{{ status.estimate.total if status and status.estimate else '' }}"
+                                   placeholder="Enter estimate...">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Estimate Confidence</label>
+                            <select id="estimateConfidence" name="estimate_confidence">
+                                <option value="">-- Select --</option>
+                                <option value="low" {% if status and status.estimate and status.estimate.confidence == 'low' %}selected{% endif %}>Low</option>
+                                <option value="medium" {% if status and status.estimate and status.estimate.confidence == 'medium' %}selected{% endif %}>Medium</option>
+                                <option value="high" {% if status and status.estimate and status.estimate.confidence == 'high' %}selected{% endif %}>High</option>
+                            </select>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button type="button" class="btn btn-primary" onclick="saveStatus()">Save Status</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tags -->
+            <div class="detail-card">
+                <div class="detail-card-header">Tags</div>
+                <div class="detail-card-body">
+                    <div class="tag-input-row">
+                        <input type="text" id="newTag" placeholder="Add tag...">
+                        <button class="btn btn-secondary" onclick="addTag()">Add</button>
+                    </div>
+                    <div class="tag-list" id="tagList">
+                        {% if status and status.tags %}
+                            {% for tag in status.tags %}
+                            <span class="tag-item">{{ tag }} <button onclick="removeTag('{{ tag }}')">&times;</button></span>
+                            {% endfor %}
+                        {% else %}
+                        <span class="empty-state">No tags</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Smart Notes -->
+            <div class="detail-card">
+                <div class="detail-card-header" style="background: var(--accent-orange);">Smart Notes</div>
+                <div class="detail-card-body">
+                    <div class="form-group">
+                        <label>Paste quote, notes, or info:</label>
+                        <textarea id="smartNote" placeholder="Paste vendor quote, pricing info, notes, etc. AI will extract and organize the data..." style="min-height: 100px;"></textarea>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                            <button class="btn btn-primary" onclick="processSmartNote()" id="smartNoteBtn">AI Parse & Save</button>
+                            <button class="btn btn-secondary" onclick="addNote()">Save as Plain Note</button>
+                        </div>
+                    </div>
+
+                    <!-- AI Parse Result -->
+                    <div id="parseResult" style="display: none; margin-top: 1rem; padding: 0.75rem; background: var(--bg); border: 2px solid var(--border);">
+                        <div class="scope-title">AI Extracted:</div>
+                        <div id="parseContent" style="font-size: 0.8rem;"></div>
+                    </div>
+
+                    <hr style="border: none; border-top: 2px solid var(--border); margin: 1rem 0;">
+
+                    <!-- File Upload -->
+                    <div class="form-group">
+                        <label>Upload Document (PDF):</label>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="file" id="docUpload" accept=".pdf" style="flex: 1;">
+                            <button class="btn btn-secondary" onclick="uploadDocument()" id="uploadBtn">Upload & Classify</button>
+                        </div>
+                        <div id="uploadResult" style="display: none; margin-top: 0.5rem; font-size: 0.8rem; padding: 0.5rem; background: var(--bg); border: 2px solid var(--border);"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes History -->
+            <div class="detail-card">
+                <div class="detail-card-header">Notes History</div>
+                <div class="detail-card-body">
+                    <div class="notes-list" id="notesList">
+                        {% if status and status.notes %}
+                            {% for note in status.notes|reverse %}
+                            <div class="note-item">
+                                {{ note.text }}
+                                <div class="note-meta">{{ note.created_at[:10] if note.created_at else '' }}</div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                        <p class="empty-state">No notes yet</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        const projectId = '{{ project_id }}';
+
+        // Document viewer state
+        let projectFiles = { drawings: [], specs: [], other: [] };
+        let currentDocTab = 'drawings';
+
+        async function loadProjectFiles() {
+            const loadBtn = document.getElementById('loadFilesBtn');
+            const loading = document.getElementById('docLoading');
+            const empty = document.getElementById('docEmpty');
+            const fileList = document.getElementById('docFileList');
+            const tabs = document.getElementById('docViewerTabs');
+
+            if (loadBtn) loadBtn.disabled = true;
+            if (loading) loading.style.display = 'block';
+            if (empty) empty.style.display = 'none';
+
+            try {
+                const resp = await fetch(`/api/project/${projectId}/files`);
+                if (!resp.ok) throw new Error('Failed to load files');
+
+                const data = await resp.json();
+                projectFiles = data;
+
+                // Update counts
+                document.getElementById('drawingsCount').textContent = `(${data.drawings.length})`;
+                document.getElementById('specsCount').textContent = `(${data.specs.length})`;
+                document.getElementById('otherCount').textContent = `(${data.other.length})`;
+
+                // Render file lists
+                renderFileList('drawings', data.drawings);
+                renderFileList('specs', data.specs);
+                renderFileList('other', data.other);
+
+                // Show tabs and list
+                if (tabs) tabs.style.display = 'flex';
+                if (fileList) fileList.style.display = 'block';
+
+                // Show first non-empty tab
+                if (data.drawings.length > 0) switchDocTab('drawings');
+                else if (data.specs.length > 0) switchDocTab('specs');
+                else if (data.other.length > 0) switchDocTab('other');
+
+                if (data.total === 0) {
+                    if (empty) {
+                        empty.textContent = 'No PDF documents found in this project folder';
+                        empty.style.display = 'block';
+                    }
+                }
+
+            } catch (err) {
+                console.error('Error loading files:', err);
+                if (empty) {
+                    empty.textContent = 'Error loading files: ' + err.message;
+                    empty.style.display = 'block';
+                }
+            } finally {
+                if (loading) loading.style.display = 'none';
+                if (loadBtn) loadBtn.disabled = false;
+            }
+        }
+
+        function renderFileList(category, files) {
+            const container = document.getElementById(category + 'List');
+            if (!container) return;
+
+            if (files.length === 0) {
+                container.innerHTML = '<div class="no-files">No files in this category</div>';
+                return;
+            }
+
+            container.innerHTML = files.map(file => `
+                <div class="doc-file-item" onclick="openPdfViewer('${file.url}', '${file.name.replace(/'/g, "\\'")}')">
+                    <span class="doc-file-icon">&#128196;</span>
+                    <div class="doc-file-info">
+                        <div class="doc-file-name">${file.name}</div>
+                        <div class="doc-file-meta">${formatFileSize(file.size)} | ${file.modified}</div>
+                    </div>
+                    <a href="${file.url}" target="_blank" class="doc-file-action" onclick="event.stopPropagation();" title="Open in new tab">&#8599;</a>
+                </div>
+            `).join('');
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function switchDocTab(tab) {
+            currentDocTab = tab;
+
+            // Update tab buttons
+            document.querySelectorAll('.doc-tab').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.doc-tab[onclick*="${tab}"]`)?.classList.add('active');
+
+            // Show correct list
+            document.getElementById('drawingsList').style.display = tab === 'drawings' ? 'block' : 'none';
+            document.getElementById('specsList').style.display = tab === 'specs' ? 'block' : 'none';
+            document.getElementById('otherList').style.display = tab === 'other' ? 'block' : 'none';
+        }
+
+        function openPdfViewer(url, filename) {
+            // Open PDF in a modal viewer or new tab
+            // For now, open in a new tab - can be enhanced to modal later
+            window.open(url, '_blank');
+        }
+
+        async function saveStatus() {
+            const decision = document.getElementById('bidDecision').value;
+            const reason = document.getElementById('decisionReason').value;
+            const errors = [];
+
+            try {
+                // Save bid decision
+                if (decision) {
+                    const resp = await fetch(`/api/status/${projectId}/decision`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ decision, reason })
+                    });
+                    if (!resp.ok) {
+                        const data = await resp.json().catch(() => ({}));
+                        errors.push(`Decision: ${data.error || 'Failed'}`);
+                    }
+                }
+
+                // Save proposal status
+                const proposalGenerated = document.getElementById('proposalGenerated').checked;
+                const proposalSubmitted = document.getElementById('proposalSubmitted').checked;
+                const propResp = await fetch(`/api/status/${projectId}/proposal`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        generated: proposalGenerated,
+                        submitted: proposalSubmitted
+                    })
+                });
+                if (!propResp.ok) {
+                    const data = await propResp.json().catch(() => ({}));
+                    errors.push(`Proposal: ${data.error || 'Failed'}`);
+                }
+
+                // Save estimate
+                const estimateTotal = document.getElementById('estimateTotal').value;
+                const estimateConfidence = document.getElementById('estimateConfidence').value;
+                if (estimateTotal) {
+                    const estResp = await fetch(`/api/status/${projectId}/estimate`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            total: parseFloat(estimateTotal),
+                            confidence: estimateConfidence || null
+                        })
+                    });
+                    if (!estResp.ok) {
+                        const data = await estResp.json().catch(() => ({}));
+                        errors.push(`Estimate: ${data.error || 'Failed'}`);
+                    }
+                }
+
+                // Check for errors before reloading
+                if (errors.length > 0) {
+                    alert('Some updates failed:\n' + errors.join('\n'));
+                    return;
+                }
+
+                // Refresh cache and reload
+                await fetch('/api/refresh', { method: 'POST' });
+                location.reload();
+
+            } catch (error) {
+                console.error('Error saving status:', error);
+                alert('Failed to save status: ' + error.message);
+            }
+        }
+
+        async function addTag() {
+            const tagInput = document.getElementById('newTag');
+            const tag = tagInput.value.trim();
+            if (!tag) return;
+
+            try {
+                const resp = await fetch(`/api/status/${projectId}/tag`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tag })
+                });
+
+                if (!resp.ok) {
+                    const data = await resp.json().catch(() => ({}));
+                    alert('Failed to add tag: ' + (data.error || 'Unknown error'));
+                    return;
+                }
+
+                location.reload();
+            } catch (error) {
+                console.error('Error adding tag:', error);
+                alert('Failed to add tag: ' + error.message);
+            }
+        }
+
+        async function removeTag(tag) {
+            try {
+                const resp = await fetch(`/api/status/${projectId}/tag`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tag })
+                });
+
+                if (!resp.ok) {
+                    const data = await resp.json().catch(() => ({}));
+                    alert('Failed to remove tag: ' + (data.error || 'Unknown error'));
+                    return;
+                }
+
+                location.reload();
+            } catch (error) {
+                console.error('Error removing tag:', error);
+                alert('Failed to remove tag: ' + error.message);
+            }
+        }
+
+        async function addNote() {
+            const noteInput = document.getElementById('smartNote');
+            const note = noteInput.value.trim();
+            if (!note) return;
+
+            try {
+                const resp = await fetch(`/api/status/${projectId}/note`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ note })
+                });
+
+                if (!resp.ok) {
+                    const data = await resp.json().catch(() => ({}));
+                    alert('Failed to add note: ' + (data.error || 'Unknown error'));
+                    return;
+                }
+
+                location.reload();
+            } catch (error) {
+                console.error('Error adding note:', error);
+                alert('Failed to add note: ' + error.message);
+            }
+        }
+
+        // Cache for loaded schedule data
+        let scheduleData = null;
+        let scheduleLoaded = false;
+
+        async function loadAllOpenings() {
+            const btn = document.getElementById('loadAllBtn');
+            const status = document.getElementById('scheduleStatus');
+
+            btn.disabled = true;
+            btn.textContent = 'Loading...';
+            status.style.display = 'block';
+            status.textContent = 'Analyzing spreadsheets with AI...';
+
+            try {
+                console.log('[loadAllOpenings] Fetching from /api/estimate/' + projectId + '/openings');
+                const response = await fetch(`/api/estimate/${projectId}/openings`);
+                const data = await response.json();
+                console.log('[loadAllOpenings] Response status:', response.status, 'Data:', data);
+
+                // Check for HTTP error first
+                if (!response.ok) {
+                    const errorMsg = data.error || `HTTP ${response.status}`;
+                    console.error('[loadAllOpenings] API error:', errorMsg);
+                    status.innerHTML = `<span style="color: red;">API Error: ${errorMsg}</span>`;
+                    btn.textContent = 'Error';
+                    return;
+                }
+
+                if (data.openings && data.openings.length > 0) {
+                    scheduleData = data;
+                    scheduleLoaded = true;
+                    console.log('[loadAllOpenings] Loaded', data.openings.length, 'openings');
+
+                    // Update badges with counts
+                    const typeCounts = {};
+                    data.openings.forEach(o => {
+                        const t = o.type || 'unknown';
+                        typeCounts[t] = (typeCounts[t] || 0) + (o.qty || 1);
+                    });
+                    console.log('[loadAllOpenings] Type counts:', typeCounts);
+
+                    // Update each type badge
+                    for (const [type, count] of Object.entries(typeCounts)) {
+                        const badge = document.getElementById(`badge-${type}`);
+                        if (badge) {
+                            badge.textContent = count;
+                            badge.style.display = 'inline';
+                        }
+                    }
+
+                    // Populate Estimate Summary Card
+                    const estCard = document.getElementById('estimateSummaryCard');
+                    if (estCard) {
+                        estCard.style.display = 'block';
+                        document.getElementById('est-doors').textContent = typeCounts['door'] || 0;
+                        document.getElementById('est-windows').textContent = typeCounts['window'] || 0;
+                        document.getElementById('est-storefront').textContent = (typeCounts['storefront'] || 0) + (typeCounts['curtain_wall'] || 0);
+                        document.getElementById('est-glazing').textContent = typeCounts['glazing'] || 0;
+
+                        // Show source file
+                        const sourceFiles = data.files_read || [];
+                        if (sourceFiles.length > 0) {
+                            const shortNames = sourceFiles.map(f => f.split('/').pop()).join(', ');
+                            document.getElementById('estimateSource').innerHTML = `Source: <strong>${shortNames}</strong>`;
+                        }
+                    }
+
+                    // Show status
+                    const dupes = data.duplicates_removed || 0;
+                    status.innerHTML = `<span style="color: green;">✓</span> Loaded ${data.total_count} openings from ${data.files_read.length} file(s)` +
+                        (dupes > 0 ? ` <span style="color: var(--text-secondary);">(${dupes} duplicates merged)</span>` : '') +
+                        `. Click a category to expand.`;
+
+                    btn.textContent = 'Loaded ✓';
+                } else {
+                    console.warn('[loadAllOpenings] No openings in response:', data);
+                    const filesInfo = data.files_read ? `(${data.files_read.length} files checked)` : '';
+                    const errorsInfo = data.errors && data.errors.length ? `<br>Errors: ${data.errors.join(', ')}` : '';
+                    status.innerHTML = `<span style="color: orange;">No openings found ${filesInfo}</span>${errorsInfo}`;
+                    btn.textContent = 'No Data';
+                }
+            } catch (error) {
+                console.error('[loadAllOpenings] Exception:', error);
+                status.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
+                btn.textContent = 'Error';
+            }
+        }
+
+        function toggleScopeSection(type) {
+            const details = document.getElementById(`details-${type}`);
+            const icon = document.getElementById(`icon-${type}`);
+
+            if (details.style.display === 'none') {
+                details.style.display = 'block';
+                icon.textContent = '▼';
+
+                // Load data if not already loaded
+                if (!scheduleLoaded) {
+                    loadAllOpenings().then(() => populateScopeTable(type));
+                } else {
+                    populateScopeTable(type);
+                }
+            } else {
+                details.style.display = 'none';
+                icon.textContent = '▶';
+            }
+        }
+
+        function populateScopeTable(type) {
+            const details = document.getElementById(`details-${type}`);
+            const tableDiv = details.querySelector('.schedule-table');
+            const loader = details.querySelector('.loading-indicator');
+
+            if (!scheduleData || !scheduleData.by_type) {
+                tableDiv.innerHTML = '<em style="color: var(--text-secondary);">No data - click "Load Schedule Data" first</em>';
+                return;
+            }
+
+            // Get openings of this type (also check for curtain_wall in storefront)
+            let openings = scheduleData.by_type[type] || [];
+            if (type === 'storefront') {
+                openings = [...openings, ...(scheduleData.by_type['curtain_wall'] || [])];
+            }
+
+            if (openings.length === 0) {
+                tableDiv.innerHTML = '<em style="color: var(--text-secondary);">No items found</em>';
+                return;
+            }
+
+            // Build table
+            let html = `
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.75rem;">
+                    <thead>
+                        <tr style="background: var(--bg);">
+                            <th style="padding: 0.3rem; border-bottom: 2px solid var(--border); text-align: left;">Mark</th>
+                            <th style="padding: 0.3rem; border-bottom: 2px solid var(--border); text-align: center;">Qty</th>
+                            <th style="padding: 0.3rem; border-bottom: 2px solid var(--border); text-align: left;">Size</th>
+                            <th style="padding: 0.3rem; border-bottom: 2px solid var(--border); text-align: left;">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            openings.forEach(o => {
+                const desc = (o.description || o.manufacturer || '-').substring(0, 50);
+                html += `
+                    <tr>
+                        <td style="padding: 0.3rem; border-bottom: 1px solid var(--border); font-weight: bold;">${o.mark || '-'}</td>
+                        <td style="padding: 0.3rem; border-bottom: 1px solid var(--border); text-align: center;">${o.qty || 1}</td>
+                        <td style="padding: 0.3rem; border-bottom: 1px solid var(--border);">${o.size || '-'}</td>
+                        <td style="padding: 0.3rem; border-bottom: 1px solid var(--border); color: var(--text-secondary);">${desc}${desc.length >= 50 ? '...' : ''}</td>
+                    </tr>
+                `;
+            });
+
+            // Add totals row
+            const totalQty = openings.reduce((sum, o) => sum + (o.qty || 1), 0);
+            html += `
+                    <tr style="background: var(--bg); font-weight: bold;">
+                        <td style="padding: 0.3rem;">TOTAL</td>
+                        <td style="padding: 0.3rem; text-align: center;">${totalQty}</td>
+                        <td colspan="2" style="padding: 0.3rem;">${openings.length} line items</td>
+                    </tr>
+                </tbody></table>
+            `;
+
+            tableDiv.innerHTML = html;
+        }
+
+        async function processSmartNote() {
+            const noteInput = document.getElementById('smartNote');
+            const btn = document.getElementById('smartNoteBtn');
+            const resultDiv = document.getElementById('parseResult');
+            const contentDiv = document.getElementById('parseContent');
+
+            const note = noteInput.value.trim();
+            if (!note) return;
+
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+            resultDiv.style.display = 'none';
+
+            try {
+                const response = await fetch(`/api/notes/${projectId}/smart`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ note })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.parsed) {
+                    // Show extracted info
+                    const extracted = data.parsed.extracted || {};
+                    const actions = data.actions_taken || [];
+
+                    let html = '';
+                    if (extracted.vendor_name) html += `<div><strong>Vendor:</strong> ${extracted.vendor_name}</div>`;
+                    if (extracted.quote_amount) html += `<div><strong>Quote:</strong> $${extracted.quote_amount.toLocaleString()}</div>`;
+                    if (extracted.quote_date) html += `<div><strong>Date:</strong> ${extracted.quote_date}</div>`;
+                    if (extracted.scope_items && extracted.scope_items.length) {
+                        html += `<div><strong>Scope:</strong> ${extracted.scope_items.join(', ')}</div>`;
+                    }
+                    if (actions.length) {
+                        html += `<div style="margin-top: 0.5rem; color: green;"><strong>Actions:</strong> ${actions.join(', ')}</div>`;
+                    }
+                    if (data.parsed.note_summary) {
+                        html += `<div style="margin-top: 0.5rem;"><strong>Summary:</strong> ${data.parsed.note_summary}</div>`;
+                    }
+
+                    contentDiv.innerHTML = html || 'No structured data extracted';
+                    resultDiv.style.display = 'block';
+
+                    // Reload after short delay to show updated data
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    contentDiv.innerHTML = `<span style="color: red;">Error: ${data.error || 'Unknown error'}</span>`;
+                    resultDiv.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = 'AI Parse & Save';
+                }
+            } catch (error) {
+                contentDiv.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
+                resultDiv.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'AI Parse & Save';
+            }
+        }
+
+        async function uploadDocument() {
+            const fileInput = document.getElementById('docUpload');
+            const btn = document.getElementById('uploadBtn');
+            const resultDiv = document.getElementById('uploadResult');
+
+            if (!fileInput.files.length) {
+                alert('Please select a file');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            btn.disabled = true;
+            btn.textContent = 'Uploading...';
+            resultDiv.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch(`/api/notes/${projectId}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    let html = `<span style="color: green;">Uploaded successfully!</span><br>`;
+                    html += `<strong>Type:</strong> ${data.document_type} (${Math.round(data.confidence * 100)}% confidence)<br>`;
+                    html += `<strong>Filed to:</strong> ${data.filed_to}`;
+
+                    if (data.quote_data) {
+                        html += `<br><strong>Vendor:</strong> ${data.quote_data.vendor_name || 'Unknown'}`;
+                        if (data.quote_data.total_amount) {
+                            html += `<br><strong>Amount:</strong> $${data.quote_data.total_amount.toLocaleString()}`;
+                        }
+                    }
+
+                    resultDiv.innerHTML = html;
+                    resultDiv.style.display = 'block';
+
+                    // Reload after short delay
+                    setTimeout(() => location.reload(), 2500);
+                } else {
+                    resultDiv.innerHTML = `<span style="color: red;">Error: ${data.error}</span>`;
+                    resultDiv.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = 'Upload & Classify';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
+                resultDiv.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Upload & Classify';
+            }
+        }
+
+        // Extraction functionality
+        let extractionPollInterval = null;
+
+        async function startExtraction() {
+            const btn = document.getElementById('extractBtn');
+            const progressDiv = document.getElementById('extractionProgress');
+            const messagesDiv = document.getElementById('extractionMessages');
+            const progressBar = document.getElementById('extractionProgressBar');
+
+            // Disable button and show progress
+            btn.disabled = true;
+            btn.textContent = 'Starting...';
+            progressDiv.style.display = 'block';
+            messagesDiv.innerHTML = '<div>Initiating extraction...</div>';
+
+            try {
+                // Start extraction
+                const response = await fetch(`/api/extract/${projectId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    messagesDiv.innerHTML += `<div style="color: red;">Error: ${data.error}</div>`;
+                    btn.disabled = false;
+                    btn.textContent = 'Extract Data';
+                    return;
+                }
+
+                // Start polling for status
+                messagesDiv.innerHTML += '<div>Extraction started, monitoring progress...</div>';
+                extractionPollInterval = setInterval(pollExtractionStatus, 2000);
+
+            } catch (error) {
+                messagesDiv.innerHTML += `<div style="color: red;">Error: ${error.message}</div>`;
+                btn.disabled = false;
+                btn.textContent = 'Extract Data';
+            }
+        }
+
+        async function pollExtractionStatus() {
+            const messagesDiv = document.getElementById('extractionMessages');
+            const progressBar = document.getElementById('extractionProgressBar');
+            const btn = document.getElementById('extractBtn');
+
+            try {
+                const response = await fetch(`/api/extract/${projectId}/status`);
+                const data = await response.json();
+
+                // Update progress bar
+                if (data.progress !== undefined) {
+                    progressBar.value = data.progress * 100;
+                }
+
+                // Add new messages
+                if (data.messages && data.messages.length > 0) {
+                    const lastMsg = data.messages[data.messages.length - 1];
+                    messagesDiv.innerHTML = data.messages.map(m =>
+                        `<div><strong>[${m.agent}]</strong> ${m.message}</div>`
+                    ).join('');
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }
+
+                // Check if complete
+                if (data.status === 'complete') {
+                    clearInterval(extractionPollInterval);
+                    messagesDiv.innerHTML += '<div style="color: green; font-weight: bold;">Extraction complete! Reloading...</div>';
+                    setTimeout(() => location.reload(), 1500);
+                } else if (data.status === 'error') {
+                    clearInterval(extractionPollInterval);
+                    messagesDiv.innerHTML += `<div style="color: red;">Error: ${data.error}</div>`;
+                    btn.disabled = false;
+                    btn.textContent = 'Retry Extraction';
+                }
+
+            } catch (error) {
+                console.error('Poll error:', error);
+            }
+        }
+
+        // ==================== PIPELINE FUNCTIONALITY ====================
+
+        let pipelinePollInterval = null;
+
+        async function runPipeline() {
+            const btn = document.getElementById('pipelineBtn');
+            const progressDiv = document.getElementById('pipelineProgress');
+            const messagesDiv = document.getElementById('pipelineMessages');
+            const progressBar = document.getElementById('pipelineProgressBar');
+            const statusDiv = document.getElementById('pipelineStatus');
+
+            // Disable button and show progress
+            btn.disabled = true;
+            btn.textContent = 'Starting Pipeline...';
+            progressDiv.style.display = 'block';
+            messagesDiv.innerHTML = '<div>Initiating pipeline...</div>';
+            statusDiv.textContent = 'Starting...';
+
+            // Reset all stage indicators
+            document.querySelectorAll('.stage-item').forEach(el => {
+                el.querySelector('.stage-status').textContent = '⏳';
+                el.style.background = '';
+            });
+
+            try {
+                // Start pipeline
+                const response = await fetch(`/api/project/${projectId}/pipeline/run`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mode: 'manual' })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    messagesDiv.innerHTML += `<div style="color: red;">Error: ${data.error}</div>`;
+                    btn.disabled = false;
+                    btn.textContent = 'Run Full Analysis';
+                    return;
+                }
+
+                // Start polling for status
+                messagesDiv.innerHTML += '<div>Pipeline started, monitoring progress...</div>';
+                pipelinePollInterval = setInterval(pollPipelineStatus, 2000);
+
+            } catch (error) {
+                messagesDiv.innerHTML += `<div style="color: red;">Error: ${error.message}</div>`;
+                btn.disabled = false;
+                btn.textContent = 'Run Full Analysis';
+            }
+        }
+
+        async function pollPipelineStatus() {
+            const messagesDiv = document.getElementById('pipelineMessages');
+            const progressBar = document.getElementById('pipelineProgressBar');
+            const statusDiv = document.getElementById('pipelineStatus');
+            const btn = document.getElementById('pipelineBtn');
+
+            try {
+                const response = await fetch(`/api/project/${projectId}/pipeline/status`);
+                const data = await response.json();
+
+                // Update progress bar
+                if (data.progress !== undefined) {
+                    progressBar.value = data.progress * 100;
+                }
+
+                // Update current stage indicator
+                if (data.current_stage) {
+                    statusDiv.textContent = `Running: ${data.current_stage}`;
+                    const currentEl = document.querySelector(`[data-stage="${data.current_stage}"]`);
+                    if (currentEl) {
+                        currentEl.querySelector('.stage-status').textContent = '🔄';
+                        currentEl.style.background = '#fff3cd';
+                    }
+                }
+
+                // Update completed stages
+                if (data.stages) {
+                    Object.entries(data.stages).forEach(([stage, info]) => {
+                        const el = document.querySelector(`[data-stage="${stage}"]`);
+                        if (el) {
+                            if (info.completed) {
+                                el.querySelector('.stage-status').textContent = '✅';
+                                el.style.background = '#d4edda';
+                            } else if (info.error) {
+                                el.querySelector('.stage-status').textContent = '❌';
+                                el.style.background = '#f8d7da';
+                            }
+                        }
+                    });
+                }
+
+                // Add new messages
+                if (data.messages && data.messages.length > 0) {
+                    messagesDiv.innerHTML = data.messages.map(m =>
+                        `<div><strong>[${m.stage}]</strong> ${m.message}</div>`
+                    ).join('');
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }
+
+                // Check if complete
+                if (data.status === 'complete') {
+                    clearInterval(pipelinePollInterval);
+                    statusDiv.textContent = 'Pipeline Complete!';
+                    statusDiv.style.color = 'green';
+                    messagesDiv.innerHTML += '<div style="color: green; font-weight: bold;">Pipeline complete! Reloading...</div>';
+                    progressBar.value = 100;
+                    setTimeout(() => location.reload(), 2000);
+                } else if (data.status === 'error') {
+                    clearInterval(pipelinePollInterval);
+                    statusDiv.textContent = 'Pipeline Error';
+                    statusDiv.style.color = 'red';
+                    messagesDiv.innerHTML += `<div style="color: red;">Error: ${data.error}</div>`;
+                    btn.disabled = false;
+                    btn.textContent = 'Retry Pipeline';
+                }
+
+            } catch (error) {
+                console.error('Pipeline poll error:', error);
+            }
+        }
+
+        // ==================== QUOTES FUNCTIONALITY ====================
+
+        let quotesData = null;
+        let estimateData = null;
+
+        async function loadQuotes() {
+            const btn = document.getElementById('loadQuotesBtn');
+            const loading = document.getElementById('quotesLoading');
+            const content = document.getElementById('quotesContent');
+            const empty = document.getElementById('quotesEmpty');
+            const error = document.getElementById('quotesError');
+
+            btn.disabled = true;
+            btn.textContent = 'Loading...';
+            loading.style.display = 'block';
+            content.style.display = 'none';
+            empty.style.display = 'none';
+            error.style.display = 'none';
+
+            try {
+                console.log('[loadQuotes] Fetching quotes and estimates for project:', projectId);
+
+                // Load both quotes and estimate data in parallel
+                const [quotesResponse, estimateResponse] = await Promise.all([
+                    fetch(`/api/quotes/${projectId}`),
+                    fetch(`/api/estimate/${projectId}/openings`)
+                ]);
+
+                const quotesResult = await quotesResponse.json();
+                const estimateResult = await estimateResponse.json();
+
+                console.log('[loadQuotes] Quotes response:', quotesResponse.status, quotesResult);
+                console.log('[loadQuotes] Estimate response:', estimateResponse.status, estimateResult);
+
+                if (quotesResponse.ok && quotesResult.status === 'ok') {
+                    quotesData = quotesResult;
+                    // Check both HTTP status and result status for estimates
+                    estimateData = (estimateResponse.ok && estimateResult.status === 'ok') ? estimateResult : null;
+                    console.log('[loadQuotes] quotesData set:', quotesData.total_quotes, 'quotes');
+                    console.log('[loadQuotes] estimateData set:', estimateData ? 'yes' : 'no');
+
+                    if (quotesData.total_quotes === 0) {
+                        empty.textContent = 'No quote PDFs found in project folder';
+                        empty.style.display = 'block';
+                        loading.style.display = 'none';
+                        btn.textContent = 'No Quotes Found';
+                        btn.disabled = false;
+                    } else {
+                        console.log('[loadQuotes] Rendering quote comparison...');
+                        renderQuoteComparison();
+                        content.style.display = 'block';
+                        loading.style.display = 'none';
+                        btn.textContent = `Loaded ${quotesData.total_quotes} Quote(s)`;
+                    }
+                } else {
+                    const errorMsg = quotesResult.error || `HTTP ${quotesResponse.status}`;
+                    console.error('[loadQuotes] API error:', errorMsg);
+                    error.textContent = `Error: ${errorMsg}`;
+                    error.style.display = 'block';
+                    loading.style.display = 'none';
+                    btn.disabled = false;
+                    btn.textContent = 'Load Quotes';
+                }
+            } catch (err) {
+                console.error('[loadQuotes] Exception:', err);
+                error.textContent = `Error: ${err.message}`;
+                error.style.display = 'block';
+                loading.style.display = 'none';
+                btn.disabled = false;
+                btn.textContent = 'Load Quotes';
+            }
+        }
+
+        function renderQuoteComparison() {
+            const content = document.getElementById('quotesContent');
+
+            if (!quotesData || !quotesData.quotes || quotesData.quotes.length === 0) {
+                content.innerHTML = '<p style="color: var(--text-muted);">No quotes available</p>';
+                return;
+            }
+
+            // Build lookup of estimate items by mark
+            const estimateByMark = {};
+            if (estimateData && estimateData.openings) {
+                estimateData.openings.forEach(item => {
+                    const mark = String(item.mark || '').trim().toUpperCase();
+                    if (mark) {
+                        estimateByMark[mark] = item;
+                    }
+                });
+            }
+
+            // Build list of all unique marks from all quotes and estimate
+            const allMarks = new Set();
+            quotesData.quotes.forEach(quote => {
+                if (quote && quote.line_items && Array.isArray(quote.line_items)) {
+                    quote.line_items.forEach(item => {
+                        const mark = String(item.mark || '').trim().toUpperCase();
+                        if (mark) allMarks.add(mark);
+                    });
+                }
+            });
+            Object.keys(estimateByMark).forEach(mark => allMarks.add(mark));
+            console.log('[renderQuoteComparison] Found', allMarks.size, 'unique marks');
+
+            const sortedMarks = Array.from(allMarks).sort();
+
+            // Build quote summary header
+            let html = '<div style="margin-bottom: 1rem;">';
+            html += `<div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">`;
+            html += `Found ${quotesData.total_quotes} vendor quote(s) | ${quotesData.vendor_count} vendor(s): ${quotesData.vendors.join(', ')}`;
+            html += '</div>';
+
+            // Vendor totals summary
+            html += '<div style="display: flex; gap: 1rem; flex-wrap: wrap;">';
+            quotesData.quotes.forEach(quote => {
+                if (!quote) return;  // Skip invalid quotes
+                const total = quote.grand_total || 0;
+                const hasTotal = quote.grand_total !== null && quote.grand_total !== undefined;
+                const sourceFile = quote.source_file || '';
+                const pdfUrl = sourceFile ? `/api/project/${projectId}/file/${encodeURIComponent(sourceFile)}` : null;
+                const itemCount = (quote.line_items && Array.isArray(quote.line_items)) ? quote.line_items.length : 0;
+
+                html += `<div class="vendor-summary-card">`;
+                html += `<div style="font-weight: 700; font-size: 0.75rem; text-transform: uppercase;">${quote.vendor_name || 'Unknown'}</div>`;
+                html += `<div style="font-size: 1.25rem; font-weight: 700; color: ${hasTotal ? 'var(--success)' : 'var(--text-muted)'};">`;
+                html += hasTotal ? `$${total.toLocaleString()}` : 'No Total';
+                html += '</div>';
+                html += `<div style="font-size: 0.7rem; color: var(--text-muted);">${itemCount} items</div>`;
+                if (pdfUrl) {
+                    html += `<a href="${pdfUrl}" target="_blank" class="btn btn-primary" style="margin-top: 0.5rem; padding: 0.25rem 0.5rem; font-size: 0.65rem; display: inline-block; text-decoration: none;">View PDF</a>`;
+                }
+                html += '</div>';
+            });
+            html += '</div></div>';
+            console.log('[renderQuoteComparison] Rendered', quotesData.quotes.length, 'vendor cards');
+
+            // Build comparison table
+            html += '<div style="overflow-x: auto;">';
+            html += '<table class="quote-comparison-table" style="margin-top: 1rem;">';
+            html += '<thead>';
+            html += '<tr>';
+            html += '<th>Mark</th>';
+
+            if (estimateData) {
+                html += '<th style="background: var(--accent-yellow);">Estimate</th>';
+            }
+
+            quotesData.quotes.forEach(quote => {
+                const sourceFile = quote.source_file || '';
+                const pdfUrl = sourceFile ? `/api/project/${projectId}/file/${encodeURIComponent(sourceFile)}` : null;
+                if (pdfUrl) {
+                    html += `<th><a href="${pdfUrl}" target="_blank" style="color: inherit; text-decoration: underline;" title="Click to view PDF">${quote.vendor_name || 'Unknown'}</a></th>`;
+                } else {
+                    html += `<th>${quote.vendor_name || 'Unknown'}</th>`;
+                }
+            });
+            html += '</tr>';
+            html += '</thead>';
+            html += '<tbody>';
+
+            // Add rows for each mark
+            sortedMarks.forEach(mark => {
+                html += '<tr>';
+                html += `<td>${mark}</td>`;
+
+                // Estimate price
+                let estimatePrice = null;
+                if (estimateData && estimateByMark[mark]) {
+                    estimatePrice = estimateByMark[mark].total_price || estimateByMark[mark].unit_price || null;
+                }
+
+                if (estimateData) {
+                    html += '<td style="background: var(--accent-yellow);">';
+                    html += estimatePrice ? `$${estimatePrice.toLocaleString()}` : '-';
+                    html += '</td>';
+                }
+
+                // Vendor prices
+                quotesData.quotes.forEach(quote => {
+                    let lineItem = null;
+                    if (quote && quote.line_items && Array.isArray(quote.line_items)) {
+                        lineItem = quote.line_items.find(item =>
+                            String(item.mark || '').trim().toUpperCase() === mark
+                        );
+                    }
+
+                    const vendorPrice = lineItem ? (lineItem.total_price || lineItem.unit_price || null) : null;
+
+                    let cellStyle = '';
+                    // Color coding: green if vendor < estimate, red if vendor > estimate
+                    if (vendorPrice && estimatePrice) {
+                        if (vendorPrice < estimatePrice) {
+                            cellStyle = ' style="color: var(--success); font-weight: 700;"';
+                        } else if (vendorPrice > estimatePrice) {
+                            cellStyle = ' style="color: var(--danger); font-weight: 700;"';
+                        }
+                    }
+
+                    html += `<td${cellStyle}>`;
+                    html += vendorPrice ? `$${vendorPrice.toLocaleString()}` : '-';
+                    html += '</td>';
+                });
+
+                html += '</tr>';
+            });
+
+            // Totals row
+            html += '<tr class="totals-row">';
+            html += '<td>TOTAL</td>';
+
+            if (estimateData) {
+                const estimateTotal = estimateData.openings.reduce((sum, item) =>
+                    sum + (item.total_price || item.unit_price || 0), 0
+                );
+                html += '<td>';
+                html += estimateTotal > 0 ? `$${estimateTotal.toLocaleString()}` : '-';
+                html += '</td>';
+            }
+
+            quotesData.quotes.forEach(quote => {
+                const total = quote.grand_total;
+                html += '<td>';
+                html += total ? `$${total.toLocaleString()}` : '-';
+                html += '</td>';
+            });
+
+            html += '</tr>';
+            html += '</tbody>';
+            html += '</table>';
+            html += '</div>';
+
+            // Legend
+            html += '<div style="margin-top: 1rem; font-size: 0.7rem; color: var(--text-muted);">';
+            html += '<span style="color: var(--success); font-weight: 700;">Green</span> = Vendor price lower than estimate | ';
+            html += '<span style="color: var(--danger); font-weight: 700;">Red</span> = Vendor price higher than estimate';
+            html += '</div>';
+
+            content.innerHTML = html;
+        }
+
+        // ==================== SCOPE TAKEOFF ====================
+
+        async function runScopeTakeoff() {
+            const btn = document.getElementById('scopeTakeoffBtn');
+            const panel = document.getElementById('fullParsePanel');
+            const status = document.getElementById('fullParseStatus');
+
+            btn.disabled = true;
+            btn.textContent = 'Running...';
+            panel.style.display = 'block';
+
+            // Show progress bar
+            status.innerHTML = `
+                <div class="takeoff-progress">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progressBarFill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-status" id="progressStatus">Starting scope takeoff...</div>
+                </div>
+            `;
+
+            // Simulate phase progress during API call
+            let progress = 0;
+            const phases = [
+                'Identifying documents...',
+                'Parsing specifications...',
+                'Extracting schedules...',
+                'Quantifying type tags...',
+                'Generating verification...'
+            ];
+            const progressInterval = setInterval(() => {
+                if (progress < 90) {
+                    progress += 15;
+                    const progressBar = document.getElementById('progressBarFill');
+                    const progressStatus = document.getElementById('progressStatus');
+                    if (progressBar) progressBar.style.width = progress + '%';
+                    if (progressStatus) progressStatus.textContent = phases[Math.min(Math.floor(progress / 20), 4)];
+                }
+            }, 800);
+
+            try {
+                const response = await fetch(`/api/project/${projectId}/scope-takeoff`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                clearInterval(progressInterval);
+
+                if (data.status === 'ok') {
+                    // Complete progress bar
+                    const progressBar = document.getElementById('progressBarFill');
+                    const progressStatus = document.getElementById('progressStatus');
+                    if (progressBar) progressBar.style.width = '100%';
+                    if (progressStatus) progressStatus.textContent = 'Complete!';
+
+                    // Show results after brief delay
+                    setTimeout(() => displayScopeTakeoffResults(data.result), 500);
+                } else {
+                    status.innerHTML = `<span style="color: #c53030;">Error: ${data.error || 'Takeoff failed'}</span>`;
+                }
+            } catch (error) {
+                clearInterval(progressInterval);
+                status.innerHTML = `<span style="color: #c53030;">Error: ${error.message}</span>`;
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Scope Takeoff';
+        }
+
+        // Store current takeoff result for corrections
+        let currentTakeoffResult = null;
+
+        function displayScopeTakeoffResults(result) {
+            currentTakeoffResult = result;
+            const status = document.getElementById('fullParseStatus');
+            const stepsContainer = document.getElementById('takeoffSteps');
+            const errorsContainer = document.getElementById('takeoffErrors');
+
+            // Show completion message in progress section
+            const docCount = (result.documents || []).length;
+            const specCount = (result.division_8_sections || []).length;
+            const doorCount = (result.door_schedule || []).length;
+            const windowCount = (result.window_schedule || []).length;
+            const totalTags = (result.type_counts || []).reduce((sum, tc) => sum + tc.count, 0);
+            const pageCount = (result.highlighted_pages || []).length;
+
+            let statusHtml = '<div style="font-size: 0.85rem; color: var(--text);">';
+            statusHtml += '<strong>Scope Takeoff Complete!</strong>';
+            if (pageCount > 0) {
+                statusHtml += ` <a href="#" onclick="viewHighlightedPDF(); return false;" style="color: #166534; margin-left: 0.5rem;">View Highlighted PDF</a>`;
+            }
+            statusHtml += '</div>';
+            status.innerHTML = statusHtml;
+
+            // Show step cards
+            stepsContainer.style.display = 'block';
+
+            // Step 1: Documents
+            document.getElementById('step1-count').textContent = docCount;
+            let step1Html = '<div>';
+            (result.documents || []).forEach(doc => {
+                const icon = doc.doc_type === 'spec' ? '📄' : doc.doc_type === 'drawing' ? '📐' : '📁';
+                step1Html += `<div style="padding: 0.25rem 0; border-bottom: 1px solid #e5e7eb;">${icon} <strong>${doc.filename}</strong> <span style="color: #6b7280;">(${doc.doc_type}, ${doc.page_count} pages)</span></div>`;
+            });
+            step1Html += '</div>';
+            document.getElementById('step1-content').innerHTML = step1Html;
+
+            // Step 2: Division 8 Specs
+            document.getElementById('step2-count').textContent = specCount;
+            let step2Html = '<div>';
+            (result.division_8_sections || []).forEach(section => {
+                step2Html += `<div style="padding: 0.25rem 0;"><strong>${section.section_id}</strong> - ${section.title}</div>`;
+            });
+            if (result.products_expected && result.products_expected.length > 0) {
+                step2Html += '<div style="margin-top: 0.5rem;"><strong>Products:</strong> ';
+                step2Html += result.products_expected.map(p => `<span style="background: #e5e7eb; padding: 0.1rem 0.4rem; border-radius: var(--border-radius-sm, 3px); margin-right: 0.25rem; text-transform: capitalize;">${p}</span>`).join('');
+                step2Html += '</div>';
+            }
+            step2Html += '</div>';
+            document.getElementById('step2-content').innerHTML = step2Html;
+
+            // Step 3: Schedules - with editable counts
+            document.getElementById('step3-count').textContent = `${doorCount}D / ${windowCount}W`;
+            document.getElementById('edit-door-count').value = doorCount;
+            document.getElementById('edit-window-count').value = windowCount;
+            document.getElementById('ai-door-count').textContent = doorCount;
+            document.getElementById('ai-window-count').textContent = windowCount;
+
+            // Step 4: Elevations
+            document.getElementById('step4-count').textContent = `${totalTags} tags`;
+            let step4Html = '<div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">';
+            const typeCounts = result.type_counts || [];
+            typeCounts.sort((a, b) => b.count - a.count).forEach(tc => {
+                step4Html += `<span style="background: #dbeafe; padding: 0.25rem 0.5rem; border-radius: var(--border-radius-sm, 3px);"><strong>${tc.type_tag}</strong>: ${tc.count}x</span>`;
+            });
+            step4Html += '</div>';
+            if (result.highlight_list && result.highlight_list.length > 0) {
+                step4Html += '<div style="margin-top: 0.75rem;"><strong>Color Legend:</strong></div>';
+                step4Html += '<div style="display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.25rem;">';
+                result.highlight_list.forEach(h => {
+                    const bgColor = h.Color || 'rgb(255,255,0)';
+                    step4Html += `<span style="background: ${bgColor}; color: black; padding: 0.15rem 0.5rem; border-radius: var(--border-radius-sm, 3px); font-size: 0.75rem; font-weight: bold;">${h.Term}: ${h.Count}x</span>`;
+                });
+                step4Html += '</div>';
+            }
+            document.getElementById('step4-content').innerHTML = step4Html;
+
+            // Step 5: Verification
+            document.getElementById('step5-count').textContent = pageCount > 0 ? `${pageCount} pages` : 'Ready';
+            let step5Html = '<div>';
+            if (pageCount > 0) {
+                step5Html += `<div style="margin-bottom: 0.5rem;"><a href="#" onclick="viewHighlightedPDF(); return false;" class="btn-small" style="background: var(--primary); color: white;">Open Highlighted PDF</a></div>`;
+                step5Html += `<div style="color: #6b7280;">Review highlighted drawings to verify quantities.</div>`;
+            } else {
+                step5Html += '<div style="color: #6b7280;">No highlighted pages generated.</div>';
+            }
+            step5Html += '</div>';
+            document.getElementById('step5-content').innerHTML = step5Html;
+
+            // Show errors if any
+            if (result.errors && result.errors.length > 0) {
+                errorsContainer.style.display = 'block';
+                document.getElementById('takeoffErrorsList').innerHTML = result.errors.map(e => `• ${e}`).join('<br>');
+            } else {
+                errorsContainer.style.display = 'none';
+            }
+
+            // Auto-load schedule data to populate the collapsible sections
+            loadAllOpenings();
+        }
+
+        function toggleStep(stepNum) {
+            const content = document.getElementById(`step${stepNum}-content`);
+            const arrow = document.querySelector(`.takeoff-step[data-step="${stepNum}"] .step-arrow`);
+
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                arrow.classList.add('open');
+            } else {
+                content.style.display = 'none';
+                arrow.classList.remove('open');
+            }
+        }
+
+        async function saveCorrections() {
+            const doorCount = document.getElementById('edit-door-count').value;
+            const windowCount = document.getElementById('edit-window-count').value;
+            const btn = document.querySelector('.btn-save-corrections');
+
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+
+            try {
+                // Save door count correction
+                if (doorCount !== document.getElementById('ai-door-count').textContent) {
+                    await fetch(`/api/project/${projectId}/corrections`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            field_name: 'door_count',
+                            corrected_value: doorCount,
+                            original_value: document.getElementById('ai-door-count').textContent,
+                            reason: 'User correction'
+                        })
+                    });
+                }
+
+                // Save window count correction
+                if (windowCount !== document.getElementById('ai-window-count').textContent) {
+                    await fetch(`/api/project/${projectId}/corrections`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            field_name: 'window_count',
+                            corrected_value: windowCount,
+                            original_value: document.getElementById('ai-window-count').textContent,
+                            reason: 'User correction'
+                        })
+                    });
+                }
+
+                btn.textContent = 'Saved!';
+                setTimeout(() => {
+                    btn.textContent = 'Save Corrections';
+                    btn.disabled = false;
+                }, 2000);
+
+            } catch (error) {
+                btn.textContent = 'Error';
+                setTimeout(() => {
+                    btn.textContent = 'Save Corrections';
+                    btn.disabled = false;
+                }, 2000);
+            }
+        }
+
+        function viewHighlightedPage(filename) {
+            // Open specific highlighted page in new tab
+            window.open(`/api/project/${projectId}/highlighted-page/${filename}`, '_blank');
+        }
+
+        function viewHighlightedPDF() {
+            // Open first highlighted PDF in new tab (legacy)
+            window.open(`/api/project/${projectId}/highlighted-pdf`, '_blank');
+        }
+
+        // ==================== CSI AUTO-TAGGING ====================
+
+        // Tag category colors for display
+        const CSI_TAG_CATEGORIES = {
+            "Hollow Metal Doors": "doors", "Hollow Metal Frames": "doors",
+            "Wood Doors": "doors", "Aluminum Doors": "doors",
+            "Storefront": "storefront", "Entrances": "storefront",
+            "Curtain Wall": "curtainwall", "Window Wall": "curtainwall",
+            "Aluminum Windows": "windows", "Wood Windows": "windows",
+            "Vinyl Windows": "windows", "Steel Windows": "windows",
+            "Skylights": "skylights", "Door Hardware": "hardware",
+            "Glazing": "glazing", "Insulating Glass": "glazing",
+            "Louvers": "louvers", "Vents": "louvers",
+        };
+
+        /**
+         * Scan project specs and auto-generate CSI tags
+         */
+        async function scanProjectSpecs() {
+            const btn = document.getElementById('scanSpecsBtn');
+            const btnText = document.getElementById('scanSpecsBtnText');
+            const progressDiv = document.getElementById('scanProgress');
+            const statusText = document.getElementById('scanStatusText');
+            const progressBar = document.getElementById('scanProgressBar');
+            const tagsSection = document.getElementById('scopeTagsSection');
+
+            // Show progress
+            btn.disabled = true;
+            btnText.textContent = 'Scanning...';
+            progressDiv.style.display = 'block';
+            statusText.textContent = 'Analyzing specifications...';
+            progressBar.value = 10;
+
+            try {
+                const response = await fetch(`/api/project/${projectId}/auto-tag`, {
+                    method: 'POST'
+                });
+
+                progressBar.value = 70;
+                statusText.textContent = 'Processing results...';
+
+                const data = await response.json();
+
+                if (data.status === 'ok') {
+                    progressBar.value = 100;
+                    statusText.textContent = `Found ${data.tag_count} scope categories`;
+
+                    // Update tags display
+                    displayScopeTags(data.tags_generated || data.simple_tags, data.detailed_tags);
+
+                    // Show success briefly then hide progress
+                    setTimeout(() => {
+                        progressDiv.style.display = 'none';
+                    }, 2000);
+
+                } else if (data.status === 'warning') {
+                    statusText.textContent = data.message || 'No spec files found';
+                    progressBar.value = 100;
+                } else {
+                    throw new Error(data.error || 'Analysis failed');
+                }
+
+            } catch (error) {
+                statusText.textContent = `Error: ${error.message}`;
+                progressBar.value = 0;
+            }
+
+            btn.disabled = false;
+            btnText.textContent = 'Scan Specs';
+        }
+
+        /**
+         * Display scope tags in the UI
+         */
+        function displayScopeTags(simpleTags, detailedTags) {
+            const container = document.getElementById('scopeTagsSection');
+
+            if (!simpleTags || simpleTags.length === 0) {
+                container.innerHTML = `
+                    <div class="scope-tags-empty" style="text-align: center; padding: 1rem; background: var(--bg); border-radius: var(--border-radius-sm, 4px);">
+                        <span style="color: var(--text-muted);">No Division 8 scope detected in specifications.</span>
+                    </div>
+                `;
+                return;
+            }
+
+            // Build tags HTML
+            let html = '<div class="scope-tags">';
+
+            for (const tag of detailedTags || []) {
+                const category = tag.category || 'other';
+                html += `<span class="scope-tag ${category}" title="${tag.name} (${tag.sections ? tag.sections.join(', ') : ''})">${tag.name}</span>`;
+            }
+
+            // Fallback if no detailed tags
+            if (!detailedTags || detailedTags.length === 0) {
+                for (const tag of simpleTags) {
+                    const category = CSI_TAG_CATEGORIES[tag] || 'other';
+                    html += `<span class="scope-tag ${category}">${tag}</span>`;
+                }
+            }
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+
+        // ==================== CSI MASTERFORMAT ANALYSIS ====================
+
+        async function runCSIAnalysis() {
+            const btn = document.getElementById('csiAnalysisBtn');
+            const panel = document.getElementById('csiAnalysisPanel');
+            const sectionsList = document.getElementById('csiSectionsList');
+            const mfrPanel = document.getElementById('csiManufacturersPanel');
+            const mfrList = document.getElementById('csiManufacturersList');
+
+            btn.disabled = true;
+            btn.textContent = 'Analyzing...';
+            sectionsList.innerHTML = '<span style="font-size: 0.8rem;">Scanning project documents...</span>';
+            panel.style.display = 'block';
+
+            try {
+                const response = await fetch(`/api/project/${projectId}/csi-analysis`);
+                const data = await response.json();
+
+                if (data.status === 'ok') {
+                    displayCSIResults(data);
+                } else {
+                    sectionsList.innerHTML = `<span style="color: #ff6b6b;">Error: ${data.error || 'Analysis failed'}</span>`;
+                }
+            } catch (error) {
+                sectionsList.innerHTML = `<span style="color: #ff6b6b;">Error: ${error.message}</span>`;
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'CSI Analysis';
+        }
+
+        function displayCSIResults(data) {
+            const sectionsList = document.getElementById('csiSectionsList');
+            const mfrPanel = document.getElementById('csiManufacturersPanel');
+            const mfrList = document.getElementById('csiManufacturersList');
+
+            // Display CSI sections
+            if (data.sections && data.sections.length > 0) {
+                // Group sections by category
+                const categories = {};
+                data.sections.forEach(section => {
+                    const cat = section.category || 'other';
+                    if (!categories[cat]) categories[cat] = [];
+                    categories[cat].push(section);
+                });
+
+                let html = '';
+                const categoryColors = {
+                    'doors': '#4CAF50',
+                    'windows': '#2196F3',
+                    'storefronts': '#FF9800',
+                    'glazing': '#9C27B0',
+                    'hardware': '#795548',
+                    'other': '#607D8B'
+                };
+
+                const categoryOrder = ['storefronts', 'windows', 'doors', 'glazing', 'hardware', 'other'];
+                categoryOrder.forEach(cat => {
+                    if (categories[cat]) {
+                        const color = categoryColors[cat] || '#607D8B';
+                        html += `<div style="margin-bottom: 0.75rem;">`;
+                        html += `<div style="font-weight: 700; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.25rem; color: ${color};">${cat}</div>`;
+                        categories[cat].forEach(section => {
+                            html += `<div style="padding: 0.25rem 0; border-bottom: 1px solid rgba(255,255,255,0.2); font-size: 0.8rem;">`;
+                            html += `<strong>${section.section_id}</strong> - ${section.title || section.csi_title || 'Unknown'}`;
+                            html += `</div>`;
+                        });
+                        html += `</div>`;
+                    }
+                });
+
+                html += `<div style="margin-top: 0.5rem; font-size: 0.7rem; opacity: 0.8;">`;
+                html += `${data.sections_count} sections found • ${data.text_analyzed_chars.toLocaleString()} chars analyzed`;
+                html += `</div>`;
+
+                sectionsList.innerHTML = html;
+            } else {
+                sectionsList.innerHTML = '<span style="font-size: 0.8rem; opacity: 0.8;">No CSI sections detected in project documents</span>';
+            }
+
+            // Display manufacturers
+            if (data.manufacturers && data.manufacturers.length > 0) {
+                mfrPanel.style.display = 'block';
+                let mfrHtml = '<div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">';
+                data.manufacturers.forEach(mfr => {
+                    mfrHtml += `<span style="background: rgba(0,0,0,0.1); padding: 0.25rem 0.5rem; border-radius: var(--border-radius-sm, 3px); font-size: 0.8rem; font-weight: 600;">`;
+                    mfrHtml += `${mfr.name}`;
+                    if (mfr.product_count > 0) {
+                        mfrHtml += ` <span style="opacity: 0.7; font-weight: 400;">(${mfr.product_count} products)</span>`;
+                    }
+                    mfrHtml += `</span>`;
+                });
+                mfrHtml += '</div>';
+                mfrList.innerHTML = mfrHtml;
+            } else {
+                mfrPanel.style.display = 'none';
+            }
+        }
+
+        // Load saved takeoff results on page load
+        async function loadSavedTakeoff() {
+            try {
+                const response = await fetch(`/api/project/${projectId}/scope-takeoff`);
+                const data = await response.json();
+
+                if (data.status === 'ok' && data.result) {
+                    // Show saved results
+                    const status = document.getElementById('fullParseStatus');
+                    const source = data.source === 'database' ? `v${data.version}` : 'saved';
+                    status.innerHTML = `<span style="color: #166534; font-size: 0.85rem;">📋 Previous takeoff loaded (${source})</span>`;
+
+                    displayScopeTakeoffResults(data.result);
+                }
+            } catch (error) {
+                console.log('No saved takeoff results found');
+            }
+        }
+
+        // Initialize on page load
+        loadSavedTakeoff();
+
+        // ==================== PROJECTDOG DOCUMENT FUNCTIONS ====================
+
+        /**
+         * Toggle a collapsible document section
+         */
+        function toggleDocSection(element) {
+            let body;
+            if (element.classList.contains('doc-section-header')) {
+                body = element.nextElementSibling;
+            } else {
+                body = element;
+            }
+
+            const icon = element.querySelector('.toggle-icon') || element.parentElement.querySelector('.toggle-icon');
+
+            if (body.style.display === 'none') {
+                body.style.display = 'block';
+                if (icon) icon.textContent = '-';
+            } else {
+                body.style.display = 'none';
+                if (icon) icon.textContent = '+';
+            }
+        }
+
+        /**
+         * Download documents for a ProjectDog project
+         */
+        async function downloadProjectDogDocs(projectCode) {
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Starting...';
+
+            try {
+                const response = await fetch(`/api/projectdog/${projectCode}/download`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    btn.textContent = 'Downloading...';
+                    btn.classList.add('downloading');
+
+                    // Show notification
+                    alert(`Download started for: ${data.title}\n\nDocuments will be saved to your bidding folder. Page will refresh when complete.`);
+
+                    // Refresh after some time
+                    setTimeout(() => {
+                        location.reload();
+                    }, 15000);
+                } else {
+                    throw new Error(data.error || 'Download failed');
+                }
+            } catch (error) {
+                console.error('Download error:', error);
+                alert(`Download failed: ${error.message}`);
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        }
+
+        // =============================================================================
+        // PLANHUB LINKING FUNCTIONS
+        // =============================================================================
+
+        async function loadPlanHubSuggestions() {
+            const statusDiv = document.getElementById('planhubLinkStatus');
+            const suggestionsDiv = document.getElementById('planhubSuggestions');
+            const suggestionsList = document.getElementById('planhubSuggestionsList');
+
+            statusDiv.innerHTML = '<span style="color: var(--text-muted);">Searching PlanHub...</span>';
+
+            try {
+                const response = await fetch(`/api/project/${projectId}/planhub/suggestions`);
+                const data = await response.json();
+
+                if (data.error) {
+                    statusDiv.innerHTML = `<span style="color: red;">Error: ${data.error}</span>`;
+                    return;
+                }
+
+                // Check if already linked
+                if (data.current_link) {
+                    statusDiv.innerHTML = `<span style="color: green;">Linked to PlanHub #${data.current_link}</span>
+                        <button class="btn btn-secondary btn-sm" onclick="unlinkPlanHub()" style="margin-left: 0.5rem;">Unlink</button>`;
+                    return;
+                }
+
+                // Show suggestions
+                if (data.suggestions && data.suggestions.length > 0) {
+                    statusDiv.innerHTML = `<strong>${data.suggestions.length} potential matches found:</strong>`;
+                    suggestionsDiv.style.display = 'block';
+
+                    let html = '';
+                    data.suggestions.forEach(sug => {
+                        const confidence = Math.round(sug.confidence * 100);
+                        const confidenceClass = confidence >= 70 ? 'high' : confidence >= 50 ? 'medium' : 'low';
+                        const gcCount = sug.general_contractors ? sug.general_contractors.length : 0;
+
+                        html += `
+                            <div class="planhub-suggestion" style="padding: 0.75rem; border: 2px solid var(--border); margin-bottom: 0.5rem; background: var(--bg);">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem;">
+                                    <div style="flex: 1;">
+                                        <strong style="font-size: 0.85rem;">${sug.planhub_name}</strong><br>
+                                        <span style="font-size: 0.75rem; color: var(--text-muted);">
+                                            ${sug.planhub_city}${sug.planhub_state ? ', ' + sug.planhub_state : ''}
+                                            ${sug.bid_date ? ' | Due: ' + sug.bid_date : ''}
+                                            ${gcCount > 0 ? ' | ' + gcCount + ' GC' + (gcCount > 1 ? 's' : '') : ''}
+                                        </span>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <span class="confidence-badge ${confidenceClass}" style="font-size: 0.7rem; padding: 0.2rem 0.4rem; border-radius: var(--border-radius-sm, 3px); font-weight: bold;
+                                            ${confidence >= 70 ? 'background: #d4edda; color: #155724;' : confidence >= 50 ? 'background: #fff3cd; color: #856404;' : 'background: #f8d7da; color: #721c24;'}">
+                                            ${confidence}% match
+                                        </span>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem;">
+                                    <button class="btn btn-primary btn-sm" onclick="linkToPlanHub('${sug.planhub_id}')">Link This</button>
+                                    ${sug.planhub_urls && sug.planhub_urls.project_info ?
+                                        `<a href="${sug.planhub_urls.project_info}" target="_blank" class="btn btn-secondary btn-sm">View on PlanHub</a>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    suggestionsList.innerHTML = html;
+                } else {
+                    statusDiv.innerHTML = `<span style="color: var(--text-muted);">No matching PlanHub projects found</span>
+                        <br><button class="btn btn-secondary btn-sm" onclick="showAllPlanHub()" style="margin-top: 0.5rem;">Browse All PlanHub Projects</button>`;
+                }
+
+            } catch (error) {
+                console.error('PlanHub suggestions error:', error);
+                statusDiv.innerHTML = `<span style="color: red;">Error loading suggestions</span>`;
+            }
+        }
+
+        async function linkToPlanHub(planhubId) {
+            try {
+                const response = await fetch(`/api/project/${projectId}/planhub/link`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ planhub_id: planhubId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Linked successfully! Refreshing page to show GC contacts...');
+                    window.location.reload();
+                } else {
+                    alert('Link failed: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Link error:', error);
+                alert('Link failed: ' + error.message);
+            }
+        }
+
+        async function unlinkPlanHub() {
+            if (!confirm('Remove PlanHub link? GC contacts will be removed from this project.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/project/${projectId}/planhub/link`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Unlinked successfully!');
+                    window.location.reload();
+                } else {
+                    alert('Unlink failed: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Unlink error:', error);
+                alert('Unlink failed: ' + error.message);
+            }
+        }
+
+        async function showAllPlanHub() {
+            const suggestionsDiv = document.getElementById('planhubSuggestions');
+            const suggestionsList = document.getElementById('planhubSuggestionsList');
+
+            suggestionsList.innerHTML = '<span style="color: var(--text-muted);">Loading all PlanHub projects...</span>';
+            suggestionsDiv.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/planhub/projects');
+                const data = await response.json();
+
+                if (data.projects && data.projects.length > 0) {
+                    let html = '<div style="max-height: 300px; overflow-y: auto;">';
+                    data.projects.forEach(p => {
+                        html += `
+                            <div style="padding: 0.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong style="font-size: 0.8rem;">${p.name}</strong><br>
+                                    <span style="font-size: 0.7rem; color: var(--text-muted);">${p.city}, ${p.state} ${p.bid_due_date ? '| Due: ' + p.bid_due_date : ''}</span>
+                                </div>
+                                <button class="btn btn-primary btn-sm" onclick="linkToPlanHub('${p.planhub_id}')">Link</button>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    suggestionsList.innerHTML = html;
+                } else {
+                    suggestionsList.innerHTML = '<span style="color: var(--text-muted);">No PlanHub projects available</span>';
+                }
+
+            } catch (error) {
+                console.error('Load all PlanHub error:', error);
+                suggestionsList.innerHTML = '<span style="color: red;">Error loading projects</span>';
+            }
+        }
+
+        // ==================== RAG ANALYSIS ON-LOAD ====================
+
+        let ragAnalysisInProgress = false;
+
+        async function checkAndRunRag() {
+            // Don't run if analysis already showing
+            const hasAnalysis = {{ 'true' if project.has_rag_analysis else 'false' }};
+            if (hasAnalysis) {
+                console.log('[RAG] Analysis already exists, skipping auto-check');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/project/${projectId}/rag-status`);
+                const status = await response.json();
+                console.log('[RAG] Status:', status);
+
+                if (status.too_large) {
+                    // Show large project warning
+                    const warning = document.getElementById('rag-large-warning');
+                    if (warning) {
+                        const warningText = warning.querySelector('.warning-text');
+                        if (warningText) {
+                            warningText.textContent = `Large project: ~${status.size.pdf_count} PDFs, ~${status.size.est_chunks} estimated chunks. Manual analysis recommended.`;
+                        }
+                        warning.style.display = 'flex';
+                    }
+                } else if (status.auto_process && status.needs_analysis) {
+                    // Auto-trigger analysis
+                    console.log('[RAG] Auto-triggering analysis...');
+                    await triggerRagAnalysis(false);
+                }
+            } catch (error) {
+                console.error('[RAG] Error checking status:', error);
+            }
+        }
+
+        async function triggerRagAnalysis(force = false) {
+            if (ragAnalysisInProgress) {
+                console.log('[RAG] Analysis already in progress');
+                return;
+            }
+
+            ragAnalysisInProgress = true;
+            const analyzing = document.getElementById('rag-analyzing');
+            const warning = document.getElementById('rag-large-warning');
+
+            // Show analyzing indicator
+            if (analyzing) analyzing.style.display = 'block';
+            if (warning) warning.style.display = 'none';
+
+            try {
+                const url = `/api/project/${projectId}/trigger-rag${force ? '?force=true' : ''}`;
+                const response = await fetch(url, { method: 'POST' });
+                const result = await response.json();
+                console.log('[RAG] Analysis result:', result);
+
+                if (result.status === 'success') {
+                    // Reload page to show new analysis
+                    location.reload();
+                } else if (result.status === 'too_large') {
+                    // Show warning
+                    if (warning) {
+                        const warningText = warning.querySelector('.warning-text');
+                        if (warningText) {
+                            warningText.textContent = result.message;
+                        }
+                        warning.style.display = 'flex';
+                    }
+                    if (analyzing) analyzing.style.display = 'none';
+                } else {
+                    console.error('[RAG] Analysis failed:', result.message);
+                    if (analyzing) {
+                        analyzing.innerHTML = `<span style="color: red;">Analysis failed: ${result.message}</span>`;
+                    }
+                }
+            } catch (error) {
+                console.error('[RAG] Error triggering analysis:', error);
+                if (analyzing) {
+                    analyzing.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
+                }
+            } finally {
+                ragAnalysisInProgress = false;
+            }
+        }
+
+        // Run RAG check on page load (after a short delay to prioritize UI)
+        setTimeout(checkAndRunRag, 1000);
+
+        // ==================== EMAIL COMMUNICATIONS ====================
+
+        let currentEmailId = null;
+
+        async function loadEmails() {
+            const emailsList = document.getElementById('emailsList');
+            if (!emailsList) return;
+
+            try {
+                const response = await fetch(`/api/project/${projectId}/emails`);
+                const data = await response.json();
+
+                if (data.emails && data.emails.length > 0) {
+                    document.getElementById('emailCount').textContent = data.emails.length;
+
+                    let html = '';
+                    data.emails.forEach(email => {
+                        const date = email.received_time ? new Date(email.received_time).toLocaleString() : 'Unknown date';
+                        const typeColors = {
+                            'bid_invite': '#4caf50',
+                            'addendum': '#ff9800',
+                            'deadline_reminder': '#f44336',
+                            'rfi': '#2196f3',
+                            'shipping_notification': '#9c27b0',
+                            'invoice': '#607d8b',
+                            'site_visit': '#00bcd4',
+                            'other': '#9e9e9e'
+                        };
+                        const typeColor = typeColors[email.email_type] || '#9e9e9e';
+                        const hasAttachments = email.attachments && email.attachments.length > 0;
+
+                        html += `
+                            <div class="email-item" onclick="viewEmail('${email.id}')" style="padding: 0.75rem; background: var(--bg-secondary); border-radius: 4px; cursor: pointer; border-left: 3px solid ${typeColor};">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem;">
+                                    <div style="flex: 1; min-width: 0;">
+                                        <div style="font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${email.subject}</div>
+                                        <div style="font-size: 0.8rem; color: var(--text-muted);">
+                                            ${email.sender_name || email.sender}
+                                            ${hasAttachments ? '<span style="margin-left: 0.5rem;">📎 ' + email.attachments.length + '</span>' : ''}
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right; font-size: 0.75rem; color: var(--text-muted); white-space: nowrap;">
+                                        <div>${date}</div>
+                                        <span style="background: ${typeColor}; color: white; padding: 0.125rem 0.375rem; border-radius: 3px; font-size: 0.7rem;">${email.email_type.replace('_', ' ')}</span>
+                                    </div>
+                                </div>
+                                ${email.links && email.links.length > 0 ? '<div style="margin-top: 0.5rem; font-size: 0.75rem;">' + email.links.slice(0, 3).filter(link => link.includes('buildingconnected') || link.includes('planhub') || link.includes('smartbidnet')).map(link => '<a href="' + link + '" target="_blank" onclick="event.stopPropagation();" style="color: #4A90A4; margin-right: 0.5rem;">🔗 View Project</a>').join('') + '</div>' : ''}
+                            </div>
+                        `;
+                    });
+                    emailsList.innerHTML = html;
+                } else {
+                    emailsList.innerHTML = '<div style="text-align: center; padding: 1rem; color: var(--text-muted);">No emails found</div>';
+                }
+            } catch (error) {
+                console.error('Error loading emails:', error);
+                emailsList.innerHTML = '<div style="text-align: center; padding: 1rem; color: var(--danger);">Error loading emails</div>';
+            }
+        }
+
+        async function viewEmail(emailId) {
+            currentEmailId = emailId;
+            const modal = document.getElementById('emailViewerModal');
+            const frame = document.getElementById('emailViewerFrame');
+            const subjectEl = document.getElementById('emailViewerSubject');
+            const fromEl = document.getElementById('emailViewerFrom');
+            const dateEl = document.getElementById('emailViewerDate');
+            const attachmentsRow = document.getElementById('emailViewerAttachmentsRow');
+            const attachmentsEl = document.getElementById('emailViewerAttachments');
+
+            try {
+                const response = await fetch(`/api/emails/${emailId}`);
+                const email = await response.json();
+
+                subjectEl.textContent = email.subject;
+                fromEl.textContent = (email.sender_name || '') + ' <' + email.sender + '>';
+                dateEl.textContent = email.received_time ? new Date(email.received_time).toLocaleString() : 'Unknown';
+
+                if (email.attachments && email.attachments.length > 0) {
+                    attachmentsRow.style.display = 'block';
+                    attachmentsEl.innerHTML = email.attachments.map(att => {
+                        const name = att.name || att;
+                        return '<a href="/api/emails/' + emailId + '/attachment/' + encodeURIComponent(name) + '" target="_blank" style="color: #4A90A4; margin-right: 0.75rem;">📎 ' + name + '</a>';
+                    }).join('');
+                } else {
+                    attachmentsRow.style.display = 'none';
+                }
+
+                frame.src = '/api/emails/' + emailId + '/html';
+                modal.style.display = 'flex';
+            } catch (error) {
+                console.error('Error loading email:', error);
+                alert('Error loading email: ' + error.message);
+            }
+        }
+
+        function closeEmailViewer() {
+            document.getElementById('emailViewerModal').style.display = 'none';
+            document.getElementById('emailViewerFrame').src = '';
+            currentEmailId = null;
+        }
+
+        async function openEmailFolder() {
+            if (!currentEmailId) return;
+            try {
+                await fetch('/api/emails/' + currentEmailId + '/open-folder');
+            } catch (error) {
+                console.error('Error opening folder:', error);
+            }
+        }
+
+        // Load emails on page load if email card exists
+        if (document.getElementById('emailsCard')) {
+            setTimeout(loadEmails, 500);
+        }
+
+        // =============================================================================
+        // LINKED SOURCES FUNCTIONS
+        // =============================================================================
+
+        let allLinkableProjects = [];
+        let currentLinks = [];
+
+        // Load linked sources on page load
+        async function loadLinkedSources() {
+            try {
+                // Load existing links
+                const linksRes = await fetch(`/api/project/${projectId}/links`);
+                const linksData = await linksRes.json();
+                currentLinks = linksData.links || [];
+
+                // Load suggested links
+                const suggestRes = await fetch(`/api/project/${projectId}/links/suggested`);
+                const suggestData = await suggestRes.json();
+                const suggestions = suggestData.suggestions || [];
+
+                // Display automatic matches
+                displayAutomaticMatches(currentLinks, suggestions);
+
+                // Load all projects for manual linking
+                const projectsRes = await fetch('/api/projects');
+                const projectsData = await projectsRes.json();
+                allLinkableProjects = projectsData.projects || [];
+
+                // Filter out the current project
+                allLinkableProjects = allLinkableProjects.filter(p => p.id !== projectId);
+
+                // Populate the dropdown
+                populateLinkableProjects();
+
+            } catch (error) {
+                console.error('Error loading linked sources:', error);
+                document.getElementById('automaticMatchesList').innerHTML =
+                    '<span style="color: red;">Error loading linked sources</span>';
+            }
+        }
+
+        function displayAutomaticMatches(links, suggestions) {
+            const container = document.getElementById('automaticMatchesList');
+
+            if (links.length === 0 && suggestions.length === 0) {
+                container.innerHTML = '<span style="color: var(--text-muted); font-size: 0.875rem;">No automatic matches found</span>';
+                return;
+            }
+
+            let html = '';
+
+            // Display confirmed links
+            if (links.length > 0) {
+                links.forEach(link => {
+                    const sourceIcon = getSourceIcon(link.source_type);
+                    const sourceBadge = getSourceBadge(link.source_type);
+                    const matchType = link.match_type === 'manual' ? 'Manual' : 'Auto';
+                    const confidence = Math.round(link.match_confidence * 100);
+
+                    html += `
+                        <div style="padding: 0.75rem; background: var(--bg); border: 2px solid var(--border); margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                    <span style="font-size: 1rem;">${sourceIcon}</span>
+                                    ${sourceBadge}
+                                    <span style="font-size: 0.7rem; color: var(--text-muted);">${matchType} ${confidence}%</span>
+                                </div>
+                                <div style="font-size: 0.8rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    ${link.source_data?.title || link.source_id}
+                                </div>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" onclick="unlinkSource('${link.source_type}', '${link.source_id}')" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">
+                                Unlink
+                            </button>
+                        </div>
+                    `;
+                });
+            }
+
+            // Display suggestions
+            if (suggestions.length > 0) {
+                html += '<div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin: 1rem 0 0.5rem 0; color: var(--text-muted);">Suggested Matches</div>';
+
+                suggestions.forEach(sug => {
+                    const sourceIcon = getSourceIcon(sug.source_type);
+                    const sourceBadge = getSourceBadge(sug.source_type);
+                    const confidence = Math.round(sug.confidence * 100);
+
+                    html += `
+                        <div style="padding: 0.75rem; background: var(--bg); border: 2px dashed var(--border); margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                    <span style="font-size: 1rem;">${sourceIcon}</span>
+                                    ${sourceBadge}
+                                    <span style="font-size: 0.7rem; color: var(--text-muted);">${confidence}% match</span>
+                                </div>
+                                <div style="font-size: 0.8rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    ${sug.title || sug.source_id}
+                                </div>
+                            </div>
+                            <button class="btn btn-primary btn-sm" onclick="linkSuggestion('${sug.source_type}', '${sug.source_id}', ${JSON.stringify(sug.data).replace(/'/g, "&apos;")})" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">
+                                Link
+                            </button>
+                        </div>
+                    `;
+                });
+            }
+
+            container.innerHTML = html;
+        }
+
+        function getSourceIcon(sourceType) {
+            const icons = {
+                'projectdog': '🐕',
+                'planhub': '📋',
+                'local_folder': '📁',
+                'local_extracted': '📁',
+                'local_bidding': '📁',
+                'email_monitor': '📧',
+                'email': '📧'
+            };
+            return icons[sourceType] || '📄';
+        }
+
+        function getSourceBadge(sourceType) {
+            const badges = {
+                'projectdog': '<span class="source-badge projectdog">ProjectDog</span>',
+                'planhub': '<span class="source-badge planhub">PlanHub</span>',
+                'local_folder': '<span class="source-badge local">Local</span>',
+                'local_extracted': '<span class="source-badge local">Local</span>',
+                'local_bidding': '<span class="source-badge local">Local</span>',
+                'email_monitor': '<span class="source-badge" style="background: var(--accent-orange);">Email</span>',
+                'email': '<span class="source-badge" style="background: var(--accent-orange);">Email</span>'
+            };
+            return badges[sourceType] || `<span class="source-badge">${sourceType}</span>`;
+        }
+
+        async function linkSuggestion(sourceType, sourceId, sourceData) {
+            if (!confirm(`Link this ${sourceType} project to the current project?`)) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/project/${projectId}/links`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        source_type: sourceType,
+                        source_id: sourceId,
+                        source_data: sourceData
+                    })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    // Reload the linked sources
+                    await loadLinkedSources();
+                } else {
+                    alert('Failed to create link: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Error creating link: ' + error.message);
+            }
+        }
+
+        async function unlinkSource(sourceType, sourceId) {
+            if (!confirm(`Remove this link? This will not delete the source project.`)) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/project/${projectId}/links/${sourceType}/${sourceId}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    // Reload the linked sources
+                    await loadLinkedSources();
+                } else {
+                    alert('Failed to remove link: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Error removing link: ' + error.message);
+            }
+        }
+
+        function populateLinkableProjects() {
+            filterLinkableProjects();
+        }
+
+        function filterLinkableProjects() {
+            const filterValue = document.getElementById('linkSourceFilter').value;
+            const searchValue = document.getElementById('linkProjectSearch').value.toLowerCase();
+            const selectElement = document.getElementById('linkProjectSelect');
+
+            // Filter projects
+            let filtered = allLinkableProjects.filter(project => {
+                // Filter by source type
+                let sourceMatch = true;
+                if (filterValue !== 'all') {
+                    if (filterValue === 'local') {
+                        sourceMatch = ['local_folder', 'local_extracted', 'local_bidding'].includes(project.source);
+                    } else if (filterValue === 'email') {
+                        sourceMatch = project.source === 'email_monitor' || project.source === 'email';
+                    } else {
+                        sourceMatch = project.source === filterValue;
+                    }
+                }
+
+                // Filter by search text
+                let searchMatch = true;
+                if (searchValue) {
+                    const title = (project.title || '').toLowerCase();
+                    const location = (project.location?.city || '').toLowerCase();
+                    const folder = (project.folder || '').toLowerCase();
+                    searchMatch = title.includes(searchValue) || location.includes(searchValue) || folder.includes(searchValue);
+                }
+
+                return sourceMatch && searchMatch;
+            });
+
+            // Sort alphabetically by title
+            filtered.sort((a, b) => {
+                const titleA = (a.title || a.folder || '').toLowerCase();
+                const titleB = (b.title || b.folder || '').toLowerCase();
+                return titleA.localeCompare(titleB);
+            });
+
+            // Check which projects are already linked
+            const linkedSourceIds = currentLinks.map(link => link.source_id);
+
+            // Populate dropdown
+            selectElement.innerHTML = '';
+
+            if (filtered.length === 0) {
+                selectElement.innerHTML = '<option value="" disabled>No projects found</option>';
+                return;
+            }
+
+            filtered.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project.id;
+                option.dataset.sourceType = project.source;
+
+                // Determine the source_id based on source type
+                let sourceId = project.id;
+                if (project.source === 'projectdog') {
+                    sourceId = project.project_code || project.interest_list_id || project.id;
+                } else if (project.source === 'planhub') {
+                    sourceId = project.project_id || project.planhub_id || project.id;
+                }
+                option.dataset.sourceId = sourceId;
+
+                // Build option text
+                const sourceLabel = getSourceLabel(project.source);
+                const location = project.location?.city || '';
+                const title = project.title || project.folder || 'Untitled';
+
+                option.textContent = `${title} [${sourceLabel}]${location ? ' - ' + location : ''}`;
+
+                // Disable if already linked
+                if (linkedSourceIds.includes(sourceId)) {
+                    option.disabled = true;
+                    option.textContent += ' (Already linked)';
+                }
+
+                selectElement.appendChild(option);
+            });
+        }
+
+        function getSourceLabel(source) {
+            const labels = {
+                'projectdog': 'PROJECTDOG',
+                'planhub': 'PLANHUB',
+                'local_folder': 'LOCAL',
+                'local_extracted': 'LOCAL',
+                'local_bidding': 'LOCAL',
+                'email_monitor': 'EMAIL',
+                'email': 'EMAIL'
+            };
+            return labels[source] || source.toUpperCase();
+        }
+
+        async function linkSelectedProject() {
+            const selectElement = document.getElementById('linkProjectSelect');
+            const statusDiv = document.getElementById('manualLinkStatus');
+            const btn = document.getElementById('linkProjectBtn');
+
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+
+            if (!selectedOption || !selectedOption.value) {
+                statusDiv.innerHTML = '<span style="color: red;">Please select a project</span>';
+                return;
+            }
+
+            const projectId_toLink = selectedOption.value;
+            const sourceType = selectedOption.dataset.sourceType;
+            const sourceId = selectedOption.dataset.sourceId;
+
+            // Find the full project data
+            const projectData = allLinkableProjects.find(p => p.id === projectId_toLink);
+
+            if (!confirm(`Link "${selectedOption.textContent}"?\n\nThis will associate this ${sourceType} project with the current project.`)) {
+                return;
+            }
+
+            btn.disabled = true;
+            statusDiv.innerHTML = '<span style="color: var(--text-muted);">Creating link...</span>';
+
+            try {
+                const res = await fetch(`/api/project/${projectId}/links`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        source_type: sourceType,
+                        source_id: sourceId,
+                        source_data: projectData
+                    })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    statusDiv.innerHTML = '<span style="color: green;">Link created successfully!</span>';
+                    // Reload linked sources
+                    await loadLinkedSources();
+                    // Clear selection
+                    selectElement.selectedIndex = -1;
+                } else {
+                    statusDiv.innerHTML = `<span style="color: red;">Failed: ${data.error || 'Unknown error'}</span>`;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // Load linked sources on page load
+        setTimeout(loadLinkedSources, 500);
+
+    </script>{% endblock %}

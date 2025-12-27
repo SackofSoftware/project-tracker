@@ -1,0 +1,829 @@
+{% extends "base.html" %}
+
+{% block title %}Master Analysis Pipeline - Project Tracker{% endblock %}
+
+{% block head %}
+<style>
+    .pipeline-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-bottom: 4px solid var(--border);
+        padding: 2rem;
+        color: white;
+    }
+    .pipeline-header h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2rem;
+        text-transform: uppercase;
+    }
+    .pipeline-header p {
+        margin: 0;
+        opacity: 0.9;
+    }
+    .pipeline-header .header-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    .pipeline-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 2rem;
+    }
+    @media (max-width: 1000px) {
+        .pipeline-content {
+            grid-template-columns: 1fr;
+        }
+    }
+    .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .main-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .card {
+        background: var(--card-bg);
+        border: 3px solid var(--border);
+        box-shadow: 4px 4px 0px var(--border);
+    }
+    .card-header {
+        padding: 1rem;
+        border-bottom: 3px solid var(--border);
+        font-weight: 700;
+        text-transform: uppercase;
+        background: var(--accent-yellow);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .card-body {
+        padding: 1rem;
+    }
+
+    /* Controls */
+    .control-btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        border: 3px solid var(--border);
+        cursor: pointer;
+        transition: all 0.1s;
+    }
+    .control-btn:hover:not(:disabled) {
+        transform: translate(-2px, -2px);
+        box-shadow: 4px 4px 0px var(--border);
+    }
+    .control-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+    }
+    .btn-success {
+        background: #28a745;
+        color: white;
+    }
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    /* Project List */
+    .project-list {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 2px solid var(--border);
+    }
+    .project-item {
+        padding: 0.75rem;
+        border-bottom: 2px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.875rem;
+    }
+    .project-item:last-child {
+        border-bottom: none;
+    }
+    .project-item:hover {
+        background: #f5f5f5;
+    }
+    .project-item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+    }
+    .project-name {
+        flex: 1;
+        font-weight: 500;
+    }
+    .project-status {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border: 2px solid;
+    }
+    .status-pending { background: #fff3cd; border-color: #ffc107; }
+    .status-running { background: #cce5ff; border-color: #007bff; }
+    .status-complete { background: #d4edda; border-color: #28a745; }
+    .status-error { background: #f8d7da; border-color: #dc3545; }
+    .status-update { background: #e2e3ff; border-color: #667eea; }
+
+    /* Stage Progress */
+    .stage-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem;
+    }
+    @media (max-width: 800px) {
+        .stage-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    .stage-card {
+        padding: 0.75rem;
+        border: 2px solid var(--border);
+        text-align: center;
+        font-size: 0.8rem;
+    }
+    .stage-card .icon {
+        font-size: 1.5rem;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+    .stage-card .name {
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .stage-card .status {
+        margin-top: 0.25rem;
+        font-size: 1.25rem;
+    }
+    .stage-pending { background: #f8f9fa; }
+    .stage-running { background: #fff3cd; animation: pulse 1s infinite; }
+    .stage-complete { background: #d4edda; }
+    .stage-error { background: #f8d7da; }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+
+    /* Console Log */
+    .console {
+        background: #1e1e1e;
+        color: #00ff00;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 0.75rem;
+        padding: 1rem;
+        height: 500px;
+        overflow-y: auto;
+        border: 3px solid var(--border);
+    }
+    .console-line {
+        padding: 0.125rem 0;
+        border-bottom: 1px solid #333;
+    }
+    .console-line.info { color: #00ff00; }
+    .console-line.warn { color: #ffcc00; }
+    .console-line.error { color: #ff4444; }
+    .console-line.success { color: #44ff44; }
+    .console-line.stage { color: #44aaff; font-weight: bold; }
+    .console-line.project { color: #ff44ff; }
+    .console-timestamp {
+        color: #888;
+        margin-right: 0.5rem;
+    }
+
+    /* Stats */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem;
+    }
+    .stat-box {
+        text-align: center;
+        padding: 0.75rem;
+        border: 2px solid var(--border);
+    }
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 800;
+    }
+    .stat-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        color: #666;
+    }
+
+    /* Progress Bar */
+    .overall-progress {
+        margin-top: 1rem;
+    }
+    .progress-bar-container {
+        height: 30px;
+        background: #e9ecef;
+        border: 2px solid var(--border);
+        position: relative;
+    }
+    .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        transition: width 0.3s;
+    }
+    .progress-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-weight: 700;
+        color: var(--border);
+    }
+
+    /* Current Project Display */
+    .current-project {
+        padding: 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-align: center;
+        font-weight: 600;
+        border: 3px solid var(--border);
+    }
+    .current-project .label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        opacity: 0.8;
+    }
+    .current-project .name {
+        font-size: 1.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<header class="pipeline-header">
+    <div class="header-actions">
+        <a href="/" style="color: white; text-decoration: none; font-size: 0.875rem; font-weight: 700;">&larr; BACK TO DASHBOARD</a>
+        <a href="/settings" class="btn btn-secondary">Settings</a>
+    </div>
+    <h1>Master Analysis Pipeline</h1>
+    <p>Batch AI-powered document analysis: rename, organize, split specs/drawings, analyze schedules, highlight, parse quotes</p>
+</header>
+
+<div class="pipeline-content">
+    <div class="sidebar">
+        <!-- Controls -->
+        <div class="card">
+            <div class="card-header">Controls</div>
+            <div class="card-body" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <button class="control-btn btn-primary" id="btnRunSelected" onclick="runSelectedProjects()">
+                    Run Selected
+                </button>
+                <button class="control-btn btn-success" id="btnRunAll" onclick="runAllProjects()">
+                    Run New + Changed
+                </button>
+                <button class="control-btn btn-danger" id="btnStop" onclick="stopPipeline()" disabled>
+                    Stop Pipeline
+                </button>
+                <button class="control-btn btn-secondary" onclick="clearConsole()">
+                    Clear Console
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="card">
+            <div class="card-header">Statistics</div>
+            <div class="card-body">
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value" id="statTotal">0</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="statProcessed">0</div>
+                        <div class="stat-label">Done</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="statPending">0</div>
+                        <div class="stat-label">New</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="statNeedsUpdate">0</div>
+                        <div class="stat-label">Changed</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="statErrors">0</div>
+                        <div class="stat-label">Errors</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Selection -->
+        <div class="card">
+            <div class="card-header">
+                <span>Projects</span>
+                <label style="font-size: 0.75rem; font-weight: normal; text-transform: none;">
+                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()"> Select All
+                </label>
+            </div>
+            <div class="card-body" style="padding: 0;">
+                <div class="project-list" id="projectList">
+                    <div style="padding: 2rem; text-align: center; color: #666;">Loading projects...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-panel">
+        <!-- Current Project -->
+        <div class="current-project" id="currentProject" style="display: none;">
+            <div class="label">Currently Processing</div>
+            <div class="name" id="currentProjectName">-</div>
+        </div>
+
+        <!-- Stage Progress -->
+        <div class="card">
+            <div class="card-header">Pipeline Stages</div>
+            <div class="card-body">
+                <div class="stage-grid" id="stageGrid">
+                    <div class="stage-card stage-pending" data-stage="rename">
+                        <span class="icon">📝</span>
+                        <div class="name">Rename</div>
+                        <div class="status">⏳</div>
+                    </div>
+                    <div class="stage-card stage-pending" data-stage="organize">
+                        <span class="icon">📁</span>
+                        <div class="name">Organize</div>
+                        <div class="status">⏳</div>
+                    </div>
+                    <div class="stage-card stage-pending" data-stage="split_specs">
+                        <span class="icon">📋</span>
+                        <div class="name">Split Specs</div>
+                        <div class="status">⏳</div>
+                    </div>
+                    <div class="stage-card stage-pending" data-stage="split_drawings">
+                        <span class="icon">📐</span>
+                        <div class="name">Split Drawings</div>
+                        <div class="status">⏳</div>
+                    </div>
+                    <div class="stage-card stage-pending" data-stage="ai_analysis">
+                        <span class="icon">🤖</span>
+                        <div class="name">AI Analysis</div>
+                        <div class="status">⏳</div>
+                    </div>
+                    <div class="stage-card stage-pending" data-stage="schedule_parse">
+                        <span class="icon">📊</span>
+                        <div class="name">Parse Schedules</div>
+                        <div class="status">⏳</div>
+                    </div>
+                    <div class="stage-card stage-pending" data-stage="highlight">
+                        <span class="icon">🖍️</span>
+                        <div class="name">Highlight PDFs</div>
+                        <div class="status">⏳</div>
+                    </div>
+                    <div class="stage-card stage-pending" data-stage="quotes">
+                        <span class="icon">💰</span>
+                        <div class="name">Quote Analysis</div>
+                        <div class="status">⏳</div>
+                    </div>
+                </div>
+
+                <div class="overall-progress">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
+                        <div class="progress-text" id="progressText">0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Console -->
+        <div class="card">
+            <div class="card-header">
+                <span>Console Output</span>
+                <span id="consoleStatus" style="font-size: 0.75rem; font-weight: normal;">Ready</span>
+            </div>
+            <div class="console" id="console">
+                <div class="console-line info">
+                    <span class="console-timestamp">[INIT]</span>
+                    Master Analysis Pipeline ready. Select projects or click "Run New + Changed" to process all pending.
+                </div>
+                <div class="console-line info">
+                    <span class="console-timestamp">[INFO]</span>
+                    Pipeline stages: Rename → Organize → Split Specs → Split Drawings → AI Analysis → Parse Schedules → Highlight → Quotes
+                </div>
+                <div class="console-line info">
+                    <span class="console-timestamp">[INFO]</span>
+                    AI Models: GPT-5 nano (vision) + DeepSeek V3.2 Speciale (reasoning)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // State
+    let projects = [];
+    let projectsNeedingUpdate = {};  // Map of project_id -> reason (never_run, has_changes)
+    let pipelineRunning = false;
+    let currentProjectId = null;
+    let pollInterval = null;
+    let stats = { total: 0, processed: 0, pending: 0, needsUpdate: 0, errors: 0 };
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        loadProjects();
+    });
+
+    // Load projects with smart change detection
+    async function loadProjects() {
+        try {
+            log('Loading projects...', 'info');
+
+            // Fetch both projects list and needing-update info in parallel
+            const [projectsResponse, updateResponse] = await Promise.all([
+                fetch('/api/projects/local'),
+                fetch('/api/projects/needing-update?include_complete=true')
+            ]);
+
+            const projectsData = await projectsResponse.json();
+            const updateData = await updateResponse.json();
+
+            projects = projectsData.projects || [];
+
+            // Build map of projects needing update
+            projectsNeedingUpdate = {};
+            (updateData.projects || []).forEach(p => {
+                projectsNeedingUpdate[p.project_id] = p.reason;
+            });
+
+            renderProjectList();
+            updateStats();
+
+            const neverRun = updateData.never_run_count || 0;
+            const hasChanges = updateData.has_changes_count || 0;
+            log(`Loaded ${projects.length} projects: ${neverRun} new, ${hasChanges} with changes`, 'success');
+        } catch (error) {
+            log(`Error loading projects: ${error.message}`, 'error');
+        }
+    }
+
+    // Render project list
+    function renderProjectList() {
+        const container = document.getElementById('projectList');
+
+        if (projects.length === 0) {
+            container.innerHTML = '<div style="padding: 2rem; text-align: center; color: #666;">No local projects found</div>';
+            return;
+        }
+
+        container.innerHTML = projects.map(p => {
+            // Determine status: complete, pending (never run), or update (has changes)
+            let pipelineStatus, statusText;
+            const updateReason = projectsNeedingUpdate[p.id];
+
+            if (!updateReason) {
+                // Not in needs-update list = up to date
+                pipelineStatus = 'complete';
+                statusText = 'Done';
+            } else if (updateReason.includes('not completed') || updateReason.includes('never')) {
+                // Never run
+                pipelineStatus = 'pending';
+                statusText = 'New';
+            } else {
+                // Has file changes
+                pipelineStatus = 'update';
+                statusText = 'Changed';
+            }
+
+            return `
+                <div class="project-item" data-id="${p.id}">
+                    <input type="checkbox" class="project-checkbox" value="${p.id}">
+                    <span class="project-name">${p.title || p.folder}</span>
+                    <span class="project-status status-${pipelineStatus}">${statusText}</span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Toggle select all
+    function toggleSelectAll() {
+        const selectAll = document.getElementById('selectAll').checked;
+        document.querySelectorAll('.project-checkbox').forEach(cb => {
+            cb.checked = selectAll;
+        });
+    }
+
+    // Get selected project IDs
+    function getSelectedProjects() {
+        return Array.from(document.querySelectorAll('.project-checkbox:checked'))
+            .map(cb => cb.value);
+    }
+
+    // Run selected projects
+    async function runSelectedProjects() {
+        const selected = getSelectedProjects();
+        if (selected.length === 0) {
+            log('No projects selected! Please select at least one project.', 'warn');
+            return;
+        }
+
+        log(`Starting pipeline for ${selected.length} selected projects...`, 'stage');
+        await runPipeline(selected);
+    }
+
+    // Run all projects needing update (new + changed)
+    async function runAllProjects() {
+        // Get projects from the projectsNeedingUpdate map
+        const needsUpdate = Object.keys(projectsNeedingUpdate);
+
+        if (needsUpdate.length === 0) {
+            log('All projects are up to date!', 'success');
+            return;
+        }
+
+        // Count by type for logging
+        let newCount = 0, changedCount = 0;
+        needsUpdate.forEach(id => {
+            const reason = projectsNeedingUpdate[id];
+            if (reason.includes('not completed') || reason.includes('never')) {
+                newCount++;
+            } else {
+                changedCount++;
+            }
+        });
+
+        log(`Starting pipeline for ${needsUpdate.length} projects (${newCount} new, ${changedCount} with changes)...`, 'stage');
+        await runPipeline(needsUpdate);
+    }
+
+    // Run pipeline for list of projects
+    async function runPipeline(projectIds) {
+        if (pipelineRunning) {
+            log('Pipeline already running!', 'warn');
+            return;
+        }
+
+        pipelineRunning = true;
+        updateButtonStates();
+        stats.errors = 0;
+
+        log(`━━━ BATCH START: ${projectIds.length} projects ━━━`, 'stage');
+
+        for (let i = 0; i < projectIds.length; i++) {
+            if (!pipelineRunning) {
+                log('⏹ Stopped by user', 'warn');
+                break;
+            }
+
+            const projectId = projectIds[i];
+            const project = projects.find(p => p.id === projectId);
+            const projectName = project?.title || project?.folder || projectId;
+
+            currentProjectId = projectId;
+            document.getElementById('currentProject').style.display = 'block';
+            document.getElementById('currentProjectName').textContent = `[${i+1}/${projectIds.length}] ${projectName}`;
+
+            log(`[${i+1}/${projectIds.length}] ${projectName}`, 'project');
+
+            resetStageIndicators();
+
+            try {
+                await runProjectPipeline(projectId, projectName);
+                stats.processed++;
+            } catch (error) {
+                stats.errors++;
+                log(`  ✗ FAILED: ${error.message}`, 'error');
+            }
+
+            updateStats();
+        }
+
+        log(`━━━ BATCH DONE: ${stats.processed} completed, ${stats.errors} errors ━━━`, 'stage');
+
+        pipelineRunning = false;
+        currentProjectId = null;
+        document.getElementById('currentProject').style.display = 'none';
+        updateButtonStates();
+
+        // Reload projects to get updated status
+        await loadProjects();
+    }
+
+    // Run pipeline for single project
+    async function runProjectPipeline(projectId, projectName) {
+        log(`Starting pipeline for: ${projectName}`, 'info');
+
+        // Start the pipeline
+        const startResponse = await fetch(`/api/project/${projectId}/pipeline/run`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mode: 'auto' })
+        });
+
+        const startData = await startResponse.json();
+
+        if (!startResponse.ok) {
+            throw new Error(startData.error || 'Failed to start pipeline');
+        }
+
+        // Track what we've already logged to avoid duplicates
+        const loggedStages = new Set();
+        let lastCurrentStage = null;
+
+        // Poll for completion
+        return new Promise((resolve, reject) => {
+            const pollFn = async () => {
+                try {
+                    const statusResponse = await fetch(`/api/project/${projectId}/pipeline/status`);
+                    const statusData = await statusResponse.json();
+
+                    // Update stage indicators - only log new current stage
+                    if (statusData.current_stage && statusData.current_stage !== lastCurrentStage) {
+                        updateStageIndicator(statusData.current_stage, 'running');
+                        log(`  → ${statusData.current_stage}...`, 'info');
+                        lastCurrentStage = statusData.current_stage;
+                    }
+
+                    if (statusData.stages) {
+                        Object.entries(statusData.stages).forEach(([stage, info]) => {
+                            // Only log each stage once
+                            const stageKey = `${stage}-${info.completed ? 'done' : 'error'}`;
+                            if (loggedStages.has(stageKey)) return;
+
+                            if (info.completed) {
+                                updateStageIndicator(stage, 'complete');
+                                const details = formatStageDetails(stage, info);
+                                log(`    ✓ ${stage}${details ? ': ' + details : ''}`, 'success');
+                                loggedStages.add(stageKey);
+                            } else if (info.error) {
+                                updateStageIndicator(stage, 'error');
+                                log(`    ✗ ${stage}: ${info.error}`, 'error');
+                                loggedStages.add(stageKey);
+                            }
+                        });
+                    }
+
+                    // Update progress bar silently
+                    const progress = (statusData.progress || 0) * 100;
+                    document.getElementById('progressFill').style.width = `${progress}%`;
+                    document.getElementById('progressText').textContent = `${Math.round(progress)}%`;
+
+                    // Check completion
+                    if (statusData.status === 'complete') {
+                        log(`✓ Complete`, 'success');
+                        resolve(statusData);
+                    } else if (statusData.status === 'error') {
+                        log(`✗ Failed: ${statusData.error}`, 'error');
+                        reject(new Error(statusData.error));
+                    } else {
+                        // Continue polling
+                        setTimeout(pollFn, 2000);
+                    }
+
+                } catch (error) {
+                    log(`Poll error: ${error.message}`, 'error');
+                    reject(error);
+                }
+            };
+
+            pollFn();
+        });
+    }
+
+    // Format stage completion details
+    function formatStageDetails(stage, info) {
+        const data = info.data || info;
+        switch (stage) {
+            case 'rename':
+                return data.new_name ? `Renamed to "${data.new_name}"` : 'No rename needed';
+            case 'organize':
+                return `Moved ${data.files_moved || 0} files`;
+            case 'split_specs':
+                return `Extracted ${data.total_sections || 0} CSI sections`;
+            case 'split_drawings':
+                return `Split ${data.sheets_extracted || 0} drawing sheets`;
+            case 'ai_analysis':
+                return `Analyzed ${data.pages_analyzed || 0} pages`;
+            case 'schedule_parse':
+                return `Found ${data.metal_doors || 0} metal doors, ${data.windows || 0} windows`;
+            case 'highlight':
+                return `Highlighted ${data.highlighted_files || 0} sheets`;
+            case 'quotes':
+                return `Found ${data.quotes_found || 0} vendor quotes`;
+            default:
+                return JSON.stringify(data).substring(0, 50);
+        }
+    }
+
+    // Update stage indicator
+    function updateStageIndicator(stage, status) {
+        const card = document.querySelector(`[data-stage="${stage}"]`);
+        if (!card) return;
+
+        card.className = `stage-card stage-${status}`;
+        const statusEl = card.querySelector('.status');
+
+        switch (status) {
+            case 'pending': statusEl.textContent = '⏳'; break;
+            case 'running': statusEl.textContent = '🔄'; break;
+            case 'complete': statusEl.textContent = '✅'; break;
+            case 'error': statusEl.textContent = '❌'; break;
+        }
+    }
+
+    // Reset all stage indicators
+    function resetStageIndicators() {
+        document.querySelectorAll('.stage-card').forEach(card => {
+            card.className = 'stage-card stage-pending';
+            card.querySelector('.status').textContent = '⏳';
+        });
+        document.getElementById('progressFill').style.width = '0%';
+        document.getElementById('progressText').textContent = '0%';
+    }
+
+    // Stop pipeline
+    function stopPipeline() {
+        log('Stopping pipeline...', 'warn');
+        pipelineRunning = false;
+    }
+
+    // Update button states
+    function updateButtonStates() {
+        document.getElementById('btnRunSelected').disabled = pipelineRunning;
+        document.getElementById('btnRunAll').disabled = pipelineRunning;
+        document.getElementById('btnStop').disabled = !pipelineRunning;
+        document.getElementById('consoleStatus').textContent = pipelineRunning ? 'Running...' : 'Ready';
+    }
+
+    // Update stats
+    function updateStats() {
+        const total = projects.length;
+
+        // Count by status using projectsNeedingUpdate
+        let newCount = 0;      // Never run
+        let changedCount = 0;  // Has file changes
+        let doneCount = 0;     // Up to date
+
+        projects.forEach(p => {
+            const updateReason = projectsNeedingUpdate[p.id];
+            if (!updateReason) {
+                doneCount++;
+            } else if (updateReason.includes('not completed') || updateReason.includes('never')) {
+                newCount++;
+            } else {
+                changedCount++;
+            }
+        });
+
+        document.getElementById('statTotal').textContent = total;
+        document.getElementById('statProcessed').textContent = doneCount;
+        document.getElementById('statPending').textContent = newCount;
+        document.getElementById('statNeedsUpdate').textContent = changedCount;
+        document.getElementById('statErrors').textContent = stats.errors;
+    }
+
+    // Console logging
+    function log(message, type = 'info') {
+        const consoleEl = document.getElementById('console');
+        const timestamp = new Date().toLocaleTimeString();
+
+        const line = document.createElement('div');
+        line.className = `console-line ${type}`;
+        line.innerHTML = `<span class="console-timestamp">[${timestamp}]</span> ${escapeHtml(message)}`;
+
+        consoleEl.appendChild(line);
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    // Clear console
+    function clearConsole() {
+        document.getElementById('console').innerHTML = '';
+        log('Console cleared', 'info');
+    }
+
+    // Escape HTML
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+</script>
+{% endblock %}

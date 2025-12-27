@@ -1,0 +1,44 @@
+<!-- Global Status Footer - Job Queue Status Display -->
+<footer id="globalStatusFooter" class="global-status-footer">
+    <div class="footer-content">
+        <!-- Status Indicator + Job Info -->
+        <div class="footer-job-status" id="footerJobStatus">
+            <span class="status-indicator" id="footerIndicator"></span>
+            <span class="job-task" id="footerTask">No active jobs</span>
+            <span class="job-project" id="footerProject"></span>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="footer-progress" id="footerProgress" style="display: none;">
+            <div class="progress-bar">
+                <div class="progress-fill" id="footerProgressFill"></div>
+            </div>
+            <span class="progress-text" id="footerProgressText">0%</span>
+        </div>
+
+        <!-- Phase/Message -->
+        <div class="footer-message" id="footerMessage"></div>
+
+        <!-- Queue Depth -->
+        <div class="footer-queue">
+            <span class="queue-count" id="footerQueueCount">0</span>
+            <span class="queue-label">queued</span>
+        </div>
+
+        <!-- Expand/Collapse Button -->
+        <button class="footer-expand" id="footerExpand" onclick="window.globalFooter && window.globalFooter.toggleExpanded()" title="Toggle details">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="18 15 12 9 6 15"></polyline>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Expanded Details Panel -->
+    <div class="footer-details" id="footerDetails">
+        <div class="details-header">
+            <span>Activity Log</span>
+            <button onclick="window.globalFooter && window.globalFooter.clearLogs()" class="clear-logs-btn">Clear</button>
+        </div>
+        <div class="details-logs" id="footerLogs"></div>
+    </div>
+</footer>

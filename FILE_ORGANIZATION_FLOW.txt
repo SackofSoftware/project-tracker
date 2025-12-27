@@ -1,0 +1,227 @@
+FILE ORGANIZATION FLOW
+======================
+
+SCOPE TAKEOFF PIPELINE - PHASE 1 ENHANCED
+------------------------------------------
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ PHASE 1: DOCUMENT RECOGNITION & ORGANIZATION                       │
+└─────────────────────────────────────────────────────────────────────┘
+
+Step 1: Scan Project Folder
+────────────────────────────
+  ┌─────────────────┐
+  │ Project Folder  │
+  └────────┬────────┘
+           │
+           ├── Architectural Plans.pdf (50 pages)
+           ├── Specifications.pdf (200 pages)
+           ├── Door Schedule.pdf (2 pages)
+           └── Addendum 01.pdf
+
+Step 2: Analyze Each PDF
+─────────────────────────
+  For each PDF:
+    1. Check image resolution (DPI)
+    2. Extract text content
+    3. Look for sheet numbers (A101, S200, etc.)
+    4. Classify document type
+
+  Classification Logic:
+    ┌──────────────┬──────────────────────────────────┐
+    │ High DPI     │ → Drawing                        │
+    │ Sheet #s     │ → Drawing                        │
+    │ "spec" name  │ → Spec                           │
+    │ "addend"     │ → Addendum                       │
+    │ "schedule"   │ → Schedule                       │
+    └──────────────┴──────────────────────────────────┘
+
+  Results:
+    ┌────────────────────────────────────────────┐
+    │ Architectural Plans.pdf  → DRAWING         │
+    │ Specifications.pdf       → SPEC            │
+    │ Door Schedule.pdf        → SCHEDULE        │
+    │ Addendum 01.pdf          → ADDENDUM        │
+    └────────────────────────────────────────────┘
+
+Step 3: Organize Files (NEW!)
+──────────────────────────────
+  Create folder structure:
+    Extracted-Data/Organized/
+      ├── Specs/
+      ├── Drawings/
+      ├── Schedules/
+      └── Addenda/
+
+  For each document:
+    ┌──────────────────────────────────────────────────────┐
+    │ SPEC/SCHEDULE/ADDENDUM                               │
+    │   → Copy entire file to appropriate folder           │
+    └──────────────────────────────────────────────────────┘
+
+    ┌──────────────────────────────────────────────────────┐
+    │ DRAWING                                              │
+    │   → Split into individual sheets                     │
+    │   → Extract sheet number from each page              │
+    │   → Extract sheet title from each page               │
+    │   → Save as: "A101 - Floor Plan.pdf"                 │
+    └──────────────────────────────────────────────────────┘
+
+Step 4: Drawing Sheet Splitting Detail
+───────────────────────────────────────
+  Architectural Plans.pdf (50 pages)
+         │
+         ├─ Page 1  → Extract sheet info → A101 - Floor Plan.pdf
+         ├─ Page 2  → Extract sheet info → A102 - Floor Plan.pdf
+         ├─ Page 3  → Extract sheet info → A200 - Exterior Elevations.pdf
+         ├─ Page 4  → Extract sheet info → A201 - Exterior Elevations.pdf
+         ├─ Page 5  → Extract sheet info → A300 - Building Sections.pdf
+         └─ ... (continues for all 50 pages)
+
+  Sheet Info Extraction:
+    ┌─────────────────────────────────────────────────────┐
+    │ From page text:                                     │
+    │   - Sheet number: A101, A2.1, S200, etc.            │
+    │   - Sheet title: "FLOOR PLAN", "ELEVATIONS", etc.   │
+    │                                                     │
+    │ Fallback if not found:                              │
+    │   - Sheet number: "Sheet-001", "Sheet-002", ...     │
+    │   - Title from prefix: A1→Floor Plan, A2→Elevations │
+    └─────────────────────────────────────────────────────┘
+
+Step 5: Database Tracking
+──────────────────────────
+  For each organized file:
+    ┌───────────────────────────────────────────────────────┐
+    │ INSERT INTO organized_files                           │
+    │   original_path:   "Architectural Plans.pdf"          │
+    │   organized_path:  "Organized/Drawings/A101...pdf"    │
+    │   doc_type:        "drawing"                          │
+    │   sheet_number:    "A101"                             │
+    │   sheet_title:     "Floor Plan"                       │
+    │   page_number:     1                                  │
+    └───────────────────────────────────────────────────────┘
+
+Step 6: Update Takeoff Result
+──────────────────────────────
+  Add to result:
+    {
+      "organized_files": [
+        {
+          "original_path": "...",
+          "organized_path": "...",
+          "doc_type": "drawing",
+          "sheet_number": "A101",
+          "sheet_title": "Floor Plan",
+          "page_number": 1
+        },
+        ...
+      ],
+      "organization_stats": {
+        "specs": 1,
+        "drawings": 1,
+        "total_sheets": 50,
+        "schedules": 1,
+        "addenda": 1
+      }
+    }
+
+FINAL RESULT
+────────────
+Project Folder/
+├── Architectural Plans.pdf          [ORIGINAL - UNCHANGED]
+├── Specifications.pdf                [ORIGINAL - UNCHANGED]
+├── Door Schedule.pdf                 [ORIGINAL - UNCHANGED]
+├── Addendum 01.pdf                   [ORIGINAL - UNCHANGED]
+└── Extracted-Data/
+    └── Organized/
+        ├── Specs/
+        │   └── Specifications.pdf
+        ├── Drawings/
+        │   ├── A101 - Floor Plan.pdf
+        │   ├── A102 - Floor Plan.pdf
+        │   ├── A200 - Exterior Elevations.pdf
+        │   ├── A201 - Exterior Elevations.pdf
+        │   ├── A300 - Building Sections.pdf
+        │   └── ... (50 individual sheet files)
+        ├── Schedules/
+        │   └── Door Schedule.pdf
+        └── Addenda/
+            └── Addendum 01.pdf
+
+DATABASE:
+  organized_files table:
+    - 50 records for drawing sheets
+    - 1 record for spec
+    - 1 record for schedule
+    - 1 record for addendum
+    Total: 53 records
+
+CONTINUE TO PHASE 2-5
+─────────────────────
+  → Phase 2: Parse specs for Division 8 sections
+  → Phase 3: Extract door/window schedules
+  → Phase 4: Count type tags on elevations
+  → Phase 5: Generate highlighted verification pages
+
+
+MODULE ARCHITECTURE
+───────────────────
+
+┌──────────────────────────────────────────────────────────────┐
+│ takeoff_pipeline.py                                          │
+│                                                              │
+│  ScopeTakeoff.phase_identify()                              │
+│    │                                                         │
+│    ├─► Scan PDFs                                            │
+│    ├─► _analyze_document() for each                         │
+│    ├─► Classify document types                              │
+│    │                                                         │
+│    └─► _organize_files()  ◄─── NEW METHOD                   │
+│          │                                                   │
+│          ├─► Convert docs to dicts                          │
+│          │                                                   │
+│          ├─► Call organize_project_files() ───────┐         │
+│          │                                         │         │
+│          ├─► Store results in TakeoffResult        │         │
+│          │                                         │         │
+│          └─► Save to database                      │         │
+│                                                     │         │
+└─────────────────────────────────────────────────────┼─────────┘
+                                                      │
+                                                      ▼
+┌──────────────────────────────────────────────────────────────┐
+│ file_organizer.py                          ◄─── NEW MODULE   │
+│                                                              │
+│  organize_project_files(folder, docs)                       │
+│    │                                                         │
+│    └─► FileOrganizer(folder)                                │
+│          │                                                   │
+│          ├─► Create folder structure                        │
+│          │                                                   │
+│          ├─► For each document:                             │
+│          │     organize_document(doc)                       │
+│          │       │                                           │
+│          │       ├─► If drawing: _organize_drawings()       │
+│          │       │     ├─► Split PDF into sheets            │
+│          │       │     ├─► Extract sheet info               │
+│          │       │     └─► Save individual PDFs             │
+│          │       │                                           │
+│          │       └─► Else: _copy_document()                 │
+│          │             └─► Copy to appropriate folder       │
+│          │                                                   │
+│          └─► Return organized_files + stats                 │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌──────────────────────────────────────────────────────────────┐
+│ database.py                                                  │
+│                                                              │
+│  save_organized_file(project_id, ...)                       │
+│    └─► INSERT INTO organized_files                          │
+│                                                              │
+│  get_organized_files(project_id, doc_type=None)             │
+│    └─► SELECT * FROM organized_files WHERE ...              │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘

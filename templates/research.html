@@ -1,0 +1,1942 @@
+{% extends "base.html" %}
+
+{% block title %}Company Research - Project Tracker{% endblock %}
+
+{% block head %}
+<style>
+    :root {
+        --bg-primary: #e0e7ff;
+        --bg-secondary: #f5f0e6;
+        --surface: #ffffff;
+        --ink: #111111;
+        --border: 3px solid #111;
+        --shadow: 4px 4px 0 #1A1A1A;
+        --shadow-sm: 3px 3px 0 #1A1A1A;
+        --t: 140ms;
+
+        --accent-yellow: #ffe500;
+        --accent-pink: #ff4fd8;
+        --accent-blue: #2f6bff;
+        --accent-green: #37d67a;
+        --accent-orange: #ff7a00;
+        --danger: #ff3b3b;
+    }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(180deg, var(--bg-primary), var(--bg-secondary));
+        color: var(--ink);
+        min-height: 100vh;
+    }
+
+    .mono { font-family: "Space Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+    /* Top Header */
+    .top-bar {
+        background: var(--accent-yellow);
+        border-bottom: var(--border);
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .logo {
+        width: 42px;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--accent-pink);
+        border: var(--border);
+        box-shadow: var(--shadow);
+        font-weight: 800;
+        font-size: 14px;
+    }
+    .title-block {
+        display: grid;
+        gap: 2px;
+    }
+    .title-block .h {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        line-height: 1.1;
+    }
+    .title-block .s {
+        font-size: 12px;
+        opacity: 0.9;
+    }
+    .pill {
+        border: var(--border);
+        background: var(--accent-pink);
+        box-shadow: var(--shadow-sm);
+        padding: 6px 8px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    /* Buttons */
+    .btn {
+        border: var(--border);
+        background: #fff;
+        box-shadow: var(--shadow-sm);
+        padding: 9px 10px;
+        cursor: pointer;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        font-size: 12px;
+        transition: transform var(--t);
+        user-select: none;
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+    }
+    .btn:hover:not(:disabled) {
+        transform: translate(-2px, -2px);
+    }
+    .btn:active {
+        transform: translate(0, 0);
+        box-shadow: none;
+    }
+    .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    .btn.primary {
+        background: linear-gradient(90deg, var(--accent-blue), var(--accent-pink));
+        color: white;
+    }
+    .btn.negative {
+        background: linear-gradient(90deg, var(--danger), var(--accent-orange));
+        color: white;
+    }
+    .btn.success {
+        background: var(--accent-green);
+    }
+
+    /* Main Grid */
+    .main-grid {
+        padding: 14px;
+        display: grid;
+        grid-template-columns: 420px 1fr 380px;
+        gap: 14px;
+        min-height: calc(100vh - 80px);
+    }
+    @media (max-width: 1400px) {
+        .main-grid {
+            grid-template-columns: 360px 1fr;
+        }
+        .sources-panel {
+            display: none;
+        }
+    }
+    @media (max-width: 900px) {
+        .main-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Panels */
+    .panel {
+        border: var(--border);
+        background: rgba(255, 255, 255, 0.70);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    .panel-title {
+        background: var(--accent-pink);
+        border-bottom: var(--border);
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+    .panel-title .h {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+    .panel-title .meta {
+        font-size: 12px;
+        opacity: 0.9;
+    }
+    .panel-body {
+        padding: 12px;
+        overflow: auto;
+        flex: 1;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+    .stat-box {
+        border: var(--border);
+        background: #fff;
+        box-shadow: var(--shadow-sm);
+        padding: 8px;
+        text-align: center;
+    }
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 800;
+    }
+    .stat-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        opacity: 0.8;
+    }
+
+    /* Company Cards */
+    .company-queue {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-height: 600px;
+        overflow-y: auto;
+    }
+    .company-card {
+        border: var(--border);
+        box-shadow: var(--shadow-sm);
+        background: #fff;
+        padding: 10px;
+        cursor: pointer;
+        transition: transform var(--t);
+    }
+    .company-card:hover {
+        transform: translate(-2px, -2px);
+    }
+    .company-card.selected {
+        border-color: var(--accent-blue);
+        box-shadow: 4px 4px 0 var(--accent-blue);
+    }
+    .company-card .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .company-card .name {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        font-size: 13px;
+        flex: 1;
+    }
+    .company-card .check {
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--ink);
+        cursor: pointer;
+    }
+
+    /* Badges */
+    .badge {
+        border: var(--border);
+        box-shadow: var(--shadow-sm);
+        padding: 4px 6px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        font-size: 10px;
+        background: #fff;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+    }
+    .badge.type-contractor { background: var(--accent-green); }
+    .badge.type-subcontractor { background: var(--accent-blue); color: white; }
+    .badge.type-vendor { background: var(--accent-orange); }
+    .badge.type-architect { background: var(--accent-pink); }
+    .badge.type-owner { background: var(--accent-yellow); }
+
+    .badge.status-pending { background: #fff3cd; }
+    .badge.status-running { background: #cce5ff; animation: pulse 1s infinite; }
+    .badge.status-complete { background: var(--accent-green); }
+    .badge.status-failed { background: var(--danger); color: white; }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+
+    .company-card .badges {
+        display: flex;
+        gap: 6px;
+        margin-top: 6px;
+    }
+    .company-card .card-actions {
+        display: flex;
+        gap: 6px;
+        margin-top: 8px;
+    }
+    .company-card .btn-mini {
+        padding: 4px 8px;
+        font-size: 10px;
+    }
+
+    /* Add Company Form */
+    .add-form {
+        border: var(--border);
+        box-shadow: var(--shadow-sm);
+        background: var(--accent-yellow);
+        padding: 12px;
+        margin-bottom: 12px;
+        display: none;
+    }
+    .add-form.visible {
+        display: block;
+    }
+    .form-row {
+        margin-bottom: 10px;
+    }
+    .form-row label {
+        display: block;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        font-size: 11px;
+        margin-bottom: 4px;
+    }
+    .form-row input, .form-row select {
+        width: 100%;
+        border: var(--border);
+        padding: 8px 10px;
+        background: #fff;
+        box-shadow: var(--shadow-sm);
+        font-family: inherit;
+        font-size: 13px;
+        outline: none;
+    }
+    .form-row input:focus, .form-row select:focus {
+        transform: translate(-2px, -2px);
+    }
+    .form-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    /* Workspace */
+    .workspace-content {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    /* Phase Rail */
+    .phase-rail {
+        display: flex;
+        gap: 0;
+        border: var(--border);
+        box-shadow: var(--shadow-sm);
+        background: #fff;
+    }
+    .phase-step {
+        flex: 1;
+        padding: 10px;
+        text-align: center;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        font-size: 12px;
+        border-right: var(--border);
+        background: #f0f0f0;
+    }
+    .phase-step:last-child {
+        border-right: none;
+    }
+    .phase-step.active {
+        background: var(--accent-yellow);
+    }
+    .phase-step.done {
+        background: var(--accent-green);
+    }
+
+    /* Artifact Cards */
+    .artifact {
+        border: var(--border);
+        box-shadow: var(--shadow-sm);
+        background: #fff;
+    }
+    .artifact-header {
+        background: var(--accent-yellow);
+        border-bottom: var(--border);
+        padding: 8px 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .artifact-header .h {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        font-size: 12px;
+    }
+    .artifact-body {
+        padding: 12px;
+    }
+
+    /* Profile Display */
+    .profile-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    .profile-section {
+        border: 2px solid var(--ink);
+        padding: 10px;
+    }
+    .profile-section h4 {
+        margin: 0 0 8px 0;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        border-bottom: 2px solid var(--ink);
+        padding-bottom: 6px;
+    }
+    .profile-field {
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+    .profile-label {
+        font-weight: 700;
+        display: inline-block;
+        min-width: 70px;
+    }
+    .profile-value a {
+        color: var(--accent-blue);
+    }
+
+    /* Claims */
+    .claims-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .claim-item {
+        border: 2px solid var(--ink);
+        padding: 10px;
+        background: #fff;
+    }
+    .claim-text {
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+    .claim-meta {
+        display: flex;
+        gap: 10px;
+        font-size: 11px;
+    }
+    .confidence-bar {
+        width: 60px;
+        height: 8px;
+        background: #e9ecef;
+        border: 1px solid #ddd;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    .confidence-fill {
+        height: 100%;
+        background: var(--accent-green);
+    }
+
+    /* Summary */
+    .company-summary {
+        font-size: 13px;
+        line-height: 1.6;
+        background: #f8f9fa;
+        padding: 12px;
+        border-left: 4px solid var(--accent-blue);
+        margin-bottom: 12px;
+    }
+
+    /* Certifications */
+    .cert-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .cert-badge {
+        padding: 4px 8px;
+        background: #d1fae5;
+        border: 2px solid #10b981;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    /* Team List */
+    .person-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .person-item {
+        padding: 8px;
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        font-size: 12px;
+    }
+    .person-name {
+        font-weight: 700;
+    }
+    .person-title {
+        color: #666;
+        font-style: italic;
+    }
+
+    /* Portfolio */
+    .portfolio-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 8px;
+    }
+    .project-card {
+        border: 2px solid var(--ink);
+        padding: 8px;
+        font-size: 11px;
+    }
+    .project-name {
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+    .project-type {
+        display: inline-block;
+        padding: 2px 6px;
+        background: #fef3c7;
+        border: 1px solid #fbbf24;
+        font-size: 10px;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+
+    /* Sources Panel */
+    .source-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .source-item {
+        border: var(--border);
+        box-shadow: var(--shadow-sm);
+        background: #fff;
+        padding: 10px;
+    }
+    .source-url {
+        font-size: 11px;
+        word-break: break-all;
+        color: var(--accent-blue);
+        margin-bottom: 6px;
+    }
+    .source-snippet {
+        font-size: 11px;
+        color: #666;
+        line-height: 1.4;
+    }
+
+    /* Empty State */
+    .empty-state {
+        padding: 40px 20px;
+        text-align: center;
+        color: #666;
+    }
+    .empty-state h3 {
+        margin: 0 0 8px 0;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    /* Progress */
+    .progress-container {
+        padding: 40px;
+        text-align: center;
+    }
+    .progress-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #e9ecef;
+        border-top-color: var(--accent-blue);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 16px;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    .progress-stage {
+        font-weight: 800;
+        text-transform: uppercase;
+        color: var(--accent-blue);
+    }
+
+    /* Screenshot Viewer */
+    .viewer-shell {
+        border: var(--border);
+        box-shadow: var(--shadow-sm);
+        background: #fff;
+        padding: 10px;
+        margin-bottom: 12px;
+    }
+    .viewer-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    .viewer-header .label {
+        border: var(--border);
+        background: var(--accent-yellow);
+        box-shadow: var(--shadow-sm);
+        padding: 6px 8px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        font-size: 12px;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+    }
+    .viewer-header .page {
+        border: var(--border);
+        background: #fff;
+        box-shadow: var(--shadow-sm);
+        padding: 6px 8px;
+        font-weight: 800;
+        font-size: 12px;
+    }
+
+    /* Viewer - taller ratio for full-page screenshots */
+    .square {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 3 / 4;
+        border: var(--border);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        background: #f8f8f8;
+        max-height: 500px;
+    }
+    .frame {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: top center;
+        background: #f5f5f5;
+        image-rendering: auto;
+        transform: translateX(0) scale(1);
+        opacity: 1;
+        transition: opacity var(--t) ease, transform var(--t) ease;
+    }
+    .frame.next {
+        opacity: 0;
+        transform: translateX(10px) scale(1.02);
+    }
+    .scanlines {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+            to bottom,
+            rgba(0,0,0,0.0) 0px,
+            rgba(0,0,0,0.0) 6px,
+            rgba(0,0,0,0.06) 7px
+        );
+        mix-blend-mode: multiply;
+        opacity: .22;
+    }
+
+    /* Streaming Banner */
+    .streaming-banner {
+        margin-top: 10px;
+        border: var(--border);
+        box-shadow: var(--shadow-sm);
+        background: var(--accent-yellow);
+        padding: 8px 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        justify-content: space-between;
+    }
+    .streaming-banner .tag {
+        border: var(--border);
+        background: var(--accent-pink);
+        box-shadow: var(--shadow-sm);
+        padding: 4px 6px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        font-size: 11px;
+        white-space: nowrap;
+    }
+    .streaming-banner .text {
+        flex: 1;
+        font-weight: 700;
+        font-size: 13px;
+        line-height: 1.25;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .streaming-banner .blink {
+        border: var(--border);
+        background: #fff;
+        box-shadow: var(--shadow-sm);
+        padding: 4px 6px;
+        font-weight: 800;
+        font-size: 11px;
+        animation: blink-pulse 1s infinite;
+    }
+    @keyframes blink-pulse {
+        0% { outline: 0 solid rgba(0,0,0,0); }
+        50% { outline: 3px solid rgba(0,0,0,1); }
+        100% { outline: 0 solid rgba(0,0,0,0); }
+    }
+
+    /* Agent Steps */
+    .step-card {
+        border: var(--border);
+        box-shadow: var(--shadow-sm);
+        background: #fff;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    .step-card .step-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .step-card .step-name {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+    .step-card .step-detail {
+        font-size: 12px;
+        opacity: .85;
+        margin-top: 6px;
+    }
+    .badge.run {
+        animation: pulse 1s infinite;
+    }
+    .badge.ok {
+        background: var(--accent-green);
+    }
+    .badge.warn {
+        background: var(--accent-yellow);
+    }
+    .badge.bad {
+        background: var(--danger);
+        color: white;
+    }
+
+    /* Tabs */
+    .tabs {
+        display: flex;
+        border-bottom: var(--border);
+        background: #f0f0f0;
+    }
+    .tab {
+        padding: 10px 16px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        font-size: 11px;
+        cursor: pointer;
+        border-right: var(--border);
+        transition: background var(--t);
+    }
+    .tab:hover {
+        background: #e0e0e0;
+    }
+    .tab.active {
+        background: var(--accent-yellow);
+    }
+    .tab-content {
+        display: none;
+    }
+    .tab-content.active {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Top Header -->
+<div class="top-bar">
+    <div class="brand">
+        <div class="logo">ODR</div>
+        <div class="title-block">
+            <div class="h">Company Research</div>
+            <div class="s mono">Vision + LLM pipeline</div>
+        </div>
+        <span class="pill mono" id="statusPill">IDLE</span>
+    </div>
+    <div class="actions">
+        <a href="/" class="btn">&larr; Dashboard</a>
+        <button class="btn" onclick="runSelected()" id="btnRunSelected" disabled>Run Selected (0)</button>
+        <button class="btn negative" onclick="stopResearch()" id="btnStop" disabled>Stop</button>
+        <button class="btn success" onclick="importCompanies()">Import JSON</button>
+    </div>
+</div>
+
+<!-- Main Grid -->
+<div class="main-grid">
+    <!-- Queue Panel (Left) -->
+    <div class="panel queue-panel">
+        <div class="panel-title">
+            <div class="h">Queue</div>
+            <button class="btn btn-mini" onclick="toggleAddForm()">+ Add</button>
+        </div>
+        <div class="panel-body">
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-value" id="statTotal">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="statPending">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="statComplete">0</div>
+                    <div class="stat-label">Done</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="statSelected">0</div>
+                    <div class="stat-label">Selected</div>
+                </div>
+            </div>
+
+            <!-- Add Company Form -->
+            <div class="add-form" id="addCompanyForm">
+                <div class="form-row">
+                    <label>Company Name</label>
+                    <input type="text" id="newCompanyName" placeholder="e.g. South Coast Improvement">
+                </div>
+                <div class="form-row">
+                    <label>Type</label>
+                    <select id="newCompanyType">
+                        <option value="contractor">General Contractor (GC)</option>
+                        <option value="subcontractor">Subcontractor (SUB)</option>
+                        <option value="vendor">Vendor</option>
+                        <option value="architect">Architect</option>
+                        <option value="owner">Owner</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label>Website (optional)</label>
+                    <input type="text" id="newCompanyWebsite" placeholder="https://...">
+                </div>
+                <div class="form-row">
+                    <label>Location (optional)</label>
+                    <input type="text" id="newCompanyLocation" placeholder="e.g. Boston, MA">
+                </div>
+                <div class="form-actions">
+                    <button class="btn primary" onclick="addCompany()">Add & Research</button>
+                    <button class="btn" onclick="addCompanyOnly()">Add Only</button>
+                    <button class="btn" onclick="toggleAddForm()">Cancel</button>
+                </div>
+            </div>
+
+            <!-- Select All -->
+            <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" style="width: 18px; height: 18px;">
+                <label for="selectAll" style="font-weight: 700; font-size: 12px; text-transform: uppercase;">Select All</label>
+            </div>
+
+            <!-- Company Queue -->
+            <div class="company-queue" id="companyQueue">
+                <div class="empty-state">
+                    <h3>No Companies</h3>
+                    <p>Click "+ Add" or "Import JSON"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workspace Panel (Center) -->
+    <div class="panel workspace-panel">
+        <div class="panel-title">
+            <div class="h">Workspace</div>
+            <div class="meta mono" id="workspaceMeta">Select a company</div>
+        </div>
+        <div class="panel-body">
+            <!-- Phase Rail -->
+            <div class="phase-rail" id="phaseRail" style="display: none;">
+                <div class="phase-step" data-phase="scope">Scope</div>
+                <div class="phase-step" data-phase="research">Research</div>
+                <div class="phase-step" data-phase="write">Write</div>
+            </div>
+
+            <div class="workspace-content" id="workspaceContent">
+                <!-- Welcome State -->
+                <div class="empty-state" id="welcomeState">
+                    <h3>Welcome to Company Research</h3>
+                    <p>Select a company from the queue or use "Import JSON" to load companies from your companies.json file.</p>
+                    <p style="margin-top: 12px; font-size: 12px;">
+                        Research extracts: Leadership, Staff, Certifications, Portfolio, Contact Info using AI vision models.
+                    </p>
+                </div>
+
+                <!-- Progress State with Viewer -->
+                <div id="progressState" style="display: none;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                        <!-- Screenshot Viewer -->
+                        <div>
+                            <div class="viewer-shell">
+                                <div class="viewer-header">
+                                    <div class="label mono" id="viewerLabel">LOOKING AT: —</div>
+                                    <div class="page mono" id="viewerPage">—</div>
+                                </div>
+
+                                <div class="square" id="square">
+                                    <img class="frame current" id="imgA" alt="current frame" />
+                                    <img class="frame next" id="imgB" alt="next frame" />
+                                    <div class="scanlines"></div>
+                                </div>
+
+                                <div class="streaming-banner">
+                                    <span class="tag mono">NOW</span>
+                                    <span class="text" id="bannerText">Waiting for events...</span>
+                                    <span class="blink mono" id="blink">—</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Agent Steps -->
+                        <div>
+                            <div class="step-card" id="step_find">
+                                <div class="step-row">
+                                    <div class="step-name">Find Website</div>
+                                    <span class="badge warn mono" id="badge_find">pending</span>
+                                </div>
+                                <div class="step-detail mono" id="detail_find">—</div>
+                            </div>
+
+                            <div class="step-card" id="step_screenshot">
+                                <div class="step-row">
+                                    <div class="step-name">Screenshot Pages</div>
+                                    <span class="badge warn mono" id="badge_screenshot">pending</span>
+                                </div>
+                                <div class="step-detail mono" id="detail_screenshot">—</div>
+                            </div>
+
+                            <div class="step-card" id="step_extract">
+                                <div class="step-row">
+                                    <div class="step-name">Vision Extract</div>
+                                    <span class="badge warn mono" id="badge_extract">pending</span>
+                                </div>
+                                <div class="step-detail mono" id="detail_extract">—</div>
+                            </div>
+
+                            <div class="step-card" id="step_summarize">
+                                <div class="step-row">
+                                    <div class="step-name">Summarize</div>
+                                    <span class="badge warn mono" id="badge_summarize">pending</span>
+                                </div>
+                                <div class="step-detail mono" id="detail_summarize">—</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile State -->
+                <div id="profileState" style="display: none;">
+                    <!-- Tabs -->
+                    <div class="tabs">
+                        <div class="tab active" onclick="showTab('overview')">Overview</div>
+                        <div class="tab" onclick="showTab('team')">Team</div>
+                        <div class="tab" onclick="showTab('portfolio')">Portfolio</div>
+                        <div class="tab" onclick="showTab('claims')">Claims</div>
+                    </div>
+
+                    <!-- Tab Contents -->
+                    <div class="tab-content active" id="tab-overview">
+                        <div id="overviewContent"></div>
+                    </div>
+                    <div class="tab-content" id="tab-team">
+                        <div id="teamContent"></div>
+                    </div>
+                    <div class="tab-content" id="tab-portfolio">
+                        <div id="portfolioContent"></div>
+                    </div>
+                    <div class="tab-content" id="tab-claims">
+                        <div id="claimsContent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sources Panel (Right) -->
+    <div class="panel sources-panel">
+        <div class="panel-title">
+            <div class="h">Sources</div>
+            <div class="meta mono" id="sourceCount">0 sources</div>
+        </div>
+        <div class="panel-body">
+            <div class="source-list" id="sourceList">
+                <div class="empty-state">
+                    <h3>No Sources</h3>
+                    <p>Sources appear after research</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // State
+    let companies = [];
+    let selectedCompanyId = null;
+    let selectedCompanyIds = new Set();
+    let activeResearchSession = null;
+    let eventSource = null;
+    let frameA = true;
+
+    // Company type display mapping
+    const TYPE_DISPLAY = {
+        'contractor': 'GC',
+        'subcontractor': 'SUB',
+        'vendor': 'VENDOR',
+        'architect': 'ARCH',
+        'owner': 'OWNER'
+    };
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        loadCompanies();
+    });
+
+    // Set status pill
+    function setStatus(text, type = 'idle') {
+        const pill = document.getElementById('statusPill');
+        pill.textContent = text;
+        pill.style.background = type === 'run' ? 'var(--accent-green)' :
+                                type === 'warn' ? 'var(--accent-yellow)' :
+                                type === 'bad' ? 'var(--danger)' :
+                                'var(--accent-pink)';
+    }
+
+    // Load companies
+    async function loadCompanies() {
+        try {
+            const response = await fetch('/api/research/companies');
+            const data = await response.json();
+            companies = data.companies || [];
+            renderCompanyQueue();
+            updateStats();
+        } catch (error) {
+            console.error('Failed to load companies:', error);
+        }
+    }
+
+    // ============ Viewer Functions ============
+
+    // Generate placeholder thumbnail
+    function makePlaceholderThumb(text, seed = 0) {
+        const c = document.createElement('canvas');
+        c.width = 512;
+        c.height = 512;
+        const ctx = c.getContext('2d');
+
+        // Background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, c.width, c.height);
+
+        // Brutal blocks
+        ctx.fillStyle = '#ffe500';
+        ctx.fillRect(0, 0, 512, 90);
+        ctx.fillStyle = '#e0e7ff';
+        ctx.fillRect(0, 90, 512, 332);
+        ctx.fillStyle = '#ff4fd8';
+        ctx.fillRect(0, 422, 512, 90);
+
+        // Border
+        ctx.strokeStyle = '#111';
+        ctx.lineWidth = 10;
+        ctx.strokeRect(18, 120, 476, 280);
+
+        // Text
+        ctx.fillStyle = '#111';
+        ctx.font = 'bold 28px "Space Mono", monospace';
+        ctx.fillText('SCANNING PAGE', 24, 56);
+        ctx.font = 'bold 18px "Space Mono", monospace';
+        ctx.fillText((text || 'Loading...').slice(0, 35), 34, 180);
+        ctx.font = '14px "Space Mono", monospace';
+        ctx.fillText('Waiting for screenshot...', 34, 220);
+
+        return c.toDataURL('image/jpeg', 0.75);
+    }
+
+    // Transition to new frame (crossfade + slide)
+    function transitionToFrame(nextUrl) {
+        const imgA = document.getElementById('imgA');
+        const imgB = document.getElementById('imgB');
+        if (!imgA || !imgB) return;
+
+        const current = frameA ? imgA : imgB;
+        const next = frameA ? imgB : imgA;
+
+        next.classList.add('next');
+        next.src = nextUrl;
+
+        const go = () => {
+            requestAnimationFrame(() => {
+                // Show next
+                next.style.opacity = '1';
+                next.style.transform = 'translateX(0px) scale(1)';
+                // Hide current
+                current.style.opacity = '0';
+                current.style.transform = 'translateX(-10px) scale(0.99)';
+
+                setTimeout(() => {
+                    current.classList.add('next');
+                    current.style.opacity = '1';
+                    current.style.transform = 'translateX(0px) scale(1)';
+                    next.classList.remove('next');
+                    frameA = !frameA;
+                }, 170);
+            });
+        };
+
+        if (next.complete && next.src === nextUrl) go();
+        else next.onload = go;
+        next.onerror = () => {
+            console.log('Thumb load failed, using placeholder');
+        };
+    }
+
+    // Update viewer display
+    function setViewer(label, pageText, thumbUrl) {
+        const labelEl = document.getElementById('viewerLabel');
+        const pageEl = document.getElementById('viewerPage');
+        if (labelEl) labelEl.textContent = label || 'LOOKING AT: —';
+        if (pageEl) pageEl.textContent = pageText || '—';
+        if (thumbUrl) transitionToFrame(thumbUrl);
+    }
+
+    // Update streaming banner
+    function setBanner(text, blink) {
+        const textEl = document.getElementById('bannerText');
+        const blinkEl = document.getElementById('blink');
+        if (textEl) textEl.textContent = text || '—';
+        if (blinkEl) blinkEl.textContent = blink || '—';
+    }
+
+    // Update step badge
+    function badgeSet(stepId, status) {
+        const el = document.getElementById('badge_' + stepId);
+        if (!el) return;
+        el.className = 'badge mono';
+        el.textContent = status;
+        if (status === 'running') el.classList.add('run');
+        if (status === 'done') el.classList.add('ok');
+        if (status === 'failed') el.classList.add('bad');
+        if (status === 'pending') el.classList.add('warn');
+    }
+
+    // Update step detail
+    function detailSet(stepId, text) {
+        const el = document.getElementById('detail_' + stepId);
+        if (el) el.textContent = text || '—';
+    }
+
+    // Handle SSE event
+    function handleSSEEvent(msg) {
+        console.log('SSE Event:', msg);
+
+        if (msg.type === 'viewer.frame') {
+            const pageText = msg.page_index != null && msg.page_total != null
+                ? `p${msg.page_index}/${msg.page_total}`
+                : (msg.page_text || '—');
+            const label = msg.label || (msg.source_kind ? `LOOKING AT: ${msg.source_kind}` : 'LOOKING AT: —');
+            setViewer(label, pageText, msg.thumb_url);
+            setBanner(msg.banner || 'Inspecting...', 'LIVE');
+            return;
+        }
+
+        if (msg.type === 'viewer.caption') {
+            setBanner(msg.text || '...', 'LIVE');
+            return;
+        }
+
+        if (msg.type === 'agent.step') {
+            const stepMap = {
+                find: 'find',
+                screenshot: 'screenshot',
+                extract: 'extract',
+                summarize: 'summarize'
+            };
+            const stepId = stepMap[msg.step_name?.toLowerCase()] || null;
+            if (stepId) {
+                badgeSet(stepId, msg.state || 'running');
+                detailSet(stepId, msg.detail || '');
+            }
+            return;
+        }
+
+        if (msg.type === 'run.status') {
+            if (msg.status === 'complete' || msg.status === 'done') {
+                setStatus('DONE', 'idle');
+                setBanner('Research complete!', 'OK');
+            } else if (msg.status === 'failed') {
+                setStatus('FAILED', 'bad');
+                setBanner('Research failed: ' + (msg.error || 'Unknown error'), 'ERR');
+            } else {
+                setStatus(msg.status?.toUpperCase() || 'RUNNING', 'run');
+            }
+        }
+    }
+
+    // Connect to SSE stream
+    let sseErrorCount = 0;
+    function connectSSE(sessionId) {
+        if (eventSource) {
+            eventSource.close();
+        }
+        sseErrorCount = 0;  // Reset error count
+
+        const url = `/api/research/session/${sessionId}/stream`;
+        console.log('Connecting to SSE:', url);
+
+        eventSource = new EventSource(url);
+
+        eventSource.onopen = () => {
+            console.log('SSE connected');
+            sseErrorCount = 0;  // Reset on successful connect
+            setBanner('Connected, starting research...', 'LIVE');
+        };
+
+        eventSource.onmessage = (event) => {
+            try {
+                const msg = JSON.parse(event.data);
+                handleSSEEvent(msg);
+
+                // Check for completion or not found
+                if (msg.status === 'complete' || msg.status === 'failed' || msg.status === 'not_found') {
+                    eventSource.close();
+                    eventSource = null;
+
+                    if (msg.status === 'not_found') {
+                        // Session was lost (Flask reloaded) - just refresh the list
+                        setBanner('Session lost - refreshing...', 'ERR');
+                        setTimeout(async () => {
+                            await loadCompanies();
+                        }, 500);
+                    } else {
+                        // Reload companies and show results after a short delay
+                        setTimeout(async () => {
+                            await loadCompanies();
+                            if (msg.result?.company_id) {
+                                selectCompany(msg.result.company_id);
+                            }
+                        }, 1000);
+                    }
+                }
+            } catch (e) {
+                // Plain text message
+                setBanner(event.data?.slice(0, 100) || '...', 'LIVE');
+            }
+        };
+
+        eventSource.onerror = (err) => {
+            sseErrorCount++;
+            console.error('SSE error:', err, 'count:', sseErrorCount);
+
+            if (sseErrorCount >= 3) {
+                // Too many errors - stop retrying
+                eventSource.close();
+                eventSource = null;
+                setBanner('Connection lost - refresh to retry', 'ERR');
+                loadCompanies();  // Refresh the list
+            } else {
+                setBanner('Connection error, retrying...', 'ERR');
+            }
+        };
+    }
+
+    // Reset step badges
+    function resetStepBadges() {
+        ['find', 'screenshot', 'extract', 'summarize'].forEach(s => {
+            badgeSet(s, 'pending');
+            detailSet(s, '—');
+        });
+    }
+
+    // Initialize viewer with placeholder
+    function initViewer() {
+        const imgA = document.getElementById('imgA');
+        const imgB = document.getElementById('imgB');
+        if (imgA) imgA.src = makePlaceholderThumb('Waiting for events', 0);
+        if (imgB) imgB.src = makePlaceholderThumb('Next frame', 1);
+        setViewer('LOOKING AT: —', '—');
+        setBanner('Waiting for events...', '—');
+    }
+
+    // Render company queue
+    function renderCompanyQueue() {
+        const container = document.getElementById('companyQueue');
+
+        if (companies.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <h3>No Companies</h3>
+                    <p>Click "+ Add" or "Import JSON"</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = companies.map(c => {
+            const typeClass = `type-${c.company_type || 'contractor'}`;
+            const statusClass = `status-${c.research_status || 'pending'}`;
+            const typeDisplay = TYPE_DISPLAY[c.company_type] || 'GC';
+            const isSelected = selectedCompanyIds.has(c.id);
+            const isActive = c.id === selectedCompanyId;
+
+            return `
+                <div class="company-card ${isActive ? 'selected' : ''}" data-id="${c.id}">
+                    <div class="row">
+                        <input type="checkbox" class="check" ${isSelected ? 'checked' : ''}
+                               onclick="event.stopPropagation(); toggleSelect('${c.id}')" data-check="${c.id}">
+                        <span class="name">${c.name}</span>
+                    </div>
+                    <div class="badges">
+                        <span class="badge ${typeClass}" onclick="event.stopPropagation(); editType('${c.id}')" title="Click to change type">${typeDisplay}</span>
+                        <span class="badge ${statusClass}">${c.research_status || 'pending'}</span>
+                        ${c.certifications && c.certifications.length ? `<span class="badge">${c.certifications.length} certs</span>` : ''}
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-mini" onclick="event.stopPropagation(); selectCompany('${c.id}')">Open</button>
+                        <button class="btn btn-mini primary" onclick="event.stopPropagation(); runSingle('${c.id}')">Run</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Toggle selection
+    function toggleSelect(id) {
+        if (selectedCompanyIds.has(id)) {
+            selectedCompanyIds.delete(id);
+        } else {
+            selectedCompanyIds.add(id);
+        }
+        updateStats();
+        updateRunSelectedButton();
+    }
+
+    // Toggle select all
+    function toggleSelectAll() {
+        const selectAll = document.getElementById('selectAll').checked;
+        if (selectAll) {
+            companies.forEach(c => selectedCompanyIds.add(c.id));
+        } else {
+            selectedCompanyIds.clear();
+        }
+        renderCompanyQueue();
+        updateStats();
+        updateRunSelectedButton();
+    }
+
+    // Update run selected button
+    function updateRunSelectedButton() {
+        const btn = document.getElementById('btnRunSelected');
+        const count = selectedCompanyIds.size;
+        btn.textContent = `Run Selected (${count})`;
+        btn.disabled = count === 0;
+    }
+
+    // Select company for viewing
+    async function selectCompany(companyId) {
+        selectedCompanyId = companyId;
+        renderCompanyQueue();
+
+        document.getElementById('welcomeState').style.display = 'none';
+        document.getElementById('progressState').style.display = 'none';
+        document.getElementById('profileState').style.display = 'block';
+        document.getElementById('phaseRail').style.display = 'flex';
+
+        try {
+            const response = await fetch(`/api/research/companies/${companyId}`);
+            const company = await response.json();
+
+            document.getElementById('workspaceMeta').textContent = company.name;
+
+            // Update phase rail
+            updatePhaseRail(company.research_status);
+
+            renderOverview(company);
+            renderTeam(company);
+            renderPortfolio(company);
+
+            // Load claims
+            const claimsResponse = await fetch(`/api/research/companies/${companyId}/claims`);
+            const claimsData = await claimsResponse.json();
+            renderClaims(claimsData.claims || []);
+
+            // Update sources
+            renderSources(company);
+
+        } catch (error) {
+            console.error('Failed to load company:', error);
+        }
+    }
+
+    // Update phase rail
+    function updatePhaseRail(status) {
+        const phases = document.querySelectorAll('.phase-step');
+        phases.forEach(p => p.classList.remove('active', 'done'));
+
+        if (status === 'complete') {
+            phases.forEach(p => p.classList.add('done'));
+        } else if (status === 'running') {
+            phases[0].classList.add('done');
+            phases[1].classList.add('active');
+        }
+    }
+
+    // Edit company type
+    async function editType(companyId) {
+        const company = companies.find(c => c.id === companyId);
+        if (!company) return;
+
+        const types = ['contractor', 'subcontractor', 'vendor', 'architect', 'owner'];
+        const currentIndex = types.indexOf(company.company_type || 'contractor');
+        const newType = types[(currentIndex + 1) % types.length];
+
+        try {
+            await fetch(`/api/research/companies/${companyId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ company_type: newType })
+            });
+            await loadCompanies();
+        } catch (error) {
+            console.error('Failed to update type:', error);
+        }
+    }
+
+    // Run single company research
+    async function runSingle(companyId) {
+        const company = companies.find(c => c.id === companyId);
+        if (company) {
+            await startResearch(companyId, company.name, company.website, null);
+        }
+    }
+
+    // Run selected companies
+    async function runSelected() {
+        if (selectedCompanyIds.size === 0) return;
+        // For now, run first selected
+        const firstId = [...selectedCompanyIds][0];
+        await runSingle(firstId);
+    }
+
+    // Stop research
+    function stopResearch() {
+        // TODO: Implement stop
+        setStatus('STOPPED', 'warn');
+    }
+
+    // Render overview
+    function renderOverview(company) {
+        const container = document.getElementById('overviewContent');
+
+        if (!company.website && !company.description && !company.company_summary) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <h3>No Data</h3>
+                    <p>Click "Run" to research this company</p>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '';
+
+        if (company.company_summary) {
+            html += `<div class="company-summary">${company.company_summary}</div>`;
+        }
+
+        html += '<div class="profile-grid">';
+
+        // Basic Info
+        html += `
+            <div class="profile-section">
+                <h4>Basic Info</h4>
+                ${company.website ? `<div class="profile-field"><span class="profile-label">Website:</span> <a href="${company.website}" target="_blank">${company.website}</a></div>` : ''}
+                ${company.phone ? `<div class="profile-field"><span class="profile-label">Phone:</span> ${company.phone}</div>` : ''}
+                ${company.email ? `<div class="profile-field"><span class="profile-label">Email:</span> ${company.email}</div>` : ''}
+                ${company.founded ? `<div class="profile-field"><span class="profile-label">Founded:</span> ${company.founded}</div>` : ''}
+            </div>
+        `;
+
+        // Location
+        html += `
+            <div class="profile-section">
+                <h4>Location</h4>
+                ${formatHeadquarters(company.headquarters)}
+            </div>
+        `;
+
+        html += '</div>';
+
+        // Certifications
+        if (company.certifications && company.certifications.length > 0) {
+            html += `
+                <div class="artifact" style="margin-top: 12px;">
+                    <div class="artifact-header">
+                        <span class="h">Certifications</span>
+                    </div>
+                    <div class="artifact-body">
+                        <div class="cert-list">
+                            ${company.certifications.map(c => `<span class="cert-badge">${c}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        container.innerHTML = html;
+    }
+
+    // Format headquarters
+    function formatHeadquarters(hq) {
+        if (!hq) return '<div class="profile-field">No address on file</div>';
+        if (typeof hq === 'string') return `<div class="profile-field">${hq}</div>`;
+        if (Array.isArray(hq)) {
+            return hq.map(addr => {
+                if (typeof addr === 'string') return `<div class="profile-field">${addr}</div>`;
+                return `<div class="profile-field">${addr.street || ''}, ${addr.city || ''}, ${addr.state || ''} ${addr.zip || ''}</div>`;
+            }).join('');
+        }
+        if (typeof hq === 'object') {
+            return `<div class="profile-field">${hq.street || ''}, ${hq.city || ''}, ${hq.state || ''} ${hq.zip || ''}</div>`;
+        }
+        return `<div class="profile-field">${JSON.stringify(hq)}</div>`;
+    }
+
+    // Render team
+    function renderTeam(company) {
+        const container = document.getElementById('teamContent');
+        const leadership = company.leadership || [];
+        const staff = company.staff?.staff || company.staff || [];
+
+        if (leadership.length === 0 && staff.length === 0) {
+            container.innerHTML = '<div class="empty-state"><h3>No Team Data</h3><p>Research to discover team members</p></div>';
+            return;
+        }
+
+        let html = '';
+
+        if (leadership.length > 0) {
+            html += `
+                <div class="artifact">
+                    <div class="artifact-header"><span class="h">Leadership (${leadership.length})</span></div>
+                    <div class="artifact-body">
+                        <div class="person-list">
+                            ${leadership.map(p => `
+                                <div class="person-item">
+                                    <span class="person-name">${p.name || 'Unknown'}</span>
+                                    ${p.title ? `<span class="person-title"> - ${p.title}</span>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        if (staff.length > 0) {
+            html += `
+                <div class="artifact" style="margin-top: 12px;">
+                    <div class="artifact-header"><span class="h">Staff (${staff.length})</span></div>
+                    <div class="artifact-body">
+                        <div class="person-list">
+                            ${staff.slice(0, 20).map(p => `
+                                <div class="person-item">
+                                    <span class="person-name">${p.name || 'Unknown'}</span>
+                                    ${p.title ? `<span class="person-title"> - ${p.title}</span>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        container.innerHTML = html;
+    }
+
+    // Render portfolio
+    function renderPortfolio(company) {
+        const container = document.getElementById('portfolioContent');
+        const portfolio = company.portfolio;
+
+        if (!portfolio || !portfolio.projects || portfolio.projects.length === 0) {
+            container.innerHTML = '<div class="empty-state"><h3>No Portfolio Data</h3><p>Research to discover projects</p></div>';
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="artifact">
+                <div class="artifact-header"><span class="h">Projects (${portfolio.projects.length})</span></div>
+                <div class="artifact-body">
+                    <div class="portfolio-grid">
+                        ${portfolio.projects.map(p => `
+                            <div class="project-card">
+                                <div class="project-name">${p.name || 'Unnamed'}</div>
+                                ${p.type ? `<span class="project-type">${p.type}</span>` : ''}
+                                ${p.location ? `<div style="margin-top: 4px; color: #666;">${p.location}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Render claims
+    function renderClaims(claims) {
+        const container = document.getElementById('claimsContent');
+
+        if (claims.length === 0) {
+            container.innerHTML = '<div class="empty-state"><h3>No Claims</h3><p>Claims are generated from research</p></div>';
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="artifact">
+                <div class="artifact-header"><span class="h">Claims (${claims.length})</span></div>
+                <div class="artifact-body">
+                    <div class="claims-list">
+                        ${claims.map(c => `
+                            <div class="claim-item">
+                                <div class="claim-text">${c.claim_text}</div>
+                                <div class="claim-meta">
+                                    <span class="badge">${c.claim_type}</span>
+                                    <span>
+                                        <div class="confidence-bar">
+                                            <div class="confidence-fill" style="width: ${(c.confidence || 0) * 100}%"></div>
+                                        </div>
+                                        ${Math.round((c.confidence || 0) * 100)}%
+                                    </span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Render sources
+    function renderSources(company) {
+        const container = document.getElementById('sourceList');
+        const sources = [];
+
+        // Add pages visited during research
+        if (company.sources && Array.isArray(company.sources)) {
+            company.sources.forEach((url, i) => {
+                const domain = new URL(url).hostname;
+                const path = new URL(url).pathname;
+                const title = path === '/' ? 'Homepage' : path.split('/').filter(Boolean).pop() || 'Page';
+                sources.push({ url, title: `${title} (${domain})`, type: 'visited' });
+            });
+        }
+
+        // Add website if not already in sources
+        if (company.website && !sources.some(s => s.url === company.website)) {
+            sources.unshift({ url: company.website, title: 'Company Website', type: 'main' });
+        }
+
+        // Add social links
+        if (company.social_links) {
+            Object.entries(company.social_links).forEach(([platform, url]) => {
+                if (url && typeof url === 'string') {
+                    sources.push({ url, title: platform.charAt(0).toUpperCase() + platform.slice(1), type: 'social' });
+                }
+            });
+        }
+
+        document.getElementById('sourceCount').textContent = `${sources.length} sources`;
+
+        if (sources.length === 0) {
+            container.innerHTML = '<div class="empty-state"><h3>No Sources</h3><p>Sources appear after research</p></div>';
+            return;
+        }
+
+        container.innerHTML = sources.map(s => `
+            <div class="source-item">
+                <div class="source-url">
+                    <a href="${s.url}" target="_blank">${s.title}</a>
+                    ${s.type === 'visited' ? '<span class="badge mono" style="margin-left: 8px;">VISITED</span>' : ''}
+                </div>
+                <div class="source-snippet mono">${s.url.length > 50 ? s.url.slice(0, 50) + '...' : s.url}</div>
+            </div>
+        `).join('');
+    }
+
+    // Show tab
+    function showTab(tabName) {
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.classList.toggle('active', tab.textContent.toLowerCase() === tabName);
+        });
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.toggle('active', content.id === `tab-${tabName}`);
+        });
+    }
+
+    // Toggle add form
+    function toggleAddForm() {
+        document.getElementById('addCompanyForm').classList.toggle('visible');
+    }
+
+    // Add company and research
+    async function addCompany() {
+        const name = document.getElementById('newCompanyName').value.trim();
+        const type = document.getElementById('newCompanyType').value;
+        const website = document.getElementById('newCompanyWebsite').value.trim();
+        const location = document.getElementById('newCompanyLocation').value.trim();
+
+        if (!name) {
+            alert('Please enter a company name');
+            return;
+        }
+
+        try {
+            const createResponse = await fetch('/api/research/companies', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, company_type: type, website })
+            });
+
+            const createData = await createResponse.json();
+
+            if (!createResponse.ok && createData.company_id) {
+                await startResearch(createData.company_id, name, website, location);
+            } else if (createResponse.ok) {
+                await startResearch(createData.id, name, website, location);
+            } else {
+                throw new Error(createData.error);
+            }
+
+            clearAddForm();
+            await loadCompanies();
+
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    }
+
+    // Add company only
+    async function addCompanyOnly() {
+        const name = document.getElementById('newCompanyName').value.trim();
+        const type = document.getElementById('newCompanyType').value;
+        const website = document.getElementById('newCompanyWebsite').value.trim();
+
+        if (!name) {
+            alert('Please enter a company name');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/research/companies', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, company_type: type, website })
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error);
+            }
+
+            clearAddForm();
+            await loadCompanies();
+
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    }
+
+    // Clear add form
+    function clearAddForm() {
+        document.getElementById('newCompanyName').value = '';
+        document.getElementById('newCompanyWebsite').value = '';
+        document.getElementById('newCompanyLocation').value = '';
+        document.getElementById('newCompanyType').value = 'contractor';
+        toggleAddForm();
+    }
+
+    // Start research
+    async function startResearch(companyId, companyName, websiteUrl, location) {
+        setStatus('RUNNING', 'run');
+        document.getElementById('btnStop').disabled = false;
+
+        document.getElementById('welcomeState').style.display = 'none';
+        document.getElementById('profileState').style.display = 'none';
+        document.getElementById('progressState').style.display = 'block';
+        document.getElementById('phaseRail').style.display = 'flex';
+        document.getElementById('workspaceMeta').textContent = companyName;
+
+        // Update phase rail
+        const phases = document.querySelectorAll('.phase-step');
+        phases.forEach(p => p.classList.remove('active', 'done'));
+        phases[0].classList.add('active');
+
+        // Initialize viewer and reset steps
+        initViewer();
+        resetStepBadges();
+        setBanner(`Starting research for ${companyName}...`, 'INIT');
+
+        try {
+            const response = await fetch('/api/research/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    company_id: companyId,
+                    company_name: companyName,
+                    website_url: websiteUrl,
+                    location: location
+                })
+            });
+
+            const data = await response.json();
+            activeResearchSession = data.session_id;
+
+            // Connect to SSE stream for real-time updates
+            connectSSE(data.session_id);
+
+            // Also poll as backup (SSE may have limited event types)
+            pollResearchProgress(data.session_id);
+
+        } catch (error) {
+            alert('Failed to start research: ' + error.message);
+            setStatus('FAILED', 'bad');
+            document.getElementById('progressState').style.display = 'none';
+            document.getElementById('welcomeState').style.display = 'block';
+        }
+    }
+
+    // Poll research progress
+    async function pollResearchProgress(sessionId) {
+        try {
+            const response = await fetch(`/api/research/session/${sessionId}`);
+            const data = await response.json();
+
+            document.getElementById('progressStage').textContent = data.stage || data.status;
+            document.getElementById('progressMessage').textContent =
+                data.status === 'complete' ? 'Research complete!' :
+                data.status === 'failed' ? `Error: ${data.error}` :
+                'Extracting company information...';
+
+            // Update phase rail during progress
+            const phases = document.querySelectorAll('.phase-step');
+            if (data.stage === 'researching') {
+                phases[0].classList.add('done');
+                phases[1].classList.add('active');
+            }
+
+            if (data.status === 'complete') {
+                setStatus('DONE', 'idle');
+                document.getElementById('btnStop').disabled = true;
+                document.getElementById('progressState').style.display = 'none';
+                await loadCompanies();
+
+                if (data.result?.company_id) {
+                    selectCompany(data.result.company_id);
+                } else {
+                    document.getElementById('welcomeState').style.display = 'block';
+                }
+            } else if (data.status === 'failed') {
+                setStatus('FAILED', 'bad');
+                setTimeout(() => {
+                    document.getElementById('progressState').style.display = 'none';
+                    document.getElementById('welcomeState').style.display = 'block';
+                }, 3000);
+            } else {
+                setTimeout(() => pollResearchProgress(sessionId), 2000);
+            }
+
+        } catch (error) {
+            console.error('Poll error:', error);
+            setTimeout(() => pollResearchProgress(sessionId), 3000);
+        }
+    }
+
+    // Import companies from companies.json
+    async function importCompanies() {
+        try {
+            const response = await fetch('/api/research/import-companies', {
+                method: 'POST'
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(`Imported ${data.count} companies`);
+                await loadCompanies();
+            } else {
+                throw new Error(data.error);
+            }
+        } catch (error) {
+            alert('Import failed: ' + error.message);
+        }
+    }
+
+    // Update stats
+    function updateStats() {
+        const total = companies.length;
+        const pending = companies.filter(c => !c.research_status || c.research_status === 'pending').length;
+        const complete = companies.filter(c => c.research_status === 'complete').length;
+        const selected = selectedCompanyIds.size;
+
+        document.getElementById('statTotal').textContent = total;
+        document.getElementById('statPending').textContent = pending;
+        document.getElementById('statComplete').textContent = complete;
+        document.getElementById('statSelected').textContent = selected;
+    }
+</script>
+{% endblock %}

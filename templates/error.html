@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Error - Project Tracker{% endblock %}
+
+{% block body %}
+    <header class="header">
+        <div class="header-content">
+            <h1>Division 8 Project Tracker</h1>
+        </div>
+    </header>
+    <main class="main-content">
+        <div class="detail-card" style="max-width: 500px; margin: 2rem auto; text-align: center;">
+            <div class="detail-card-body" style="padding: 2rem;">
+                <h2 style="margin-bottom: 1rem;">{{ message or 'An error occurred' }}</h2>
+                <a href="/" class="btn btn-primary">Back to Dashboard</a>
+            </div>
+        </div>
+    </main>
+{% endblock %}

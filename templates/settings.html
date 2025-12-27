@@ -1,0 +1,840 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Project Tracker{% endblock %}
+
+{% block head %}
+<style>
+/* Settings Page Styles - Theme Aware */
+.settings-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: calc(var(--spacing-unit, 8px) * 4);
+}
+
+.settings-header {
+  margin-bottom: calc(var(--spacing-unit, 8px) * 5);
+}
+
+.settings-header h1 {
+  font-family: var(--font-display);
+  font-size: var(--font-size-2xl, 32px);
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+.settings-subtitle {
+  color: var(--text-secondary);
+  font-size: var(--font-size-lg, 18px);
+  margin: 0;
+}
+
+.settings-back {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.settings-back:hover {
+  text-decoration: underline;
+}
+
+/* Settings Sections */
+.settings-section {
+  background: var(--bg-card);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: var(--card-padding, 24px);
+  margin-bottom: calc(var(--spacing-unit, 8px) * 3);
+}
+
+.settings-section h2 {
+  font-family: var(--font-display);
+  font-size: var(--font-size-xl, 24px);
+  color: var(--text-primary);
+  margin: 0 0 calc(var(--spacing-unit, 8px) * 3) 0;
+  padding-bottom: calc(var(--spacing-unit, 8px) * 2);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.settings-section h3 {
+  font-size: var(--font-size-lg, 18px);
+  color: var(--text-primary);
+  margin: 0 0 calc(var(--spacing-unit, 8px) * 2) 0;
+}
+
+/* Theme Selector Grid */
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: calc(var(--spacing-unit, 8px) * 2);
+  margin-top: calc(var(--spacing-unit, 8px) * 2);
+}
+
+.theme-option {
+  background: var(--bg-secondary, var(--bg-hover));
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: calc(var(--spacing-unit, 8px) * 2);
+  cursor: pointer;
+  transition: all var(--transition-speed) var(--transition-timing);
+  text-align: center;
+  font-family: var(--font-primary);
+}
+
+.theme-option:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.theme-option[data-active="true"],
+.theme-option.active {
+  border-color: var(--accent-primary);
+  background: var(--bg-card);
+}
+
+.theme-preview {
+  height: 80px;
+  border-radius: var(--border-radius-sm, 0);
+  margin-bottom: calc(var(--spacing-unit, 8px) * 1.5);
+  border: 1px solid var(--border-color);
+}
+
+/* Theme preview backgrounds */
+.brutalist-preview {
+  background: linear-gradient(135deg, #e0e7ff 0%, #e0e7ff 50%, #1A1A1A 50%, #1A1A1A 100%);
+  box-shadow: 4px 4px 0 #1A1A1A;
+}
+
+.fruit-preview {
+  background: linear-gradient(180deg, #F5F5F7 0%, rgba(255,255,255,0.8) 100%);
+  border-radius: 12px;
+}
+
+.dialup-preview {
+  background: #C0C0C0;
+  position: relative;
+}
+.dialup-preview::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: linear-gradient(90deg, #000080, #1084D0);
+}
+
+.saas-preview {
+  background: linear-gradient(90deg, #1E2532 0%, #1E2532 25%, #FAFAFA 25%, #FAFAFA 100%);
+  border-radius: 8px;
+}
+
+.theme-name {
+  display: block;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.theme-desc {
+  display: block;
+  font-size: var(--font-size-sm, 14px);
+  color: var(--text-secondary);
+}
+
+/* Dark Mode Toggle */
+.mode-toggle-container {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing-unit, 8px) * 2);
+  margin-top: calc(var(--spacing-unit, 8px) * 3);
+  padding-top: calc(var(--spacing-unit, 8px) * 2);
+  border-top: 1px solid var(--border-color);
+}
+
+.mode-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--bg-secondary, var(--bg-hover));
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-base, 16px);
+  color: var(--text-primary);
+  transition: all var(--transition-speed) var(--transition-timing);
+}
+
+.mode-toggle-btn:hover {
+  background: var(--bg-hover);
+}
+
+/* Forms */
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing-unit, 8px) * 2.5);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing-unit, 8px) * 0.75);
+}
+
+.form-group label {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: var(--font-size-base, 16px);
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="number"],
+.form-group select {
+  padding: var(--input-padding, 12px 16px);
+  background: var(--bg-input, #fff);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-sm, 0);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-base, 16px);
+  color: var(--text-primary);
+  transition: border-color var(--transition-speed) var(--transition-timing);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.form-group small {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm, 14px);
+}
+
+/* Path input with browse button */
+.path-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.path-input-group input {
+  flex: 1;
+}
+
+.btn-browse {
+  padding: var(--input-padding, 12px 16px);
+  background: var(--bg-secondary, var(--bg-hover));
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-sm, 0);
+  cursor: pointer;
+  font-family: var(--font-primary);
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.btn-browse:hover {
+  background: var(--bg-hover);
+}
+
+/* Checkbox groups */
+.checkbox-group {
+  flex-direction: row;
+  align-items: center;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent-primary);
+}
+
+/* Buttons */
+.btn-primary {
+  padding: var(--btn-padding, 12px 24px);
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm, 0);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-base, 16px);
+  font-weight: var(--btn-font-weight, 600);
+  cursor: pointer;
+  transition: all var(--transition-speed) var(--transition-timing);
+  align-self: flex-start;
+}
+
+.btn-primary:hover {
+  background: var(--accent-primary-hover);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary {
+  padding: var(--btn-padding, 12px 24px);
+  background: var(--bg-secondary, var(--bg-hover));
+  color: var(--text-primary);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-sm, 0);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-base, 16px);
+  font-weight: var(--btn-font-weight, 600);
+  cursor: pointer;
+  transition: all var(--transition-speed) var(--transition-timing);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-hover);
+}
+
+/* Danger Zone */
+.settings-danger {
+  border-color: var(--accent-danger);
+}
+
+.settings-danger h2 {
+  color: var(--accent-danger);
+}
+
+.danger-actions {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing-unit, 8px) * 2);
+}
+
+.danger-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(var(--spacing-unit, 8px) * 2);
+  padding: calc(var(--spacing-unit, 8px) * 2);
+  background: var(--bg-secondary, var(--bg-hover));
+  border-radius: var(--border-radius-sm, 0);
+}
+
+.danger-item strong {
+  color: var(--text-primary);
+}
+
+.danger-item p {
+  color: var(--text-secondary);
+  margin: 4px 0 0 0;
+  font-size: var(--font-size-sm, 14px);
+}
+
+.btn-danger {
+  padding: var(--btn-padding, 12px 24px);
+  background: var(--accent-danger);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm, 0);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-base, 16px);
+  font-weight: var(--btn-font-weight, 600);
+  cursor: pointer;
+  transition: all var(--transition-speed) var(--transition-timing);
+  white-space: nowrap;
+}
+
+.btn-danger:hover {
+  opacity: 0.9;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Toast notifications */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 12px 20px;
+  border-radius: var(--border-radius-sm, 0);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-base, 16px);
+  animation: slideIn 0.3s ease;
+  z-index: 1000;
+}
+
+.toast-success {
+  background: var(--accent-success);
+  color: white;
+}
+
+.toast-error {
+  background: var(--accent-danger);
+  color: white;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Keyboard shortcut hint */
+.keyboard-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  font-size: var(--font-size-sm, 14px);
+  color: var(--text-muted);
+}
+
+.key {
+  display: inline-block;
+  padding: 2px 6px;
+  background: var(--bg-secondary, var(--bg-hover));
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .settings-container {
+    padding: calc(var(--spacing-unit, 8px) * 2);
+  }
+
+  .theme-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .danger-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Dial-Up Theme Overrides */
+[data-theme="dialup"] .settings-section {
+  border: 2px solid;
+  border-color: var(--border-light) var(--border-darker) var(--border-darker) var(--border-light);
+  box-shadow: none;
+}
+
+[data-theme="dialup"] .settings-section h2 {
+  background: var(--bg-titlebar);
+  color: white;
+  padding: 4px 8px;
+  margin: -8px -8px 16px -8px;
+  font-family: var(--font-primary);
+  font-size: 14px;
+}
+
+[data-theme="dialup"] .btn-primary,
+[data-theme="dialup"] .btn-secondary,
+[data-theme="dialup"] .btn-browse,
+[data-theme="dialup"] .btn-danger {
+  box-shadow: var(--shadow-outset);
+  border-radius: 0;
+}
+
+[data-theme="dialup"] .btn-primary:active,
+[data-theme="dialup"] .btn-secondary:active,
+[data-theme="dialup"] .btn-browse:active,
+[data-theme="dialup"] .btn-danger:active {
+  box-shadow: var(--shadow-inset);
+}
+
+[data-theme="dialup"] input,
+[data-theme="dialup"] select {
+  box-shadow: var(--shadow-inset);
+  border: none;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="settings-container">
+  <a href="/" class="settings-back">&larr; Back to Dashboard</a>
+
+  <header class="settings-header">
+    <h1>Settings</h1>
+    <p class="settings-subtitle">Configure your Project Tracker preferences</p>
+  </header>
+
+  <!-- Theme Selection -->
+  <section class="settings-section">
+    <h2>Appearance</h2>
+
+    <div class="theme-selector">
+      <h3>Select Theme
+        <span class="keyboard-hint">
+          <span class="key">Cmd</span><span class="key">Shift</span><span class="key">T</span> to cycle
+        </span>
+      </h3>
+      <div class="theme-grid">
+        <button type="button" class="theme-option" data-theme-select="brutalist"
+                data-active="{{ 'true' if settings.theme == 'brutalist' else 'false' }}">
+          <div class="theme-preview brutalist-preview"></div>
+          <span class="theme-name">Neo Brutalist</span>
+          <span class="theme-desc">Bold & raw</span>
+        </button>
+
+        <button type="button" class="theme-option" data-theme-select="fruit"
+                data-active="{{ 'true' if settings.theme == 'fruit' else 'false' }}">
+          <div class="theme-preview fruit-preview"></div>
+          <span class="theme-name">Fruit</span>
+          <span class="theme-desc">Clean & minimal</span>
+        </button>
+
+        <button type="button" class="theme-option" data-theme-select="dialup"
+                data-active="{{ 'true' if settings.theme == 'dialup' else 'false' }}">
+          <div class="theme-preview dialup-preview"></div>
+          <span class="theme-name">Dial-Up</span>
+          <span class="theme-desc">90s nostalgia</span>
+        </button>
+
+        <button type="button" class="theme-option" data-theme-select="saas"
+                data-active="{{ 'true' if settings.theme == 'saas' else 'false' }}">
+          <div class="theme-preview saas-preview"></div>
+          <span class="theme-name">Modern SaaS</span>
+          <span class="theme-desc">Professional</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="mode-toggle-container">
+      <span>Color Mode:</span>
+      <button type="button" class="mode-toggle-btn" data-toggle-mode>
+        <span class="icon-light">Sun</span>
+        <span class="icon-dark" style="display:none;">Moon</span>
+        <span data-current-mode>{{ 'Dark' if settings.dark_mode else 'Light' }}</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- API Keys -->
+  <section class="settings-section">
+    <h2>API Configuration</h2>
+    <form id="api-keys-form" class="settings-form">
+      <div class="form-group">
+        <label for="openrouter-key">OpenRouter API Key</label>
+        <input type="password" id="openrouter-key" name="openrouter"
+               placeholder="sk-or-..." autocomplete="off"
+               value="{{ '********' if settings.api_keys.openrouter else '' }}">
+        <small>Used for AI-powered brief generation and document analysis</small>
+      </div>
+
+      <div class="form-group">
+        <label for="projectdog-email">ProjectDog Email</label>
+        <input type="email" id="projectdog-email" name="projectdog_email"
+               value="{{ settings.api_keys.projectdog_email or '' }}"
+               placeholder="your@email.com">
+      </div>
+
+      <div class="form-group">
+        <label for="projectdog-password">ProjectDog Password</label>
+        <input type="password" id="projectdog-password" name="projectdog_password"
+               placeholder="********" autocomplete="off">
+      </div>
+
+      <button type="submit" class="btn-primary">Save API Keys</button>
+    </form>
+  </section>
+
+  <!-- Folder Paths -->
+  <section class="settings-section">
+    <h2>Folder Paths</h2>
+    <form id="paths-form" class="settings-form">
+      <div class="form-group">
+        <label for="bidding-folder">Bidding Folder</label>
+        <div class="path-input-group">
+          <input type="text" id="bidding-folder" name="bidding_folder"
+                 value="{{ settings.paths.bidding_folder or '' }}"
+                 placeholder="/path/to/Bidding">
+          <button type="button" class="btn-browse" onclick="browsePath('bidding-folder')">
+            Browse
+          </button>
+        </div>
+        <small>Root folder containing all project folders</small>
+      </div>
+
+      <div class="form-group">
+        <label for="archive-folder">Archive Folder</label>
+        <div class="path-input-group">
+          <input type="text" id="archive-folder" name="archive_folder"
+                 value="{{ settings.paths.archive_folder or '' }}"
+                 placeholder="/path/to/Archive">
+          <button type="button" class="btn-browse" onclick="browsePath('archive-folder')">
+            Browse
+          </button>
+        </div>
+        <small>Where archived/completed projects are moved</small>
+      </div>
+
+      <button type="submit" class="btn-primary">Save Paths</button>
+    </form>
+  </section>
+
+  <!-- Display Settings -->
+  <section class="settings-section">
+    <h2>Display Options</h2>
+    <form id="display-form" class="settings-form">
+      <div class="form-group">
+        <label for="items-per-page">Items Per Page</label>
+        <input type="number" id="items-per-page" name="items_per_page"
+               value="{{ settings.display.items_per_page or 25 }}"
+               min="10" max="100">
+      </div>
+
+      <div class="form-group">
+        <label for="default-view">Default View</label>
+        <select id="default-view" name="default_view">
+          <option value="table" {{ 'selected' if settings.display.default_view == 'table' else '' }}>Table</option>
+          <option value="grid" {{ 'selected' if settings.display.default_view == 'grid' else '' }}>Grid</option>
+          <option value="list" {{ 'selected' if settings.display.default_view == 'list' else '' }}>List</option>
+        </select>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="show-archived" name="show_archived"
+                 {{ 'checked' if settings.display.show_archived else '' }}>
+          <span>Show archived projects by default</span>
+        </label>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="compact-mode" name="compact_mode"
+                 {{ 'checked' if settings.display.compact_mode else '' }}>
+          <span>Compact mode (less spacing)</span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn-primary">Save Display Settings</button>
+    </form>
+  </section>
+
+  <!-- Danger Zone -->
+  <section class="settings-section settings-danger">
+    <h2>Danger Zone</h2>
+    <div class="danger-actions">
+      <div class="danger-item">
+        <div>
+          <strong>Reset Theme Settings</strong>
+          <p>Reset appearance to default (Neo Brutalist, light mode)</p>
+        </div>
+        <button type="button" class="btn-danger" onclick="resetSection('theme')">
+          Reset Theme
+        </button>
+      </div>
+
+      <div class="danger-item">
+        <div>
+          <strong>Reset All Settings</strong>
+          <p>Restore all settings to their default values</p>
+        </div>
+        <button type="button" class="btn-danger" onclick="resetAllSettings()">
+          Reset Everything
+        </button>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Toast notification helper
+function showToast(message, type = 'success') {
+  const existing = document.querySelectorAll('.toast');
+  existing.forEach(t => t.remove());
+
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// API Keys Form
+document.getElementById('api-keys-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const data = {};
+
+  // Only include non-placeholder values
+  const openrouter = form.openrouter.value;
+  if (openrouter && !openrouter.includes('*')) {
+    data.openrouter = openrouter;
+  }
+
+  const email = form.projectdog_email.value;
+  if (email) {
+    data.projectdog_email = email;
+  }
+
+  const password = form.projectdog_password.value;
+  if (password && !password.includes('*')) {
+    data.projectdog_password = password;
+  }
+
+  if (Object.keys(data).length === 0) {
+    showToast('No changes to save', 'error');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/settings/api-keys', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (res.ok) {
+      showToast('API keys saved successfully');
+    } else {
+      const err = await res.json();
+      showToast(err.error || 'Failed to save API keys', 'error');
+    }
+  } catch (e) {
+    showToast('Network error: ' + e.message, 'error');
+  }
+});
+
+// Paths Form
+document.getElementById('paths-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const data = {
+    bidding_folder: form.bidding_folder.value,
+    archive_folder: form.archive_folder.value
+  };
+
+  try {
+    const res = await fetch('/api/settings/paths', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (res.ok) {
+      showToast('Paths saved successfully');
+    } else {
+      const err = await res.json();
+      showToast(err.error || 'Failed to save paths', 'error');
+    }
+  } catch (e) {
+    showToast('Network error: ' + e.message, 'error');
+  }
+});
+
+// Display Form
+document.getElementById('display-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const data = {
+    items_per_page: parseInt(document.getElementById('items-per-page').value, 10),
+    default_view: document.getElementById('default-view').value,
+    show_archived: document.getElementById('show-archived').checked,
+    compact_mode: document.getElementById('compact-mode').checked
+  };
+
+  try {
+    const res = await fetch('/api/settings/display', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (res.ok) {
+      showToast('Display settings saved');
+    } else {
+      const err = await res.json();
+      showToast(err.error || 'Failed to save', 'error');
+    }
+  } catch (e) {
+    showToast('Network error: ' + e.message, 'error');
+  }
+});
+
+// Reset functions
+async function resetSection(section) {
+  if (!confirm(`Are you sure you want to reset ${section} settings to defaults?`)) return;
+
+  try {
+    const res = await fetch('/api/settings/reset', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ section })
+    });
+
+    if (res.ok) {
+      showToast(`${section} settings reset`);
+      if (section === 'theme') {
+        // Apply default theme immediately
+        ThemeSwitcher.applyTheme('brutalist', 'light');
+      }
+      setTimeout(() => location.reload(), 1000);
+    } else {
+      showToast('Failed to reset', 'error');
+    }
+  } catch (e) {
+    showToast('Network error: ' + e.message, 'error');
+  }
+}
+
+async function resetAllSettings() {
+  if (!confirm('Are you sure you want to reset ALL settings to defaults? This cannot be undone.')) return;
+
+  try {
+    const res = await fetch('/api/settings/reset', { method: 'POST' });
+
+    if (res.ok) {
+      showToast('All settings reset to defaults');
+      ThemeSwitcher.applyTheme('brutalist', 'light');
+      setTimeout(() => location.reload(), 1000);
+    } else {
+      showToast('Failed to reset settings', 'error');
+    }
+  } catch (e) {
+    showToast('Network error: ' + e.message, 'error');
+  }
+}
+
+// Browse path (placeholder - would need native file picker in Electron/Tauri)
+function browsePath(inputId) {
+  // In a web-only context, we just focus the input
+  const input = document.getElementById(inputId);
+  input.focus();
+  input.select();
+  showToast('Enter the folder path manually');
+}
+
+// Update dark mode UI on theme change
+window.addEventListener('themechange', (e) => {
+  const { mode } = e.detail;
+  document.querySelectorAll('.icon-light').forEach(el => {
+    el.style.display = mode === 'dark' ? 'none' : 'inline';
+  });
+  document.querySelectorAll('.icon-dark').forEach(el => {
+    el.style.display = mode === 'dark' ? 'inline' : 'none';
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% block title %}Archived Projects - Project Tracker{% endblock %}
+
+{% block head %}
+<style>
+    .archived-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    .archived-stats {
+        display: flex;
+        gap: 1.5rem;
+    }
+    .archived-stat {
+        text-align: center;
+        padding: 0.5rem 1rem;
+        background: var(--bg-card);
+        border-radius: var(--border-radius-sm, 8px);
+        border: var(--border-width) solid var(--border-color);
+    }
+    .archived-stat .number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--accent-blue);
+    }
+    .archived-stat .label {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+    }
+    .archived-stat.planhub .number {
+        color: var(--accent-orange);
+    }
+    .archived-card {
+        opacity: 0.85;
+        border-left: 3px solid var(--text-muted);
+    }
+    .archived-card:hover {
+        opacity: 1;
+    }
+    .archived-reason-badge {
+        font-size: 0.65rem;
+        padding: 0.15rem 0.4rem;
+        border-radius: 3px;
+        background: var(--text-muted);
+        color: white;
+    }
+    .card-trades {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+    }
+    .card-description {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+        line-height: 1.4;
+    }
+    .card-value {
+        font-size: 0.85rem;
+        color: var(--accent-success);
+        font-weight: 500;
+    }
+    .loading-indicator {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-secondary);
+    }
+    .no-results {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-secondary);
+    }
+    .load-more-btn {
+        display: block;
+        width: 200px;
+        margin: 2rem auto;
+        padding: 0.75rem;
+        background: var(--accent-primary);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius-sm, 6px);
+        cursor: pointer;
+    }
+    .load-more-btn:hover {
+        background: var(--accent-primary-hover);
+    }
+    .load-more-btn:disabled {
+        background: var(--text-muted);
+        cursor: not-allowed;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <header class="header">
+        <div class="header-content">
+            <div class="header-brand">
+                <img src="{{ url_for('static', filename='images/cws-logo.png') }}" alt="CWS" class="header-logo">
+                <span class="header-divider">|</span>
+                <h1>Archived Projects</h1>
+            </div>
+            <div class="header-actions">
+                <a href="/" class="btn btn-secondary">Dashboard</a>
+                <a href="/intake" class="btn btn-secondary">Intake</a>
+                <a href="/vendors" class="btn btn-secondary">Vendors</a>
+                <a href="/settings" class="btn btn-secondary">Settings</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Stats -->
+        <section class="archived-header">
+            <div class="archived-stats" id="archivedStats">
+                <div class="archived-stat">
+                    <div class="number" id="statTotal">-</div>
+                    <div class="label">Total Archived</div>
+                </div>
+                <div class="archived-stat planhub">
+                    <div class="number" id="statPlanhub">-</div>
+                    <div class="label">From PlanHub</div>
+                </div>
+                <div class="archived-stat">
+                    <div class="number" id="statLocal">-</div>
+                    <div class="label">Local Projects</div>
+                </div>
+                <div class="archived-stat">
+                    <div class="number" id="statWithFolders">-</div>
+                    <div class="label">With Folders</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters -->
+        <section class="filters">
+            <div class="filter-group">
+                <label for="sourceFilter">Source:</label>
+                <select id="sourceFilter" onchange="loadProjects()">
+                    <option value="all">All Sources</option>
+                    <option value="local">Local Only</option>
+                    <option value="planhub">PlanHub Only</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="searchFilter">Search:</label>
+                <input type="text" id="searchFilter" placeholder="Search archived projects..." oninput="debounceSearch()">
+            </div>
+            <div class="filter-group">
+                <label for="reasonFilter">Reason:</label>
+                <select id="reasonFilter" onchange="loadProjects()">
+                    <option value="">All Reasons</option>
+                    <option value="past_bid_date">Past Bid Date</option>
+                    <option value="no_bid">No Bid Decision</option>
+                    <option value="lost">Lost</option>
+                    <option value="completed">Completed</option>
+                    <option value="manual">Manual Archive</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Projects Grid -->
+        <section class="section">
+            <h2 class="section-title">Archived Projects <span class="count" id="projectCount">(loading...)</span></h2>
+            <div class="project-grid" id="projectGrid">
+                <div class="loading-indicator">Loading archived projects...</div>
+            </div>
+            <button class="load-more-btn" id="loadMoreBtn" onclick="loadMore()" style="display: none;">
+                Load More
+            </button>
+        </section>
+    </main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentOffset = 0;
+    const pageSize = 50;
+    let totalProjects = 0;
+    let searchTimeout = null;
+
+    // Load stats on page load
+    async function loadStats() {
+        try {
+            const response = await fetch('/api/projects/archived/stats');
+            const data = await response.json();
+
+            document.getElementById('statTotal').textContent = data.total;
+            document.getElementById('statPlanhub').textContent = data.by_source.planhub || 0;
+            document.getElementById('statLocal').textContent = data.by_source.local || 0;
+            document.getElementById('statWithFolders').textContent = data.with_folders || 0;
+        } catch (error) {
+            console.error('Error loading stats:', error);
+        }
+    }
+
+    // Load projects
+    async function loadProjects(append = false) {
+        if (!append) {
+            currentOffset = 0;
+            document.getElementById('projectGrid').innerHTML = '<div class="loading-indicator">Loading archived projects...</div>';
+        }
+
+        const source = document.getElementById('sourceFilter').value;
+        const search = document.getElementById('searchFilter').value;
+        const reason = document.getElementById('reasonFilter').value;
+
+        let url = `/api/projects/archived?limit=${pageSize}&offset=${currentOffset}`;
+        if (source !== 'all') url += `&source=${source}`;
+        if (search) url += `&search=${encodeURIComponent(search)}`;
+        if (reason) url += `&reason=${reason}`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            totalProjects = data.total;
+            document.getElementById('projectCount').textContent = `(${totalProjects})`;
+
+            if (!append) {
+                document.getElementById('projectGrid').innerHTML = '';
+            }
+
+            if (data.projects.length === 0 && !append) {
+                document.getElementById('projectGrid').innerHTML = '<div class="no-results">No archived projects found.</div>';
+                document.getElementById('loadMoreBtn').style.display = 'none';
+                return;
+            }
+
+            const grid = document.getElementById('projectGrid');
+            for (const project of data.projects) {
+                grid.appendChild(createProjectCard(project));
+            }
+
+            // Show/hide load more button
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            if (currentOffset + pageSize < totalProjects) {
+                loadMoreBtn.style.display = 'block';
+                loadMoreBtn.disabled = false;
+            } else {
+                loadMoreBtn.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error loading projects:', error);
+            document.getElementById('projectGrid').innerHTML = '<div class="no-results">Error loading projects.</div>';
+        }
+    }
+
+    // Create project card
+    function createProjectCard(project) {
+        const card = document.createElement('div');
+        card.className = 'project-card archived-card';
+        card.onclick = () => {
+            if (project.has_folder) {
+                window.location = `/project/${project.id}`;
+            }
+        };
+        card.style.cursor = project.has_folder ? 'pointer' : 'default';
+
+        let badgesHtml = '';
+        if (project.source === 'planhub') {
+            badgesHtml += '<span class="source-badge planhub">PlanHub</span>';
+        } else {
+            badgesHtml += '<span class="source-badge local">Local</span>';
+        }
+        if (project.archived_reason) {
+            badgesHtml += `<span class="archived-reason-badge">${formatReason(project.archived_reason)}</span>`;
+        }
+
+        let metaHtml = '';
+        if (project.city || project.state) {
+            metaHtml += `<span class="location">${project.city || ''}${project.city && project.state ? ', ' : ''}${project.state || ''}</span>`;
+        }
+        if (project.bid_date) {
+            metaHtml += `<span class="bid-date">Bid: ${formatDate(project.bid_date)}</span>`;
+        }
+
+        let detailsHtml = '';
+        if (project.estimated_value) {
+            detailsHtml += `<div class="card-value">${project.estimated_value}</div>`;
+        }
+        if (project.building_use) {
+            detailsHtml += `<div class="card-meta">${project.building_use}</div>`;
+        }
+        if (project.trades) {
+            detailsHtml += `<div class="card-trades">${project.trades}</div>`;
+        }
+        if (project.description) {
+            detailsHtml += `<div class="card-description">${project.description}</div>`;
+        }
+
+        card.innerHTML = `
+            <div class="card-header">
+                ${badgesHtml}
+            </div>
+            <h3 class="card-title">${project.title || 'Untitled'}</h3>
+            <div class="card-meta">${metaHtml}</div>
+            ${detailsHtml}
+            ${project.has_folder ? '<div class="card-actions"><span class="status-tag">Has Folder</span></div>' : ''}
+        `;
+
+        return card;
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' });
+    }
+
+    function formatReason(reason) {
+        const reasonMap = {
+            'past_bid_date': 'Past Due',
+            'no_bid': 'No Bid',
+            'lost': 'Lost',
+            'completed': 'Completed',
+            'manual': 'Manual'
+        };
+        return reasonMap[reason] || reason;
+    }
+
+    function debounceSearch() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => loadProjects(), 300);
+    }
+
+    function loadMore() {
+        currentOffset += pageSize;
+        document.getElementById('loadMoreBtn').disabled = true;
+        loadProjects(true);
+    }
+
+    // Initialize
+    loadStats();
+    loadProjects();
+</script>
+{% endblock %}

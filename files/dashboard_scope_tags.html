@@ -1,0 +1,394 @@
+<!--
+DASHBOARD CSI TAG INTEGRATION
+==============================
+
+This provides:
+1. CSI Scope filter dropdown in filters section
+2. Scope tags displayed on project cards
+3. Data attributes for client-side filtering
+4. CSS for tag styling
+
+CHANGES TO MAKE:
+-->
+
+
+<!-- ======================================================================
+     1. ADD FILTER TO filters SECTION (after line 108, after statusFilter)
+     ====================================================================== -->
+
+<div class="filter-group">
+    <label for="scopeFilter">Scope:</label>
+    <select id="scopeFilter" onchange="filterProjects()">
+        <option value="all">All Scope</option>
+        <!-- Populated by JavaScript -->
+    </select>
+</div>
+
+
+<!-- ======================================================================
+     2. UPDATE PROJECT CARD (in the "All Projects" section around line 253)
+     ====================================================================== -->
+
+<!-- Add data-scope attribute to the project card div -->
+<div class="project-card ..."
+     data-source="{{ project.source }}"
+     data-type="..."
+     data-scope="{{ project.csi_tags|join(',') if project.csi_tags else '' }}"
+     ...>
+
+<!-- Add Scope Tags display AFTER the internal-status div (around line 342) -->
+<!-- Replace lines 339-342 with this enhanced version: -->
+
+<!-- Internal Status & Scope Tags -->
+<div class="card-tags">
+    {% if project.has_internal_estimate %}
+    <span class="tag estimate">Est: ${{ "{:,.0f}".format(project.internal_estimate_total) if project.internal_estimate_total else 'Yes' }}</span>
+    {% endif %}
+    {% if project.has_proposal %}
+    <span class="tag proposal">Proposal</span>
+    {% endif %}
+    {% for tag in project.tags %}
+    <span class="tag custom">{{ tag }}</span>
+    {% endfor %}
+    
+    <!-- CSI Scope Tags (limit to 3 for space) -->
+    {% if project.csi_tags %}
+    {% for tag in project.csi_tags[:3] %}
+    <span class="tag scope {{ tag_category(tag) }}">{{ tag_short(tag) }}</span>
+    {% endfor %}
+    {% if project.csi_tags|length > 3 %}
+    <span class="tag scope-more">+{{ project.csi_tags|length - 3 }}</span>
+    {% endif %}
+    {% endif %}
+</div>
+
+
+<!-- ======================================================================
+     3. CSS STYLES (add to style.css or in <style> block)
+     ====================================================================== -->
+
+<style>
+/* Card Tags Container */
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+}
+
+.card-tags .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Existing tag types */
+.tag.estimate {
+    background: #22c55e;
+    color: white;
+}
+
+.tag.proposal {
+    background: #3b82f6;
+    color: white;
+}
+
+.tag.custom {
+    background: var(--bg-secondary);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+/* CSI Scope Tags */
+.tag.scope {
+    color: white;
+    background: #607D8B;
+}
+
+.tag.scope.doors { background: #4CAF50; }
+.tag.scope.storefront { background: #9C27B0; }
+.tag.scope.curtainwall { background: #673AB7; }
+.tag.scope.windows { background: #2196F3; }
+.tag.scope.skylights { background: #00BCD4; }
+.tag.scope.hardware { background: #795548; }
+.tag.scope.glazing { background: #FF9800; }
+.tag.scope.specialty { background: #F44336; }
+.tag.scope.louvers { background: #607D8B; }
+
+.tag.scope-more {
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+    font-size: 0.6rem;
+}
+
+/* Filter dropdown scope colors */
+#scopeFilter option.cat-header {
+    font-weight: bold;
+    background: var(--bg-secondary);
+}
+</style>
+
+
+<!-- ======================================================================
+     4. JAVASCRIPT (add to dashboard.js or in <script> block)
+     ====================================================================== -->
+
+<script>
+// Tag category mapping (matches csi_tagging.py)
+const TAG_CATEGORIES = {
+    "Hollow Metal Doors": "doors",
+    "Hollow Metal Frames": "doors",
+    "Wood Doors": "doors",
+    "Aluminum Doors": "doors",
+    "FRP Doors": "doors",
+    "Access Doors": "doors",
+    "Sliding Glass Doors": "doors",
+    "Coiling Doors": "doors",
+    "Storefront": "storefront",
+    "Entrances": "storefront",
+    "All-Glass Entrances": "storefront",
+    "Automatic Entrances": "storefront",
+    "Curtain Wall": "curtainwall",
+    "Window Wall": "curtainwall",
+    "Aluminum Windows": "windows",
+    "Wood Windows": "windows",
+    "Vinyl Windows": "windows",
+    "Composite Windows": "windows",
+    "Steel Windows": "windows",
+    "Skylights": "skylights",
+    "Unit Skylights": "skylights",
+    "Door Hardware": "hardware",
+    "Access Control": "hardware",
+    "Window Hardware": "hardware",
+    "Glazing": "glazing",
+    "Glass Glazing": "glazing",
+    "Insulating Glass": "glazing",
+    "Laminated Glass": "glazing",
+    "Mirrors": "glazing",
+    "Window Film": "glazing",
+    "Blast-Resistant Windows": "specialty",
+    "Bullet-Resistant Windows": "specialty",
+    "Ballistic Glazing": "specialty",
+    "Security Windows": "specialty",
+    "Louvers": "louvers",
+    "Vents": "louvers",
+};
+
+// Shortened tag names for cards
+const SHORT_NAMES = {
+    "Hollow Metal Doors": "HM Doors",
+    "Hollow Metal Frames": "HM Frames",
+    "Aluminum Windows": "Alum Win",
+    "Blast-Resistant Windows": "Blast Win",
+    "Bullet-Resistant Windows": "Ballistic Win",
+    "Curtain Wall": "CW",
+    "Door Hardware": "Hardware",
+    "Automatic Entrances": "Auto Entry",
+};
+
+// Get category for a tag
+function getTagCategory(tagName) {
+    return TAG_CATEGORIES[tagName] || 'other';
+}
+
+// Get short name for a tag
+function getShortName(tagName) {
+    return SHORT_NAMES[tagName] || tagName;
+}
+
+// Load scope filter options from API
+async function loadScopeFilterOptions() {
+    try {
+        const response = await fetch('/api/csi/tags/in-use');
+        const data = await response.json();
+        
+        if (data.status !== 'ok') return;
+        
+        const select = document.getElementById('scopeFilter');
+        if (!select) return;
+        
+        // Clear existing except "All"
+        while (select.options.length > 1) {
+            select.remove(1);
+        }
+        
+        // Group by category
+        const byCategory = {};
+        for (const [tag, count] of Object.entries(data.tags)) {
+            const cat = getTagCategory(tag);
+            if (!byCategory[cat]) byCategory[cat] = [];
+            byCategory[cat].push({ tag, count });
+        }
+        
+        // Add in order
+        const categoryOrder = ['storefront', 'curtainwall', 'windows', 'doors', 'skylights', 'hardware', 'glazing', 'specialty', 'louvers'];
+        const categoryLabels = {
+            'storefront': '── STOREFRONT ──',
+            'curtainwall': '── CURTAIN WALL ──',
+            'windows': '── WINDOWS ──',
+            'doors': '── DOORS ──',
+            'skylights': '── SKYLIGHTS ──',
+            'hardware': '── HARDWARE ──',
+            'glazing': '── GLAZING ──',
+            'specialty': '── SPECIALTY ──',
+            'louvers': '── LOUVERS ──',
+        };
+        
+        for (const cat of categoryOrder) {
+            const tags = byCategory[cat];
+            if (!tags || tags.length === 0) continue;
+            
+            // Category header
+            const header = document.createElement('option');
+            header.disabled = true;
+            header.textContent = categoryLabels[cat] || cat.toUpperCase();
+            header.style.fontWeight = 'bold';
+            select.appendChild(header);
+            
+            // Tags
+            for (const { tag, count } of tags.sort((a, b) => b.count - a.count)) {
+                const opt = document.createElement('option');
+                opt.value = tag;
+                opt.textContent = `${tag} (${count})`;
+                select.appendChild(opt);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading scope filter:', error);
+    }
+}
+
+// Update filterProjects to include scope filtering
+// ADD THIS inside the existing filterProjects() function:
+function filterProjects() {
+    // ... existing filter code ...
+    
+    const scopeFilter = document.getElementById('scopeFilter')?.value || 'all';
+    
+    const cards = document.querySelectorAll('.project-card');
+    
+    cards.forEach(card => {
+        let show = true;
+        
+        // ... existing filter checks ...
+        
+        // Scope filter
+        if (scopeFilter !== 'all') {
+            const cardScope = card.dataset.scope || '';
+            if (!cardScope.split(',').includes(scopeFilter)) {
+                show = false;
+            }
+        }
+        
+        card.style.display = show ? '' : 'none';
+    });
+    
+    // ... rest of function ...
+}
+
+// Call on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadScopeFilterOptions();
+    // ... other init code ...
+});
+</script>
+
+
+<!-- ======================================================================
+     5. BACKEND CHANGES (app.py)
+     ====================================================================== -->
+
+<!--
+In app.py, when building the projects list for the dashboard, add CSI tags:
+
+def get_dashboard_projects():
+    projects = []
+    
+    for project in all_projects:
+        # ... existing code ...
+        
+        # Add CSI tags from status
+        status = status_tracker.get_status(project_id)
+        if status:
+            project['csi_tags'] = status.get('csi_tags', [])
+        
+        projects.append(project)
+    
+    return projects
+
+
+Also add template helper functions for tag display:
+
+@app.template_filter('tag_category')
+def tag_category_filter(tag_name):
+    """Get category for a tag (for CSS class)."""
+    TAG_CATEGORIES = {
+        "Hollow Metal Doors": "doors",
+        "Storefront": "storefront",
+        "Curtain Wall": "curtainwall",
+        "Aluminum Windows": "windows",
+        # ... etc
+    }
+    return TAG_CATEGORIES.get(tag_name, 'other')
+
+
+@app.template_filter('tag_short')
+def tag_short_filter(tag_name):
+    """Get shortened tag name for display."""
+    SHORT_NAMES = {
+        "Hollow Metal Doors": "HM Doors",
+        "Aluminum Windows": "Alum Win",
+        "Curtain Wall": "CW",
+        # ... etc
+    }
+    return SHORT_NAMES.get(tag_name, tag_name)
+
+
+Then in the dashboard route:
+
+@app.route('/')
+def index():
+    projects = get_dashboard_projects()
+    
+    return render_template('dashboard.html',
+        projects=projects,
+        # ... other data ...
+    )
+-->
+
+
+<!-- ======================================================================
+     6. EXAMPLE: How a project card will look
+     ====================================================================== -->
+
+<!--
+Before (cluttered with long scope summary):
+┌────────────────────────────────────────┐
+│ [Local] [DCAM] [Bidding]               │
+│ Boston Medical Center Renovation       │
+│ Boston, MA  •  Bid: 01/15/25          │
+│ Owner: BMC                             │
+│ "This project includes aluminum        │
+│ framed entrances and storefronts..."   │
+│ [Est: $125,000] [Proposal]             │
+│ [View] [Status]                        │
+└────────────────────────────────────────┘
+
+After (clean with scope tags):
+┌────────────────────────────────────────┐
+│ [Local] [DCAM] [Bidding]               │
+│ Boston Medical Center Renovation       │
+│ Boston, MA  •  Bid: 01/15/25          │
+│ Owner: BMC                             │
+│ [Est: $125K] [Proposal]                │
+│ [Storefront] [CW] [Alum Win] [HW] +2   │
+│ [View] [Status]                        │
+└────────────────────────────────────────┘
+
+The scope tags are color-coded by category and show at a glance
+what Division 8 work is in each project.
+-->

@@ -1,0 +1,1042 @@
+{% extends "base.html" %}
+
+{% block title %}Contractors - Project Tracker{% endblock %}
+
+{% block head %}
+<style>
+    :root {
+        --bg-primary: #e0e7ff;
+        --bg-secondary: #f5f0e6;
+        --surface: #ffffff;
+        --ink: #111111;
+        --border: 3px solid #111;
+        --shadow: 4px 4px 0 #1A1A1A;
+        --shadow-sm: 3px 3px 0 #1A1A1A;
+        --t: 140ms;
+
+        --accent-yellow: #ffe500;
+        --accent-pink: #ff4fd8;
+        --accent-blue: #2f6bff;
+        --accent-green: #37d67a;
+        --accent-orange: #ff7a00;
+        --danger: #ff3b3b;
+    }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(180deg, var(--bg-primary), var(--bg-secondary));
+        color: var(--ink);
+        min-height: 100vh;
+    }
+
+    .mono { font-family: "Space Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+    /* Top Header */
+    .top-bar {
+        background: var(--accent-yellow);
+        border-bottom: var(--border);
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .logo {
+        width: 42px;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--accent-green);
+        border: var(--border);
+        box-shadow: var(--shadow);
+        font-weight: 800;
+        font-size: 14px;
+    }
+    .title-block {
+        display: grid;
+        gap: 2px;
+    }
+    .title-block .h {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        line-height: 1.1;
+    }
+    .title-block .s {
+        font-size: 12px;
+        opacity: 0.9;
+    }
+    .actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    /* Buttons */
+    .btn {
+        border: var(--border);
+        background: #fff;
+        box-shadow: var(--shadow-sm);
+        padding: 9px 10px;
+        cursor: pointer;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        font-size: 12px;
+        transition: transform var(--t);
+        user-select: none;
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        text-decoration: none;
+        color: var(--ink);
+    }
+    .btn:hover:not(:disabled) {
+        transform: translate(-2px, -2px);
+    }
+    .btn:active {
+        transform: translate(0, 0);
+        box-shadow: none;
+    }
+    .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    .btn.primary {
+        background: linear-gradient(90deg, var(--accent-blue), var(--accent-pink));
+        color: white;
+    }
+    .btn.success {
+        background: var(--accent-green);
+    }
+
+    /* Main Grid */
+    .main-grid {
+        padding: 14px;
+        display: grid;
+        grid-template-columns: 420px 1fr 380px;
+        gap: 14px;
+        min-height: calc(100vh - 80px);
+    }
+    @media (max-width: 1400px) {
+        .main-grid {
+            grid-template-columns: 360px 1fr;
+        }
+        .timeline-panel {
+            display: none;
+        }
+    }
+    @media (max-width: 900px) {
+        .main-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Panels */
+    .panel {
+        border: var(--border);
+        background: rgba(255, 255, 255, 0.70);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    .panel-title {
+        background: var(--accent-pink);
+        border-bottom: var(--border);
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+    .panel-title .h {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+    .panel-title .meta {
+        font-size: 12px;
+        opacity: 0.9;
+    }
+    .panel-body {
+        padding: 12px;
+        overflow: auto;
+        flex: 1;
+    }
+
+    /* Contractor Cards */
+    .contractor-queue {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .contractor-card {
+        border: var(--border);
+        box-shadow: var(--shadow-sm);
+        background: #fff;
+        padding: 10px;
+        cursor: pointer;
+        transition: transform var(--t);
+    }
+    .contractor-card:hover {
+        transform: translate(-2px, -2px);
+    }
+    .contractor-card.selected {
+        border-color: var(--accent-blue);
+        box-shadow: 4px 4px 0 var(--accent-blue);
+    }
+    .contractor-card .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .contractor-card .name {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        font-size: 13px;
+        flex: 1;
+    }
+    .contractor-card .badges {
+        display: flex;
+        gap: 6px;
+        margin-top: 6px;
+        flex-wrap: wrap;
+    }
+    .contractor-card .engagement-stats {
+        display: flex;
+        gap: 10px;
+        margin-top: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        opacity: 0.8;
+    }
+
+    /* Badges */
+    .badge {
+        border: var(--border);
+        box-shadow: var(--shadow-sm);
+        padding: 4px 6px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        font-size: 10px;
+        background: #fff;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+    }
+    .badge.type-contractor { background: var(--accent-green); }
+    .badge.type-subcontractor { background: var(--accent-blue); color: white; }
+    .badge.type-vendor { background: var(--accent-orange); }
+
+    .badge.has-research { background: var(--accent-pink); }
+    .badge.has-quotes { background: var(--accent-yellow); }
+
+    /* Filters */
+    .filter-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .filter-row select {
+        border: var(--border);
+        background: #fff;
+        box-shadow: var(--shadow-sm);
+        padding: 6px 8px;
+        font-weight: 700;
+        font-size: 11px;
+        font-family: inherit;
+    }
+    .filter-row label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        border: var(--border);
+        background: #fff;
+        box-shadow: var(--shadow-sm);
+        padding: 6px 8px;
+        font-weight: 700;
+        font-size: 11px;
+    }
+    .filter-row input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+
+    /* Tabs */
+    .tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: var(--border);
+        margin-bottom: 12px;
+    }
+    .tab {
+        border: none;
+        border-right: var(--border);
+        background: rgba(255, 255, 255, 0.5);
+        padding: 10px 14px;
+        cursor: pointer;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        font-size: 11px;
+        transition: background var(--t);
+    }
+    .tab:hover {
+        background: rgba(255, 255, 255, 0.8);
+    }
+    .tab.active {
+        background: var(--accent-yellow);
+    }
+
+    /* Tab Content */
+    .tab-content {
+        display: none;
+    }
+    .tab-content.active {
+        display: block;
+    }
+
+    /* Profile Sections */
+    .profile-section {
+        border: var(--border);
+        background: #fff;
+        box-shadow: var(--shadow-sm);
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+    .profile-section h3 {
+        margin: 0 0 10px 0;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        font-size: 13px;
+        border-bottom: 2px solid var(--ink);
+        padding-bottom: 6px;
+    }
+    .info-grid {
+        display: grid;
+        gap: 8px;
+    }
+    .info-row {
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        gap: 8px;
+    }
+    .info-label {
+        font-weight: 800;
+        font-size: 11px;
+        text-transform: uppercase;
+        opacity: 0.7;
+    }
+    .info-value {
+        font-size: 13px;
+    }
+
+    /* Project Table */
+    .project-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+    }
+    .project-table th {
+        border: var(--border);
+        background: var(--accent-yellow);
+        padding: 8px;
+        text-align: left;
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 10px;
+    }
+    .project-table td {
+        border: 2px solid var(--ink);
+        padding: 8px;
+    }
+    .project-table tr:nth-child(even) {
+        background: rgba(0,0,0,0.03);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        opacity: 0.6;
+    }
+    .empty-state .icon {
+        font-size: 48px;
+        margin-bottom: 12px;
+    }
+    .empty-state .message {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+    /* Timeline */
+    .timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .timeline-item {
+        border: var(--border);
+        background: #fff;
+        box-shadow: var(--shadow-sm);
+        padding: 10px;
+    }
+    .timeline-date {
+        font-weight: 800;
+        font-size: 11px;
+        opacity: 0.7;
+        margin-bottom: 4px;
+    }
+    .timeline-title {
+        font-weight: 800;
+        font-size: 13px;
+        margin-bottom: 4px;
+    }
+    .timeline-details {
+        font-size: 11px;
+        opacity: 0.8;
+    }
+
+    /* Staff Grid */
+    .staff-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 10px;
+    }
+    .staff-card {
+        border: 2px solid var(--ink);
+        background: #fff;
+        padding: 8px;
+    }
+    .staff-name {
+        font-weight: 800;
+        font-size: 12px;
+        margin-bottom: 2px;
+    }
+    .staff-title {
+        font-size: 10px;
+        opacity: 0.7;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Top Header -->
+<div class="top-bar">
+    <div class="brand">
+        <div class="logo">GC</div>
+        <div class="title-block">
+            <div class="h">Contractors</div>
+            <div class="s mono">Profiles & Project Engagement</div>
+        </div>
+    </div>
+    <div class="actions">
+        <a href="/" class="btn">&larr; Dashboard</a>
+        <a href="/research" class="btn">Research New</a>
+    </div>
+</div>
+
+<!-- Main Grid (3 columns) -->
+<div class="main-grid">
+    <!-- Contractor List Panel (Left) -->
+    <div class="panel">
+        <div class="panel-title">
+            <div class="h">Contractors</div>
+            <div class="meta" id="contractorCount">0</div>
+        </div>
+        <div class="panel-body">
+            <!-- Filters -->
+            <div class="filter-row">
+                <select id="typeFilter">
+                    <option value="">All Types</option>
+                    <option value="contractor">General Contractors</option>
+                    <option value="subcontractor">Subcontractors</option>
+                </select>
+                <label>
+                    <input type="checkbox" id="hasResearchFilter">
+                    <span>Research</span>
+                </label>
+                <label>
+                    <input type="checkbox" id="hasQuotesFilter">
+                    <span>Quotes</span>
+                </label>
+            </div>
+
+            <!-- Contractor Cards -->
+            <div id="contractorQueue" class="contractor-queue">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Panel (Center) -->
+    <div class="panel">
+        <div class="panel-title">
+            <div class="h" id="contractorName">Select a contractor</div>
+        </div>
+        <div class="panel-body">
+            <div id="welcomeState" class="empty-state">
+                <div class="icon">👷</div>
+                <div class="message">Select a contractor to view profile</div>
+            </div>
+
+            <div id="profileView" style="display: none;">
+                <!-- Tabs -->
+                <div class="tabs">
+                    <div class="tab active" data-tab="overview">Overview</div>
+                    <div class="tab" data-tab="projects">Quoted Projects</div>
+                    <div class="tab" data-tab="gc-projects">GC Projects</div>
+                    <div class="tab" data-tab="team">Team</div>
+                    <div class="tab" data-tab="portfolio">Portfolio</div>
+                </div>
+
+                <!-- Tab Contents -->
+                <div class="tab-content active" id="tab-overview">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="tab-content" id="tab-projects">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="tab-content" id="tab-gc-projects">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="tab-content" id="tab-team">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="tab-content" id="tab-portfolio">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timeline Panel (Right) -->
+    <div class="panel timeline-panel">
+        <div class="panel-title">
+            <div class="h">Project Timeline</div>
+        </div>
+        <div class="panel-body">
+            <div id="projectTimeline">
+                <div class="empty-state">
+                    <div class="icon">📊</div>
+                    <div class="message">Select a contractor</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// State
+let contractors = [];
+let selectedContractorId = null;
+let currentContractor = null;
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    loadContractors();
+
+    // Filter listeners
+    document.getElementById('typeFilter').addEventListener('change', loadContractors);
+    document.getElementById('hasResearchFilter').addEventListener('change', loadContractors);
+    document.getElementById('hasQuotesFilter').addEventListener('change', loadContractors);
+
+    // Tab listeners
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabName = tab.dataset.tab;
+            showTab(tabName);
+        });
+    });
+});
+
+// Load contractors
+async function loadContractors() {
+    const type = document.getElementById('typeFilter').value;
+    const hasResearch = document.getElementById('hasResearchFilter').checked;
+    const hasQuotes = document.getElementById('hasQuotesFilter').checked;
+
+    const params = new URLSearchParams();
+    if (type) params.append('type', type);
+    if (hasResearch) params.append('has_research', 'true');
+    if (hasQuotes) params.append('has_quotes', 'true');
+
+    try {
+        const response = await fetch(`/api/contractors?${params}`);
+        const data = await response.json();
+        contractors = data.contractors;
+        renderContractorQueue();
+    } catch (error) {
+        console.error('Error loading contractors:', error);
+    }
+}
+
+// Render contractor queue
+function renderContractorQueue() {
+    const queue = document.getElementById('contractorQueue');
+    document.getElementById('contractorCount').textContent = contractors.length;
+
+    if (contractors.length === 0) {
+        queue.innerHTML = '<div class="empty-state"><div class="message">No contractors found</div></div>';
+        return;
+    }
+
+    queue.innerHTML = contractors.map(c => `
+        <div class="contractor-card ${selectedContractorId === c.id ? 'selected' : ''}"
+             onclick="selectContractor('${c.id}')">
+            <div class="row">
+                <span class="name">${c.name}</span>
+            </div>
+            <div class="badges">
+                <span class="badge type-${c.type}">${c.type === 'contractor' ? 'GC' : 'SUB'}</span>
+                ${c.has_research ? '<span class="badge has-research">Research</span>' : ''}
+                ${c.has_quotes ? '<span class="badge has-quotes">Quotes</span>' : ''}
+            </div>
+            <div class="engagement-stats">
+                <span>📋 ${c.project_count} quoted</span>
+                <span>💰 ${c.quote_count} quotes</span>
+                ${c.gc_project_count > 0 ? `<span>🏗️ ${c.gc_project_count} as GC</span>` : ''}
+            </div>
+        </div>
+    `).join('');
+}
+
+// Select contractor
+async function selectContractor(contractorId) {
+    selectedContractorId = contractorId;
+    renderContractorQueue(); // Re-render to show selection
+
+    try {
+        const response = await fetch(`/api/contractors/${contractorId}`);
+        currentContractor = await response.json();
+        renderContractorProfile(currentContractor);
+    } catch (error) {
+        console.error('Error loading contractor:', error);
+    }
+}
+
+// Render contractor profile
+function renderContractorProfile(contractor) {
+    document.getElementById('contractorName').textContent = contractor.name;
+    document.getElementById('welcomeState').style.display = 'none';
+    document.getElementById('profileView').style.display = 'block';
+
+    // Render Overview tab
+    renderOverviewTab(contractor);
+
+    // Render Projects tab
+    renderProjectsTab(contractor);
+
+    // Render GC Projects tab
+    renderGCProjectsTab(contractor);
+
+    // Render Team tab
+    renderTeamTab(contractor);
+
+    // Render Portfolio tab
+    renderPortfolioTab(contractor);
+
+    // Render Timeline
+    renderTimeline(contractor);
+}
+
+// Render Overview Tab
+function renderOverviewTab(contractor) {
+    const tab = document.getElementById('tab-overview');
+    const companyData = contractor.company_data;
+    const vendorData = contractor.vendor_data;
+    const engagement = contractor.project_engagement;
+
+    let html = '';
+
+    // Engagement Stats
+    html += `
+        <div class="profile-section">
+            <h3>Project Engagement</h3>
+            <div class="info-grid">
+                <div class="info-row">
+                    <div class="info-label">Total Projects</div>
+                    <div class="info-value">${engagement.total_projects}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Projects Won</div>
+                    <div class="info-value">${engagement.projects_won}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Projects Lost</div>
+                    <div class="info-value">${engagement.projects_lost}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Pending</div>
+                    <div class="info-value">${engagement.projects_pending}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Total Quoted</div>
+                    <div class="info-value">$${engagement.total_quoted_value.toLocaleString()}</div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Company Info (if available)
+    if (companyData) {
+        html += `
+            <div class="profile-section">
+                <h3>Company Information</h3>
+                <div class="info-grid">
+                    ${companyData.website ? `
+                        <div class="info-row">
+                            <div class="info-label">Website</div>
+                            <div class="info-value"><a href="${companyData.website}" target="_blank">${companyData.website}</a></div>
+                        </div>
+                    ` : ''}
+                    ${companyData.headquarters ? `
+                        <div class="info-row">
+                            <div class="info-label">Location</div>
+                            <div class="info-value">${companyData.headquarters}</div>
+                        </div>
+                    ` : ''}
+                    ${companyData.phone ? `
+                        <div class="info-row">
+                            <div class="info-label">Phone</div>
+                            <div class="info-value">${companyData.phone}</div>
+                        </div>
+                    ` : ''}
+                    ${companyData.email ? `
+                        <div class="info-row">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">${companyData.email}</div>
+                        </div>
+                    ` : ''}
+                    ${companyData.founded ? `
+                        <div class="info-row">
+                            <div class="info-label">Founded</div>
+                            <div class="info-value">${companyData.founded}</div>
+                        </div>
+                    ` : ''}
+                </div>
+                ${companyData.company_summary ? `
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid var(--ink);">
+                        <p>${companyData.company_summary}</p>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+
+        // Certifications
+        if (companyData.certifications && companyData.certifications.length > 0) {
+            html += `
+                <div class="profile-section">
+                    <h3>Certifications</h3>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                        ${companyData.certifications.map(cert => `
+                            <span class="badge">${cert}</span>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // Vendor Info (if available and no company data)
+    if (vendorData && !companyData) {
+        html += `
+            <div class="profile-section">
+                <h3>Contact Information</h3>
+                <div class="info-grid">
+                    ${vendorData.contact_name ? `
+                        <div class="info-row">
+                            <div class="info-label">Contact</div>
+                            <div class="info-value">${vendorData.contact_name}</div>
+                        </div>
+                    ` : ''}
+                    ${vendorData.phone ? `
+                        <div class="info-row">
+                            <div class="info-label">Phone</div>
+                            <div class="info-value">${vendorData.phone}</div>
+                        </div>
+                    ` : ''}
+                    ${vendorData.email ? `
+                        <div class="info-row">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">${vendorData.email}</div>
+                        </div>
+                    ` : ''}
+                    ${vendorData.city && vendorData.state ? `
+                        <div class="info-row">
+                            <div class="info-label">Location</div>
+                            <div class="info-value">${vendorData.city}, ${vendorData.state}</div>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+
+        // Specialties
+        if (vendorData.specialties && vendorData.specialties.length > 0) {
+            html += `
+                <div class="profile-section">
+                    <h3>Specialties</h3>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                        ${vendorData.specialties.map(spec => `
+                            <span class="badge">${spec}</span>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // No data message
+    if (!companyData && !vendorData) {
+        html = '<div class="empty-state"><div class="message">No profile data available</div></div>';
+    }
+
+    tab.innerHTML = html;
+}
+
+// Render Projects Tab
+function renderProjectsTab(contractor) {
+    const tab = document.getElementById('tab-projects');
+    const projects = contractor.project_engagement.recent_projects;
+
+    if (projects.length === 0) {
+        tab.innerHTML = '<div class="empty-state"><div class="message">No projects quoted yet</div></div>';
+        return;
+    }
+
+    let html = `
+        <table class="project-table">
+            <thead>
+                <tr>
+                    <th>Project</th>
+                    <th>Location</th>
+                    <th>Bid Date</th>
+                    <th>Quotes</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    projects.forEach(p => {
+        html += `
+            <tr>
+                <td><strong>${p.project_name}</strong></td>
+                <td>${p.project_city}, ${p.project_state}</td>
+                <td>${p.bid_date ? new Date(p.bid_date).toLocaleDateString() : 'N/A'}</td>
+                <td>${p.quote_count}</td>
+                <td>$${p.total_quoted.toLocaleString()}</td>
+                <td>
+                    <span class="badge ${p.result === 'won' ? 'status-complete' : p.result === 'lost' ? 'status-failed' : 'status-pending'}">
+                        ${p.result}
+                    </span>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += '</tbody></table>';
+    tab.innerHTML = html;
+}
+
+// Render GC Projects Tab
+function renderGCProjectsTab(contractor) {
+    const tab = document.getElementById('tab-gc-projects');
+    const gcPortfolio = contractor.gc_portfolio;
+
+    if (!gcPortfolio || gcPortfolio.total_projects === 0) {
+        tab.innerHTML = '<div class="empty-state"><div class="message">No projects as general contractor</div></div>';
+        return;
+    }
+
+    const projects = gcPortfolio.projects;
+
+    let html = `
+        <table class="project-table">
+            <thead>
+                <tr>
+                    <th>Project</th>
+                    <th>Location</th>
+                    <th>Bid Date</th>
+                    <th>Value</th>
+                    <th>Division 8</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    projects.forEach(p => {
+        html += `
+            <tr>
+                <td><strong>${p.project_name}</strong></td>
+                <td>${p.project_city || ''}, ${p.project_state || ''}</td>
+                <td>${p.bid_date ? new Date(p.bid_date).toLocaleDateString() : 'N/A'}</td>
+                <td>${p.project_value_str || 'N/A'}</td>
+                <td>
+                    ${p.is_division_8 ? '<span class="badge status-complete">Yes</span>' : '<span class="badge">No</span>'}
+                </td>
+                <td>
+                    ${p.is_gc_awarded ? '<span class="badge status-complete">GC Awarded</span>' : ''}
+                    ${p.is_sub_bidding ? '<span class="badge has-quotes">Sub Bidding</span>' : ''}
+                </td>
+            </tr>
+        `;
+    });
+
+    html += '</tbody></table>';
+    tab.innerHTML = html;
+}
+
+// Render Team Tab
+function renderTeamTab(contractor) {
+    const tab = document.getElementById('tab-team');
+    const companyData = contractor.company_data;
+
+    if (!companyData || (!companyData.leadership || companyData.leadership.length === 0) &&
+        (!companyData.staff || companyData.staff.length === 0)) {
+        tab.innerHTML = '<div class="empty-state"><div class="message">No team data available</div></div>';
+        return;
+    }
+
+    let html = '';
+
+    // Leadership
+    if (companyData.leadership && companyData.leadership.length > 0) {
+        html += `
+            <div class="profile-section">
+                <h3>Leadership</h3>
+                <div class="staff-grid">
+                    ${companyData.leadership.map(person => `
+                        <div class="staff-card">
+                            <div class="staff-name">${person.name}</div>
+                            <div class="staff-title">${person.title}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    // Staff
+    if (companyData.staff && companyData.staff.length > 0) {
+        html += `
+            <div class="profile-section">
+                <h3>Staff</h3>
+                <div class="staff-grid">
+                    ${companyData.staff.map(person => `
+                        <div class="staff-card">
+                            <div class="staff-name">${person.name}</div>
+                            <div class="staff-title">${person.title || person.role}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    tab.innerHTML = html;
+}
+
+// Render Portfolio Tab
+function renderPortfolioTab(contractor) {
+    const tab = document.getElementById('tab-portfolio');
+    const companyData = contractor.company_data;
+
+    if (!companyData || !companyData.portfolio || companyData.portfolio.length === 0) {
+        tab.innerHTML = '<div class="empty-state"><div class="message">No portfolio data available</div></div>';
+        return;
+    }
+
+    let html = `
+        <div class="profile-section">
+            <h3>Portfolio</h3>
+            <div class="staff-grid">
+    `;
+
+    companyData.portfolio.forEach(project => {
+        html += `
+            <div class="staff-card">
+                <div class="staff-name">${project.name}</div>
+                <div class="staff-title">${project.type || ''}</div>
+                ${project.location ? `<div style="font-size: 10px; opacity: 0.7; margin-top: 4px;">${project.location}</div>` : ''}
+                ${project.year ? `<div style="font-size: 10px; opacity: 0.7;">${project.year}</div>` : ''}
+            </div>
+        `;
+    });
+
+    html += '</div></div>';
+    tab.innerHTML = html;
+}
+
+// Render Timeline
+function renderTimeline(contractor) {
+    const timeline = document.getElementById('projectTimeline');
+    const projects = contractor.project_engagement.recent_projects;
+
+    if (projects.length === 0) {
+        timeline.innerHTML = '<div class="empty-state"><div class="message">No project history</div></div>';
+        return;
+    }
+
+    let html = '<div class="timeline">';
+
+    projects.slice(0, 10).forEach(p => {
+        html += `
+            <div class="timeline-item">
+                <div class="timeline-date">${p.bid_date ? new Date(p.bid_date).toLocaleDateString() : 'No date'}</div>
+                <div class="timeline-title">${p.project_name}</div>
+                <div class="timeline-details">
+                    ${p.project_city}, ${p.project_state}<br>
+                    ${p.quote_count} quote${p.quote_count !== 1 ? 's' : ''} • $${p.total_quoted.toLocaleString()}<br>
+                    <span class="badge ${p.result === 'won' ? 'status-complete' : p.result === 'lost' ? 'status-failed' : 'status-pending'}">
+                        ${p.result}
+                    </span>
+                </div>
+            </div>
+        `;
+    });
+
+    html += '</div>';
+    timeline.innerHTML = html;
+}
+
+// Show Tab
+function showTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.tab === tabName);
+    });
+
+    // Update tab content
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.toggle('active', content.id === `tab-${tabName}`);
+    });
+}
+</script>
+{% endblock %}

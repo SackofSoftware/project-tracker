@@ -1,0 +1,1051 @@
+{% extends "base.html" %}
+
+{% block title %}Annotation Tool - {{ project.title or project.folder or project_id }}{% endblock %}
+
+{% block head %}
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs" type="module"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf_viewer.min.css">
+
+    <!-- Fabric.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+
+    <style>
+        /* =================================================================
+           NEOBRUTALIST THEME - Matching Project Tracker Style
+           ================================================================= */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        /* Main Layout */
+        .app-container {
+            display: grid;
+            grid-template-columns: 220px 1fr 300px;
+            grid-template-rows: 56px 1fr 44px;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Header Bar */
+        .header-bar {
+            grid-column: 1 / -1;
+            background: var(--warning);
+            border-bottom: var(--border-width) solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            gap: 1rem;
+        }
+
+        .header-bar h1 {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text);
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+        }
+
+        .header-bar .back-btn {
+            background: var(--card-bg);
+            color: var(--text);
+            border: var(--border-width) solid var(--border);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-weight: 700;
+            text-decoration: none;
+            font-family: inherit;
+            text-transform: uppercase;
+            box-shadow: var(--shadow);
+            transition: all 0.1s ease;
+        }
+
+        .header-bar .back-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .header-bar .back-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #000000;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-left: auto;
+        }
+
+        .toolbar-group {
+            display: flex;
+            gap: 0;
+            background: var(--card-bg);
+            border: var(--border-width) solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .tool-btn {
+            background: var(--card-bg);
+            border: none;
+            border-right: 2px solid var(--border);
+            color: var(--text);
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: inherit;
+            text-transform: uppercase;
+            transition: all 0.1s ease;
+        }
+
+        .tool-btn:last-child {
+            border-right: none;
+        }
+
+        .tool-btn:hover {
+            background: var(--accent-yellow);
+        }
+
+        .tool-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .zoom-display {
+            color: var(--text);
+            font-size: 0.875rem;
+            font-weight: 700;
+            min-width: 50px;
+            text-align: center;
+            padding: 0 0.5rem;
+        }
+
+        /* Page Thumbnails Sidebar */
+        .sidebar-left {
+            background: var(--card-bg);
+            border-right: var(--border-width) solid var(--border);
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .thumbnail-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 0.75rem;
+        }
+
+        .page-thumb {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            padding: 0.375rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.1s ease;
+        }
+
+        .page-thumb:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: var(--shadow);
+        }
+
+        .page-thumb.active {
+            border-color: var(--primary);
+            background: var(--accent-blue);
+            box-shadow: var(--shadow);
+        }
+
+        .page-thumb img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border: 1px solid var(--border);
+        }
+
+        .page-thumb .page-num {
+            color: var(--text);
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-top: 0.25rem;
+            text-transform: uppercase;
+        }
+
+        /* Main Viewer Area */
+        .viewer-area {
+            background: var(--bg);
+            overflow: auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .canvas-container {
+            position: relative;
+            background: var(--card-bg);
+            border: var(--border-width) solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        #pdf-canvas {
+            display: block;
+        }
+
+        #annotation-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: auto;
+        }
+
+        /* Properties Panel */
+        .sidebar-right {
+            background: var(--card-bg);
+            border-left: var(--border-width) solid var(--border);
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .panel-section {
+            margin-bottom: 0;
+            border-bottom: var(--border-width) solid var(--border);
+        }
+
+        .panel-section:last-child {
+            border-bottom: none;
+        }
+
+        .panel-title {
+            background: var(--accent-pink);
+            color: var(--text);
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.625rem 1rem;
+            margin: 0;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .panel-section > *:not(.panel-title) {
+            padding: 0.75rem 1rem;
+        }
+
+        /* Classification Buttons */
+        .classification-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+        }
+
+        .class-btn {
+            padding: 0.5rem;
+            border: var(--border-width) solid var(--border);
+            background: var(--card-bg);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 700;
+            font-family: inherit;
+            text-transform: uppercase;
+            box-shadow: 2px 2px 0px var(--border);
+            transition: all 0.1s ease;
+        }
+
+        .class-btn:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px var(--border);
+        }
+
+        .class-btn:active {
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0px var(--border);
+        }
+
+        .class-btn.window {
+            border-left: 4px solid #FF5722;
+        }
+        .class-btn.window.active {
+            background: #FF5722;
+            color: white;
+        }
+
+        .class-btn.door {
+            border-left: 4px solid #9C27B0;
+        }
+        .class-btn.door.active {
+            background: #9C27B0;
+            color: white;
+        }
+
+        .class-btn.storefront {
+            border-left: 4px solid #4CAF50;
+        }
+        .class-btn.storefront.active {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .class-btn.curtainwall {
+            border-left: 4px solid #2196F3;
+        }
+        .class-btn.curtainwall.active {
+            background: #2196F3;
+            color: white;
+        }
+
+        /* Type Label Input */
+        .type-label-input {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0 1rem 0.75rem 1rem;
+        }
+
+        .type-label-input label {
+            color: var(--text);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .type-label-input input {
+            flex: 1;
+            background: var(--card-bg);
+            border: var(--border-width) solid var(--border);
+            color: var(--text);
+            padding: 0.5rem;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: inherit;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .type-label-input input:focus {
+            outline: none;
+            box-shadow: 3px 3px 0px var(--border);
+        }
+
+        /* Annotation List */
+        .annotation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.375rem;
+            padding: 0.75rem 1rem;
+        }
+
+        .annotation-item {
+            background: var(--bg);
+            padding: 0.5rem 0.75rem;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            border-left-width: 4px;
+            transition: all 0.1s ease;
+        }
+
+        .annotation-item:hover {
+            background: var(--accent-yellow);
+            transform: translate(-1px, -1px);
+            box-shadow: 2px 2px 0px var(--border);
+        }
+
+        .annotation-item.selected {
+            background: var(--accent-blue);
+            box-shadow: 2px 2px 0px var(--border);
+        }
+
+        .annotation-item .color-dot {
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--border);
+        }
+
+        .annotation-item .label {
+            color: var(--text);
+            font-size: 0.8rem;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .annotation-item .delete-btn {
+            background: var(--danger);
+            border: 2px solid var(--border);
+            color: white;
+            cursor: pointer;
+            padding: 0.2rem 0.4rem;
+            font-weight: 700;
+            font-size: 0.7rem;
+        }
+
+        .annotation-item .delete-btn:hover {
+            background: #dc2626;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            grid-column: 1 / -1;
+            background: var(--accent-blue);
+            border-top: var(--border-width) solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            gap: 2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .status-bar .tag-summary {
+            display: flex;
+            gap: 0.75rem;
+            margin-left: auto;
+        }
+
+        .tag-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            font-weight: 700;
+            color: white;
+            border: 2px solid var(--border);
+        }
+
+        .tag-chip.window { background: #FF5722; }
+        .tag-chip.door { background: #9C27B0; }
+        .tag-chip.storefront { background: #4CAF50; }
+        .tag-chip.curtainwall { background: #2196F3; }
+
+        /* Keyboard hints */
+        .keyboard-hints {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            padding: 0 1rem 0.75rem 1rem;
+        }
+
+        .keyboard-hints kbd {
+            background: var(--accent-yellow);
+            border: 2px solid var(--border);
+            padding: 0.15rem 0.35rem;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: 0.65rem;
+        }
+
+        /* PDF Selector */
+        .pdf-selector {
+            padding: 0.75rem 1rem;
+        }
+
+        .pdf-selector select {
+            width: 100%;
+            background: var(--card-bg);
+            border: var(--border-width) solid var(--border);
+            color: var(--text);
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .pdf-selector select:focus {
+            outline: none;
+            box-shadow: 3px 3px 0px var(--border);
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(224, 231, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            font-size: 1.25rem;
+            font-weight: 700;
+            z-index: 100;
+            border: var(--border-width) solid var(--border);
+        }
+
+        .loading-overlay.hidden {
+            display: none;
+        }
+
+        /* Empty state */
+        .empty-state {
+            color: var(--text-muted);
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Auto-Detect Panel */
+        .detect-controls {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+        }
+
+        .shape-select {
+            flex: 1;
+            background: var(--card-bg);
+            border: var(--border-width) solid var(--border);
+            color: var(--text);
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .shape-select:focus {
+            outline: none;
+            box-shadow: 3px 3px 0px var(--border);
+        }
+
+        .detect-btn {
+            background: var(--primary);
+            color: white;
+            border: var(--border-width) solid var(--border);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.75rem;
+            font-family: inherit;
+            text-transform: uppercase;
+            box-shadow: var(--shadow);
+            transition: all 0.1s ease;
+        }
+
+        .detect-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .detect-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--border);
+        }
+
+        .detect-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: var(--shadow);
+        }
+
+        .detect-results {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 0 1rem;
+        }
+
+        .detect-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.5rem;
+            background: var(--bg);
+            margin-bottom: 0.25rem;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.1s ease;
+        }
+
+        .detect-item:hover {
+            background: var(--accent-yellow);
+        }
+
+        .detect-item.selected {
+            background: var(--accent-blue);
+            box-shadow: 2px 2px 0px var(--border);
+        }
+
+        .detect-item input[type="checkbox"] {
+            margin: 0;
+            width: 16px;
+            height: 16px;
+        }
+
+        .detect-item .label {
+            color: var(--text);
+            font-weight: 700;
+            min-width: 40px;
+        }
+
+        .detect-item .coords {
+            color: var(--text-muted);
+            font-size: 0.65rem;
+        }
+
+        .detect-item .confidence {
+            margin-left: auto;
+            color: var(--success);
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+
+        .detect-actions {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+        }
+
+        .detect-actions.hidden {
+            display: none;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.5rem;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 700;
+            font-family: inherit;
+            text-transform: uppercase;
+            box-shadow: 2px 2px 0px var(--border);
+            transition: all 0.1s ease;
+        }
+
+        .action-btn:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px var(--border);
+        }
+
+        .action-btn.add {
+            background: var(--success);
+            color: white;
+        }
+
+        .action-btn.add-all {
+            background: var(--primary);
+            color: white;
+        }
+
+        .action-btn.clear {
+            background: var(--card-bg);
+            color: var(--text);
+        }
+
+        .detect-summary {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin: 0 1rem 0.5rem 1rem;
+            padding: 0.5rem;
+            background: var(--accent-yellow);
+            border: 2px solid var(--border);
+        }
+
+        .detect-summary strong {
+            color: var(--text);
+        }
+
+        /* Mode Toggle */
+        .mode-toggle {
+            background: var(--card-bg) !important;
+            border: var(--border-width) solid var(--primary) !important;
+        }
+
+        .mode-btn.active {
+            background: var(--primary) !important;
+            color: white !important;
+        }
+
+        /* Hidden utility class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Zone Type Grid */
+        .zone-type-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+        }
+
+        .zone-type-btn {
+            padding: 0.5rem;
+            border: var(--border-width) solid var(--border);
+            background: var(--card-bg);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.65rem;
+            font-weight: 700;
+            font-family: inherit;
+            text-transform: uppercase;
+            box-shadow: 2px 2px 0px var(--border);
+            transition: all 0.1s ease;
+        }
+
+        .zone-type-btn:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px var(--border);
+        }
+
+        .zone-type-btn.active {
+            color: white;
+        }
+
+        .zone-type-btn[data-zone-type="elevation_zone"] { border-left: 4px solid #4CAF50; }
+        .zone-type-btn[data-zone-type="elevation_zone"].active { background: #4CAF50; }
+
+        .zone-type-btn[data-zone-type="floor_plan_zone"] { border-left: 4px solid #9C27B0; }
+        .zone-type-btn[data-zone-type="floor_plan_zone"].active { background: #9C27B0; }
+
+        .zone-type-btn[data-zone-type="detail_zone"] { border-left: 4px solid #FF9800; }
+        .zone-type-btn[data-zone-type="detail_zone"].active { background: #FF9800; }
+
+        .zone-type-btn[data-zone-type="schedule_zone"] { border-left: 4px solid #607D8B; }
+        .zone-type-btn[data-zone-type="schedule_zone"].active { background: #607D8B; }
+
+        /* Direction Selector */
+        .direction-selector {
+            padding: 0 1rem 0.75rem 1rem;
+        }
+
+        .direction-label {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .compass-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            max-width: 160px;
+            margin: 0 auto 0.5rem;
+        }
+
+        .direction-btn {
+            padding: 0.4rem;
+            border: 2px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.65rem;
+            font-weight: 700;
+            font-family: inherit;
+            transition: all 0.1s ease;
+        }
+
+        .direction-btn:hover {
+            background: var(--accent-yellow);
+            color: var(--text);
+        }
+
+        .direction-btn.active {
+            color: white;
+            font-weight: 800;
+        }
+
+        /* Direction colors */
+        .direction-btn[data-direction="north"] { border-left: 3px solid #4CAF50; }
+        .direction-btn[data-direction="north"].active { background: #4CAF50; }
+
+        .direction-btn[data-direction="south"] { border-left: 3px solid #F44336; }
+        .direction-btn[data-direction="south"].active { background: #F44336; }
+
+        .direction-btn[data-direction="east"] { border-left: 3px solid #FF9800; }
+        .direction-btn[data-direction="east"].active { background: #FF9800; }
+
+        .direction-btn[data-direction="west"] { border-left: 3px solid #2196F3; }
+        .direction-btn[data-direction="west"].active { background: #2196F3; }
+
+        .direction-btn[data-direction="northeast"] { border-left: 3px solid #8BC34A; }
+        .direction-btn[data-direction="northeast"].active { background: #8BC34A; }
+
+        .direction-btn[data-direction="northwest"] { border-left: 3px solid #009688; }
+        .direction-btn[data-direction="northwest"].active { background: #009688; }
+
+        .direction-btn[data-direction="southeast"] { border-left: 3px solid #FF5722; }
+        .direction-btn[data-direction="southeast"].active { background: #FF5722; }
+
+        .direction-btn[data-direction="southwest"] { border-left: 3px solid #3F51B5; }
+        .direction-btn[data-direction="southwest"].active { background: #3F51B5; }
+
+        .compass-center {
+            width: 100%;
+            height: 100%;
+            background: var(--accent-green);
+            border: 2px solid var(--border);
+            min-height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: 700;
+        }
+
+        /* Zone Options */
+        .zone-options {
+            padding: 0 1rem 0.75rem 1rem;
+        }
+
+        .zone-input-group {
+            margin-bottom: 0.75rem;
+        }
+
+        .zone-input-group label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .zone-input-group input {
+            width: 100%;
+            background: var(--card-bg);
+            border: var(--border-width) solid var(--border);
+            color: var(--text);
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            font-family: inherit;
+        }
+
+        .zone-input-group input:focus {
+            outline: none;
+            box-shadow: 3px 3px 0px var(--border);
+        }
+
+        .zone-input-group input::placeholder {
+            color: var(--text-muted);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="app-container">
+        <!-- Header Bar -->
+        <div class="header-bar">
+            <a href="/project/{{ project_id }}" class="back-btn">Back</a>
+            <h1>{{ project.title or project.folder or project_id }}</h1>
+
+            <div class="toolbar">
+                <div class="toolbar-group">
+                    <button class="tool-btn" id="zoom-out" title="Zoom Out">-</button>
+                    <span class="zoom-display" id="zoom-display">100%</span>
+                    <button class="tool-btn" id="zoom-in" title="Zoom In">+</button>
+                    <button class="tool-btn" id="zoom-fit" title="Fit to Width">Fit</button>
+                </div>
+
+                <div class="toolbar-group mode-toggle">
+                    <button class="tool-btn mode-btn active" id="mode-tag" title="Tag Mode">Tags</button>
+                    <button class="tool-btn mode-btn" id="mode-zone" title="Zone Mode (Z)">Zones</button>
+                </div>
+
+                <div class="toolbar-group">
+                    <button class="tool-btn active" id="tool-pan" title="Pan (Space+Drag)">Pan</button>
+                    <button class="tool-btn" id="tool-polygon" title="Polygon Tool (P)">Polygon</button>
+                </div>
+
+                <div class="toolbar-group">
+                    <button class="tool-btn" id="btn-undo" title="Undo (Ctrl+Z)">Undo</button>
+                    <button class="tool-btn" id="btn-save" title="Save (Ctrl+S)">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Left Sidebar: Page Thumbnails -->
+        <div class="sidebar-left">
+            <div class="panel-section">
+                <div class="panel-title">PDF Files</div>
+                <div class="pdf-selector">
+                    <select id="pdf-select">
+                        <option value="">Select a PDF...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="panel-section">
+                <div class="panel-title">Pages</div>
+                <div class="thumbnail-container" id="thumbnail-container">
+                    <div class="empty-state">Load a PDF to see pages</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Viewer -->
+        <div class="viewer-area" id="viewer-area">
+            <div class="loading-overlay hidden" id="loading-overlay">
+                Loading PDF...
+            </div>
+            <div class="canvas-container" id="canvas-container">
+                <canvas id="pdf-canvas"></canvas>
+                <canvas id="annotation-canvas"></canvas>
+            </div>
+        </div>
+
+        <!-- Right Sidebar: Properties -->
+        <div class="sidebar-right">
+            <!-- Tag Panel (shown in tag mode) -->
+            <div class="panel-section" id="tag-panel">
+                <div class="panel-title">Classification</div>
+                <div class="classification-grid">
+                    <button class="class-btn window active" data-category="window">Window (W)</button>
+                    <button class="class-btn door" data-category="door">Door (D)</button>
+                    <button class="class-btn storefront" data-category="storefront">Storefront (S)</button>
+                    <button class="class-btn curtainwall" data-category="curtainwall">Curtainwall (C)</button>
+                </div>
+                <div class="type-label-input">
+                    <label>Type:</label>
+                    <input type="text" id="type-label" placeholder="A" maxlength="10">
+                </div>
+                <div class="keyboard-hints">
+                    <kbd>W</kbd> <kbd>D</kbd> <kbd>S</kbd> <kbd>C</kbd> to classify |
+                    <kbd>1</kbd>-<kbd>9</kbd> for type A-I
+                </div>
+            </div>
+
+            <!-- Zone Panel (shown in zone mode) -->
+            <div class="panel-section hidden" id="zone-panel">
+                <div class="panel-title">Zone Settings</div>
+
+                <!-- Zone Type Selector -->
+                <div class="zone-type-grid">
+                    <button class="zone-type-btn active" data-zone-type="elevation_zone" title="Mark elevation directions">Elevation</button>
+                    <button class="zone-type-btn" data-zone-type="floor_plan_zone" title="Mark building sides">Floor Plan</button>
+                    <button class="zone-type-btn" data-zone-type="detail_zone" title="Mark detail callouts">Detail</button>
+                    <button class="zone-type-btn" data-zone-type="schedule_zone" title="Mark schedule areas">Schedule</button>
+                </div>
+
+                <!-- Direction Selector (for elevation/floor plan zones) -->
+                <div class="direction-selector" id="elevation-options">
+                    <div class="direction-label">Direction:</div>
+                    <div class="compass-grid">
+                        <button class="direction-btn" data-direction="northwest">NW</button>
+                        <button class="direction-btn active" data-direction="north">N</button>
+                        <button class="direction-btn" data-direction="northeast">NE</button>
+                        <button class="direction-btn" data-direction="west">W</button>
+                        <div class="compass-center" id="compass-indicator"></div>
+                        <button class="direction-btn" data-direction="east">E</button>
+                        <button class="direction-btn" data-direction="southwest">SW</button>
+                        <button class="direction-btn" data-direction="south">S</button>
+                        <button class="direction-btn" data-direction="southeast">SE</button>
+                    </div>
+                    <div class="keyboard-hints">
+                        <kbd>N</kbd> <kbd>S</kbd> <kbd>E</kbd> <kbd>W</kbd> for direction
+                    </div>
+                </div>
+
+                <!-- Floor Plan Options (shares direction selector) -->
+                <div class="zone-options hidden" id="floor-plan-options">
+                    <div class="zone-input-group">
+                        <label>Wing/Section:</label>
+                        <input type="text" id="zone-label" placeholder="e.g., Wing A, Main">
+                    </div>
+                </div>
+
+                <!-- Detail Zone Options -->
+                <div class="zone-options hidden" id="detail-options">
+                    <div class="zone-input-group">
+                        <label>Detail ID:</label>
+                        <input type="text" id="detail-id" placeholder="e.g., A501-B">
+                    </div>
+                    <div class="zone-input-group">
+                        <label>Title:</label>
+                        <input type="text" id="detail-title" placeholder="e.g., Jamb Detail">
+                    </div>
+                    <div class="zone-input-group">
+                        <label>Applies to Types:</label>
+                        <input type="text" id="detail-applies-to" placeholder="e.g., A, B, C">
+                    </div>
+                </div>
+
+                <!-- Schedule Zone Options -->
+                <div class="zone-options hidden" id="schedule-options">
+                    <div class="zone-input-group">
+                        <label>Schedule Label:</label>
+                        <input type="text" id="schedule-label" placeholder="e.g., Window Schedule">
+                    </div>
+                </div>
+
+                <div class="keyboard-hints" style="margin-top: 1rem;">
+                    <kbd>Z</kbd> toggle zone mode | <kbd>P</kbd> polygon tool
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <div class="panel-title">Annotations (<span id="annotation-count">0</span>)</div>
+                <div class="annotation-list" id="annotation-list">
+                    <div class="empty-state">No annotations yet</div>
+                </div>
+            </div>
+
+            <!-- Auto-Detect Panel -->
+            <div class="panel-section">
+                <div class="panel-title">Auto-Detect Tags</div>
+                <div class="detect-controls">
+                    <select id="shape-select" class="shape-select">
+                        <option value="hexagon">⬡ Hexagon</option>
+                        <option value="circle">● Circle</option>
+                        <option value="rectangle">▭ Rectangle</option>
+                        <option value="diamond">◇ Diamond</option>
+                        <option value="triangle">△ Triangle</option>
+                    </select>
+                    <button id="btn-detect" class="detect-btn">Scan Page</button>
+                </div>
+                <div class="detect-results" id="detect-results">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="detect-actions hidden" id="detect-actions">
+                    <button id="btn-add-selected" class="action-btn add">Add Selected</button>
+                    <button id="btn-add-all" class="action-btn add-all">Add All</button>
+                    <button id="btn-clear-detect" class="action-btn clear">Clear</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span id="status-text">Ready</span>
+            <span id="page-info">Page 0 / 0</span>
+            <span id="coords-info">X: 0, Y: 0</span>
+            <div class="tag-summary" id="tag-summary">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- Configuration passed from server -->
+    <script>
+        window.APP_CONFIG = {
+            projectId: '{{ project_id }}',
+            initialPdf: '{{ initial_pdf | default("") }}',
+            colors: {{ colors | tojson | safe }},
+            directionColors: {{ direction_colors | default({}) | tojson | safe }}
+        };
+    </script>
+
+    <!-- Application Scripts -->
+    <script src="{{ url_for('static', filename='js/annotation/app.js') }}" type="module"></script>
+{% endblock %}

@@ -1,0 +1,841 @@
+{% extends "base.html" %}
+{% block title %}Quantity Verification - {{ project.title or project.folder }}{% endblock %}
+{% block head %}
+    <style>
+        .verification-header {
+            background: var(--accent-orange);
+            border-bottom: var(--border-width) solid var(--border);
+            padding: 1.5rem 2rem;
+        }
+        .verification-header-content {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .back-link {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+            background: var(--card-bg);
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border);
+            box-shadow: 3px 3px 0px #000000;
+        }
+        .back-link:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0px #000000;
+        }
+        .verification-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 1rem 0 0.5rem;
+            text-transform: uppercase;
+        }
+        .verification-subtitle {
+            color: var(--text);
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        .verification-content {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .verification-card {
+            background: var(--card-bg);
+            border: var(--border-width) solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+        .verification-card-header {
+            background: var(--bg);
+            padding: 1rem 1.25rem;
+            border-bottom: var(--border-width) solid var(--border);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        .verification-card-body {
+            padding: 1.25rem;
+        }
+
+        /* Step indicators */
+        .steps-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        .steps-indicator::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50px;
+            right: 50px;
+            height: 3px;
+            background: var(--border);
+        }
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 3px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .step.active .step-number {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+        .step.complete .step-number {
+            background: var(--success, #28a745);
+            border-color: var(--success, #28a745);
+            color: white;
+        }
+        .step-label {
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+        .step.active .step-label,
+        .step.complete .step-label {
+            color: var(--text);
+        }
+
+        /* Pattern tags */
+        .pattern-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .pattern-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .pattern-tag.door {
+            border-color: #dc3545;
+        }
+        .pattern-tag.window {
+            border-color: #007bff;
+        }
+        .pattern-tag.hardware {
+            border-color: #28a745;
+        }
+        .pattern-tag .remove-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 1rem;
+            padding: 0;
+            line-height: 1;
+        }
+        .pattern-tag .remove-btn:hover {
+            color: #dc3545;
+        }
+        .add-pattern-btn {
+            padding: 0.5rem 0.75rem;
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .add-pattern-btn:hover {
+            border-style: solid;
+            color: var(--text);
+        }
+
+        /* Shape selector */
+        .shape-selector {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .shape-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            cursor: pointer;
+        }
+        .shape-option.selected {
+            border-color: var(--accent-blue);
+            background: rgba(0, 123, 255, 0.1);
+        }
+        .shape-option input {
+            display: none;
+        }
+
+        /* Results table */
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .results-table th,
+        .results-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+        .results-table th {
+            background: var(--bg);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+        .results-table .status-ok {
+            color: var(--success, #28a745);
+            font-weight: 700;
+        }
+        .results-table .status-warn {
+            color: #ffc107;
+            font-weight: 700;
+        }
+        .results-table .status-error {
+            color: #dc3545;
+            font-weight: 700;
+        }
+
+        /* Progress section */
+        .progress-section {
+            background: var(--bg);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+        .progress-section.hidden {
+            display: none;
+        }
+        .progress-bar {
+            height: 20px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent-blue);
+            transition: width 0.3s ease;
+        }
+        .progress-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+            border: 2px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px #000000;
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0px #000000;
+        }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text);
+            border: 2px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px #000000;
+        }
+        .btn-secondary:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0px #000000;
+        }
+
+        /* Highlighted files list */
+        .highlighted-files {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+        .highlighted-files li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .highlighted-files li:last-child {
+            border-bottom: none;
+        }
+        .highlighted-files a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+        .highlighted-files a:hover {
+            text-decoration: underline;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <header class="verification-header">
+        <div class="verification-header-content">
+            <a href="/project/{{ project_id }}" class="back-link">&larr; Back to Project</a>
+            <h1 class="verification-title">Quantity Verification</h1>
+            <p class="verification-subtitle">{{ project.title or project.folder }}</p>
+        </div>
+    </header>
+
+    <div class="verification-content">
+        <!-- Step Indicators -->
+        <div class="steps-indicator">
+            <div class="step" id="step1" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-label">Learn Patterns</div>
+            </div>
+            <div class="step" id="step2" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-label">Confirm</div>
+            </div>
+            <div class="step" id="step3" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-label">Scan</div>
+            </div>
+            <div class="step" id="step4" data-step="4">
+                <div class="step-number">4</div>
+                <div class="step-label">Results</div>
+            </div>
+        </div>
+
+        <!-- Step 1: Learn Patterns -->
+        <div class="verification-card" id="learnCard">
+            <div class="verification-card-header">Step 1: Learn Tag Patterns</div>
+            <div class="verification-card-body">
+                <p style="margin-bottom: 1rem; color: var(--text-muted);">
+                    AI will analyze your door and window schedules to detect tag patterns (e.g., A, B, W1, WIN-A, Type 1).
+                </p>
+                <button class="btn-primary" id="learnBtn" onclick="learnPatterns()">
+                    Start Pattern Learning
+                </button>
+                <div class="progress-section hidden" id="learnProgress">
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" id="learnProgressFill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text" id="learnProgressText">Analyzing schedules...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Confirm Patterns -->
+        <div class="verification-card hidden" id="confirmCard">
+            <div class="verification-card-header">Step 2: Confirm Detected Patterns</div>
+            <div class="verification-card-body">
+                <p style="margin-bottom: 1rem; color: var(--text-muted);">
+                    Review and edit the detected patterns before scanning.
+                </p>
+
+                <h4 style="margin: 1rem 0 0.5rem; font-size: 0.85rem;">Door Tags:</h4>
+                <div class="pattern-tags" id="doorPatterns">
+                    <!-- Populated by JS -->
+                </div>
+
+                <h4 style="margin: 1rem 0 0.5rem; font-size: 0.85rem;">Window Tags:</h4>
+                <div class="pattern-tags" id="windowPatterns">
+                    <!-- Populated by JS -->
+                </div>
+
+                <h4 style="margin: 1rem 0 0.5rem; font-size: 0.85rem;">Hardware Tags:</h4>
+                <div class="pattern-tags" id="hardwarePatterns">
+                    <!-- Populated by JS -->
+                </div>
+
+                <h4 style="margin: 1.5rem 0 0.5rem; font-size: 0.85rem;">Shape Type to Detect:</h4>
+                <div class="shape-selector">
+                    <label class="shape-option selected" onclick="selectShape(this, 'hexagon')">
+                        <input type="radio" name="shape" value="hexagon" checked>
+                        <span>Hexagon</span>
+                    </label>
+                    <label class="shape-option" onclick="selectShape(this, 'circle')">
+                        <input type="radio" name="shape" value="circle">
+                        <span>Circle</span>
+                    </label>
+                    <label class="shape-option" onclick="selectShape(this, 'square')">
+                        <input type="radio" name="shape" value="square">
+                        <span>Square</span>
+                    </label>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-secondary" onclick="goBackToStep1()">Back</button>
+                    <button class="btn-primary" id="scanBtn" onclick="startScan()">
+                        Confirm & Start Scan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Scanning Progress -->
+        <div class="verification-card hidden" id="scanCard">
+            <div class="verification-card-header">Step 3: Scanning Drawings</div>
+            <div class="verification-card-body">
+                <p style="margin-bottom: 1rem; color: var(--text-muted);">
+                    Scanning floor plans and exterior elevations for tag shapes...
+                </p>
+                <div class="progress-section" id="scanProgress">
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" id="scanProgressFill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text" id="scanProgressText">Initializing scanner...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Results -->
+        <div class="verification-card hidden" id="resultsCard">
+            <div class="verification-card-header">Step 4: Verification Results</div>
+            <div class="verification-card-body">
+                <div id="resultsSummary" style="margin-bottom: 1.5rem;">
+                    <!-- Summary populated by JS -->
+                </div>
+
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Tag</th>
+                            <th>Schedule Qty</th>
+                            <th>Drawing Qty</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+
+                <h4 style="margin: 1.5rem 0 0.5rem; font-size: 0.85rem;">Highlighted PDFs:</h4>
+                <ul class="highlighted-files" id="highlightedFiles">
+                    <!-- Populated by JS -->
+                </ul>
+
+                <div class="action-buttons">
+                    <button class="btn-secondary" onclick="location.reload()">Start Over</button>
+                    <a href="/project/{{ project_id }}" class="btn-primary" style="text-decoration: none;">
+                        Back to Project
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const projectId = '{{ project_id }}';
+    let currentStep = 1;
+    let detectedPatterns = null;
+    let selectedShape = 'hexagon';
+    let pollInterval = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        updateStepIndicators();
+        checkExistingStatus();
+    });
+
+    function updateStepIndicators() {
+        for (let i = 1; i <= 4; i++) {
+            const stepEl = document.getElementById(`step${i}`);
+            stepEl.classList.remove('active', 'complete');
+            if (i < currentStep) {
+                stepEl.classList.add('complete');
+            } else if (i === currentStep) {
+                stepEl.classList.add('active');
+            }
+        }
+    }
+
+    async function checkExistingStatus() {
+        try {
+            const resp = await fetch(`/api/project/${projectId}/qty/status`);
+            const data = await resp.json();
+
+            if (data.status === 'patterns_detected') {
+                // Already have patterns, go to step 2
+                detectedPatterns = data.patterns;
+                showStep2();
+            } else if (data.status === 'complete') {
+                // Already have results, show them
+                showResults(data.results);
+            }
+        } catch (err) {
+            console.log('No existing verification status');
+        }
+    }
+
+    async function learnPatterns() {
+        const btn = document.getElementById('learnBtn');
+        const progress = document.getElementById('learnProgress');
+
+        btn.disabled = true;
+        btn.textContent = 'Learning...';
+        progress.classList.remove('hidden');
+
+        try {
+            const resp = await fetch(`/api/project/${projectId}/qty/learn-patterns`, {
+                method: 'POST'
+            });
+
+            if (!resp.ok) {
+                const data = await resp.json();
+                throw new Error(data.error || 'Failed to start pattern learning');
+            }
+
+            // Start polling for results
+            pollInterval = setInterval(pollPatternStatus, 2000);
+
+        } catch (err) {
+            alert('Error: ' + err.message);
+            btn.disabled = false;
+            btn.textContent = 'Start Pattern Learning';
+            progress.classList.add('hidden');
+        }
+    }
+
+    async function pollPatternStatus() {
+        const progressFill = document.getElementById('learnProgressFill');
+        const progressText = document.getElementById('learnProgressText');
+
+        try {
+            const resp = await fetch(`/api/project/${projectId}/qty/patterns`);
+            const data = await resp.json();
+
+            if (data.status === 'learning') {
+                progressFill.style.width = '50%';
+                progressText.textContent = 'Analyzing schedules...';
+            } else if (data.status === 'patterns_detected') {
+                clearInterval(pollInterval);
+                progressFill.style.width = '100%';
+                progressText.textContent = 'Patterns detected!';
+
+                detectedPatterns = data.patterns;
+                setTimeout(() => showStep2(), 500);
+            } else if (data.status === 'error') {
+                clearInterval(pollInterval);
+                alert('Error: ' + (data.error || 'Pattern learning failed'));
+                document.getElementById('learnBtn').disabled = false;
+                document.getElementById('learnBtn').textContent = 'Retry';
+                document.getElementById('learnProgress').classList.add('hidden');
+            }
+        } catch (err) {
+            console.error('Poll error:', err);
+        }
+    }
+
+    function showStep2() {
+        currentStep = 2;
+        updateStepIndicators();
+
+        document.getElementById('learnCard').classList.add('hidden');
+        document.getElementById('confirmCard').classList.remove('hidden');
+
+        // Populate pattern tags
+        renderPatternTags('doorPatterns', detectedPatterns.door_patterns || [], 'door');
+        renderPatternTags('windowPatterns', detectedPatterns.window_patterns || [], 'window');
+        renderPatternTags('hardwarePatterns', detectedPatterns.hardware_patterns || [], 'hardware');
+    }
+
+    function renderPatternTags(containerId, patterns, category) {
+        const container = document.getElementById(containerId);
+        let html = '';
+
+        patterns.forEach((p, idx) => {
+            const examples = p.examples || [p.pattern_id];
+            examples.forEach(ex => {
+                html += `
+                    <div class="pattern-tag ${category}" data-pattern="${ex}" data-category="${category}">
+                        <span>${ex}</span>
+                        ${p.quantity ? `<span style="font-size: 0.7rem; opacity: 0.7;">(${p.quantity})</span>` : ''}
+                        <button class="remove-btn" onclick="removePattern(this)">&times;</button>
+                    </div>
+                `;
+            });
+        });
+
+        html += `<button class="add-pattern-btn" onclick="addPattern('${category}')">+ Add</button>`;
+        container.innerHTML = html;
+    }
+
+    function removePattern(btn) {
+        btn.closest('.pattern-tag').remove();
+    }
+
+    function addPattern(category) {
+        const pattern = prompt(`Enter new ${category} tag pattern:`);
+        if (!pattern) return;
+
+        const container = document.getElementById(`${category}Patterns`);
+        const addBtn = container.querySelector('.add-pattern-btn');
+
+        const tag = document.createElement('div');
+        tag.className = `pattern-tag ${category}`;
+        tag.dataset.pattern = pattern;
+        tag.dataset.category = category;
+        tag.innerHTML = `
+            <span>${pattern}</span>
+            <button class="remove-btn" onclick="removePattern(this)">&times;</button>
+        `;
+
+        container.insertBefore(tag, addBtn);
+    }
+
+    function selectShape(el, shape) {
+        document.querySelectorAll('.shape-option').forEach(opt => opt.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedShape = shape;
+    }
+
+    function goBackToStep1() {
+        currentStep = 1;
+        updateStepIndicators();
+        document.getElementById('confirmCard').classList.add('hidden');
+        document.getElementById('learnCard').classList.remove('hidden');
+        document.getElementById('learnBtn').disabled = false;
+        document.getElementById('learnBtn').textContent = 'Start Pattern Learning';
+        document.getElementById('learnProgress').classList.add('hidden');
+    }
+
+    function collectPatterns() {
+        const patterns = {
+            door_patterns: [],
+            window_patterns: [],
+            hardware_patterns: []
+        };
+
+        document.querySelectorAll('.pattern-tag').forEach(tag => {
+            const pattern = tag.dataset.pattern;
+            const category = tag.dataset.category;
+
+            if (category === 'door') {
+                patterns.door_patterns.push({
+                    pattern_id: pattern,
+                    category: 'door',
+                    examples: [pattern],
+                    regex: pattern,
+                    confidence: 0.9
+                });
+            } else if (category === 'window') {
+                patterns.window_patterns.push({
+                    pattern_id: pattern,
+                    category: 'window',
+                    examples: [pattern],
+                    regex: pattern,
+                    confidence: 0.9
+                });
+            } else if (category === 'hardware') {
+                patterns.hardware_patterns.push({
+                    pattern_id: pattern,
+                    category: 'hardware',
+                    examples: [pattern],
+                    regex: pattern,
+                    confidence: 0.9
+                });
+            }
+        });
+
+        return patterns;
+    }
+
+    async function startScan() {
+        const btn = document.getElementById('scanBtn');
+        btn.disabled = true;
+        btn.textContent = 'Starting...';
+
+        currentStep = 3;
+        updateStepIndicators();
+        document.getElementById('confirmCard').classList.add('hidden');
+        document.getElementById('scanCard').classList.remove('hidden');
+
+        const patterns = collectPatterns();
+
+        try {
+            const resp = await fetch(`/api/project/${projectId}/qty/scan`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    patterns: patterns,
+                    shape_type: selectedShape
+                })
+            });
+
+            if (!resp.ok) {
+                const data = await resp.json();
+                throw new Error(data.error || 'Failed to start scan');
+            }
+
+            // Start polling for results
+            pollInterval = setInterval(pollScanStatus, 2000);
+
+        } catch (err) {
+            alert('Error: ' + err.message);
+            goBackToStep1();
+        }
+    }
+
+    async function pollScanStatus() {
+        const progressFill = document.getElementById('scanProgressFill');
+        const progressText = document.getElementById('scanProgressText');
+
+        try {
+            const resp = await fetch(`/api/project/${projectId}/qty/status`);
+            const data = await resp.json();
+
+            if (data.status === 'scanning') {
+                progressFill.style.width = '60%';
+                progressText.textContent = 'Scanning floor plans and elevations...';
+            } else if (data.status === 'complete') {
+                clearInterval(pollInterval);
+                progressFill.style.width = '100%';
+                progressText.textContent = 'Scan complete!';
+
+                setTimeout(() => showResults(data.results), 500);
+            } else if (data.status === 'error') {
+                clearInterval(pollInterval);
+                alert('Error: ' + (data.error || 'Scan failed'));
+                goBackToStep1();
+            }
+        } catch (err) {
+            console.error('Poll error:', err);
+        }
+    }
+
+    function showResults(results) {
+        currentStep = 4;
+        updateStepIndicators();
+
+        document.getElementById('scanCard').classList.add('hidden');
+        document.getElementById('resultsCard').classList.remove('hidden');
+
+        // Summary
+        const summary = document.getElementById('resultsSummary');
+        summary.innerHTML = `
+            <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                <div>
+                    <div style="font-size: 2rem; font-weight: 700;">${results.total_sheets_scanned || 0}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Sheets Scanned</div>
+                </div>
+                <div>
+                    <div style="font-size: 2rem; font-weight: 700;">${results.total_tags_found || 0}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Tags Found</div>
+                </div>
+            </div>
+        `;
+
+        // Results table
+        const tbody = document.getElementById('resultsTableBody');
+        const comparison = results.comparison || {};
+        let html = '';
+
+        for (const [tag, data] of Object.entries(comparison).sort()) {
+            const scheduleQty = data.schedule_qty || '-';
+            const drawingQty = data.drawing_qty || 0;
+            let statusClass = '';
+            let statusText = '';
+
+            if (data.match === null) {
+                statusText = 'N/A';
+                statusClass = '';
+            } else if (data.match) {
+                statusText = 'OK';
+                statusClass = 'status-ok';
+            } else {
+                const diff = data.difference || 0;
+                statusText = `DIFF: ${diff > 0 ? '+' : ''}${diff}`;
+                statusClass = diff !== 0 ? 'status-warn' : 'status-ok';
+            }
+
+            html += `
+                <tr>
+                    <td><strong>${tag}</strong></td>
+                    <td>${scheduleQty}</td>
+                    <td>${drawingQty}</td>
+                    <td class="${statusClass}">${statusText}</td>
+                </tr>
+            `;
+        }
+
+        if (!html) {
+            html = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No comparison data available</td></tr>';
+        }
+        tbody.innerHTML = html;
+
+        // Highlighted files
+        const filesList = document.getElementById('highlightedFiles');
+        const highlightedFiles = results.highlighted_files || [];
+
+        if (highlightedFiles.length > 0) {
+            filesList.innerHTML = highlightedFiles.map(file => {
+                const filename = file.split('/').pop();
+                const encodedPath = encodeURIComponent(file);
+                return `
+                    <li>
+                        <span style="font-size: 1.2rem;">📄</span>
+                        <a href="/api/pdf/view?path=${encodedPath}" target="_blank">${filename}</a>
+                    </li>
+                `;
+            }).join('');
+        } else {
+            filesList.innerHTML = '<li style="color: var(--text-muted);">No highlighted PDFs generated</li>';
+        }
+
+        // Report link
+        if (results.report_path) {
+            const reportEncoded = encodeURIComponent(results.report_path);
+            filesList.innerHTML += `
+                <li style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--border);">
+                    <span style="font-size: 1.2rem;">📊</span>
+                    <a href="/api/pdf/view?path=${reportEncoded}" target="_blank"><strong>COMPARISON REPORT</strong></a>
+                </li>
+            `;
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,723 @@
+/**
+ * Division 8 Analysis Page Styles
+ * Brutalist design matching command-center aesthetic
+ */
+
+/* CSS Variable Fallbacks */
+:root {
+    --bg: #f5f5f5;
+    --card-bg: #ffffff;
+    --text: #1a1a1a;
+    --text-muted: #666666;
+    --border: #1a1a1a;
+    --border-width: 2px;
+    --shadow: 4px 4px 0 #1a1a1a;
+    --accent-blue: #3b82f6;
+    --accent-green: #22c55e;
+    --accent-orange: #f59e0b;
+    --accent-red: #ef4444;
+    --accent-purple: #8b5cf6;
+    --font-mono: 'Space Mono', monospace;
+}
+
+/* =============================================================================
+   PAGE LAYOUT
+   ============================================================================= */
+
+.analysis-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem 4rem;
+    min-height: 100vh;
+    background: var(--bg, #f5f5f5);
+}
+
+/* =============================================================================
+   HEADER
+   ============================================================================= */
+
+.analysis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: var(--accent-blue);
+    border: var(--border-width, 2px) solid var(--border);
+    margin-bottom: 1rem;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.back-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.5rem 0.75rem;
+    background: var(--card-bg);
+    border: var(--border-width, 2px) solid var(--border);
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.back-link:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--border);
+}
+
+.back-arrow {
+    font-size: 1.2em;
+}
+
+.analysis-header h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0;
+    color: var(--text);
+}
+
+.project-name {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--card-bg);
+    border: var(--border-width, 2px) solid var(--border);
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.action-btn:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--border);
+}
+
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.action-btn.primary {
+    background: var(--accent-green, #22c55e);
+    color: white;
+}
+
+.action-btn .icon {
+    font-size: 1rem;
+}
+
+/* =============================================================================
+   STATUS BAR
+   ============================================================================= */
+
+.analysis-status {
+    margin-bottom: 1rem;
+}
+
+.status-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: var(--border-width, 2px) solid var(--border);
+}
+
+.status-badge.complete {
+    background: var(--accent-green, #22c55e);
+    color: white;
+}
+
+.status-badge.pending {
+    background: var(--accent-orange, #f59e0b);
+    color: white;
+}
+
+.status-badge.running {
+    background: var(--accent-blue, #3b82f6);
+    color: white;
+}
+
+.status-badge.error {
+    background: var(--accent-red, #ef4444);
+    color: white;
+}
+
+.status-badge .separator {
+    opacity: 0.5;
+}
+
+.confidence.high {
+    background: rgba(255,255,255,0.2);
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+}
+
+.confidence.medium {
+    background: rgba(255,255,255,0.15);
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+}
+
+.confidence.low {
+    background: rgba(255,255,255,0.1);
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+}
+
+/* =============================================================================
+   TABS
+   ============================================================================= */
+
+.analysis-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: var(--border-width, 2px) solid var(--border);
+    background: var(--bg);
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+}
+
+.tab-btn {
+    padding: 1rem 1.25rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    background: var(--card-bg);
+    color: var(--text);
+}
+
+.tab-btn.active {
+    background: var(--card-bg);
+    border-bottom-color: var(--accent-blue);
+    color: var(--text);
+}
+
+/* =============================================================================
+   TAB PANELS
+   ============================================================================= */
+
+.analysis-content {
+    min-height: 400px;
+}
+
+.tab-panel {
+    display: none;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+/* =============================================================================
+   SCOPE CARDS
+   ============================================================================= */
+
+.scope-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.25rem;
+}
+
+.scope-card {
+    background: var(--card-bg);
+    border: var(--border-width, 2px) solid var(--border);
+    box-shadow: var(--shadow, 4px 4px 0 var(--border));
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.scope-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--border);
+}
+
+.scope-card.wide {
+    grid-column: 1 / -1;
+}
+
+.scope-card.summary-card {
+    grid-column: 1 / -1;
+    margin-bottom: 0.5rem;
+}
+
+.scope-card.exclusions-card,
+.scope-card.clarifications-card {
+    margin-top: 1rem;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-bottom: var(--border-width, 2px) solid var(--border);
+    background: var(--bg);
+}
+
+.card-header .icon {
+    font-size: 1.1rem;
+}
+
+.card-header h2,
+.card-header h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    flex: 1;
+}
+
+.card-header.warning {
+    background: var(--accent-orange, #f59e0b);
+    color: white;
+}
+
+.card-header.info {
+    background: var(--accent-blue, #3b82f6);
+    color: white;
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+.card-footer {
+    padding: 0.5rem 1rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.spec-refs {
+    font-family: var(--font-mono, monospace);
+}
+
+/* =============================================================================
+   STATUS BADGES IN CARDS
+   ============================================================================= */
+
+.scope-card .status-badge {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: none;
+    margin-left: auto;
+}
+
+.scope-card .status-badge.specified {
+    background: var(--accent-green, #22c55e);
+    color: white;
+}
+
+.scope-card .status-badge.not-specified {
+    background: var(--text-muted);
+    color: white;
+}
+
+.scope-card .status-badge.excluded {
+    background: var(--accent-orange, #f59e0b);
+    color: white;
+}
+
+/* Scope card status styling */
+.scope-card.specified {
+    border-left: 4px solid var(--accent-green, #22c55e);
+}
+
+.scope-card.not-specified {
+    opacity: 0.7;
+}
+
+.scope-card.excluded {
+    border-left: 4px solid var(--accent-orange, #f59e0b);
+    opacity: 0.85;
+}
+
+/* =============================================================================
+   FIELDS
+   ============================================================================= */
+
+.field {
+    margin-bottom: 0.75rem;
+}
+
+.field:last-child {
+    margin-bottom: 0;
+}
+
+.field label {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.field .value {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.field .value.highlight {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent-blue);
+}
+
+.field.notes ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+.field.notes li {
+    margin-bottom: 0.25rem;
+}
+
+.exclusion-note {
+    color: var(--text-muted);
+    font-style: italic;
+    margin: 0;
+}
+
+/* =============================================================================
+   TAGS
+   ============================================================================= */
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+
+.tag {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    font-weight: 500;
+}
+
+/* =============================================================================
+   PERFORMANCE SPECS
+   ============================================================================= */
+
+.performance-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.perf-item {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    background: var(--accent-blue);
+    color: white;
+    font-weight: 500;
+    font-family: var(--font-mono, monospace);
+}
+
+/* =============================================================================
+   STATS GRID
+   ============================================================================= */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.stat-card {
+    text-align: center;
+    padding: 1.25rem;
+    background: var(--card-bg);
+    border: var(--border-width, 2px) solid var(--border);
+}
+
+.stat-card.doors {
+    border-top: 4px solid var(--accent-blue);
+}
+
+.stat-card.windows {
+    border-top: 4px solid var(--accent-green, #22c55e);
+}
+
+.stat-card.storefront {
+    border-top: 4px solid var(--accent-orange, #f59e0b);
+}
+
+.stat-card.hardware {
+    border-top: 4px solid var(--accent-purple, #8b5cf6);
+}
+
+.stat-card.active {
+    background: var(--accent-green, #22c55e);
+    color: white;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    display: block;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.stat-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+.stat-card.active .stat-label {
+    color: rgba(255,255,255,0.8);
+}
+
+/* =============================================================================
+   LISTS
+   ============================================================================= */
+
+.summary-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0 0 1rem;
+}
+
+.key-items,
+.exclusions-list,
+.clarifications-list {
+    margin: 0;
+    padding-left: 1.5rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.key-items li,
+.exclusions-list li,
+.clarifications-list li {
+    margin-bottom: 0.5rem;
+}
+
+/* =============================================================================
+   JSON VIEW
+   ============================================================================= */
+
+.json-container {
+    background: var(--card-bg);
+    border: var(--border-width, 2px) solid var(--border);
+}
+
+.json-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: var(--border-width, 2px) solid var(--border);
+    background: var(--bg);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.copy-btn {
+    padding: 0.3rem 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.copy-btn:hover {
+    opacity: 0.9;
+}
+
+.json-content {
+    padding: 1rem;
+    margin: 0;
+    font-size: 0.75rem;
+    font-family: var(--font-mono, monospace);
+    line-height: 1.5;
+    overflow-x: auto;
+    max-height: 600px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* =============================================================================
+   EMPTY STATE
+   ============================================================================= */
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--card-bg);
+    border: var(--border-width, 2px) solid var(--border);
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    font-size: 1.25rem;
+    margin: 0 0 0.5rem;
+}
+
+.empty-state p {
+    color: var(--text-muted);
+    margin: 0 0 1.5rem;
+}
+
+/* =============================================================================
+   LOADING OVERLAY
+   ============================================================================= */
+
+.loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-overlay.active {
+    display: flex;
+}
+
+.loading-content {
+    background: var(--card-bg);
+    border: var(--border-width, 2px) solid var(--border);
+    padding: 2rem 3rem;
+    text-align: center;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--border);
+    border-top-color: var(--accent-blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+#loadingMessage {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* =============================================================================
+   RESPONSIVE
+   ============================================================================= */
+
+@media (max-width: 768px) {
+    .analysis-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .header-actions {
+        width: 100%;
+    }
+
+    .header-actions .action-btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .scope-cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .analysis-tabs {
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tab-btn {
+        padding: 0.75rem 1rem;
+    }
+}

@@ -1,0 +1,772 @@
+{% extends "base.html" %}
+
+{% block title %}Project Tracker - Division 8{% endblock %}
+
+{% block head %}
+<style>
+    /* Dropdown Navigation Styles */
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+    .dropdown-toggle {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .dropdown-toggle::after {
+        content: '▼';
+        font-size: 0.7rem;
+        opacity: 0.7;
+    }
+    .dropdown-menu {
+        position: absolute;
+        top: calc(100% + 0.5rem);
+        left: 0;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        border-radius: var(--border-radius);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        min-width: 180px;
+        display: none;
+        z-index: 1000;
+        padding: 0.5rem 0;
+    }
+    .dropdown.active .dropdown-menu {
+        display: block;
+    }
+    .dropdown-menu a {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+    .dropdown-menu a:hover {
+        background: var(--bg-tertiary);
+    }
+    .intake-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #e53935;
+        color: white;
+        font-size: 0.7rem;
+        font-weight: bold;
+        min-width: 18px;
+        height: 18px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 5px;
+        border: 2px solid var(--border);
+    }
+    .new-opportunities-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: linear-gradient(135deg, #00b894, #00cec9);
+        color: white;
+        font-size: 0.65rem;
+        font-weight: bold;
+        padding: 2px 6px;
+        border-radius: 10px;
+        border: 2px solid var(--border);
+        white-space: nowrap;
+        z-index: 10;
+    }
+    /* Countdown Timer Styles */
+    .countdown-timer {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: var(--border-radius-sm, 4px);
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+    .countdown-timer.urgent {
+        background: var(--accent-danger, #ff5252);
+        color: white;
+    }
+    .countdown-timer.soon {
+        background: var(--accent-warning, #ffab40);
+        color: var(--text-primary, #1a1a2e);
+    }
+    .countdown-timer.normal {
+        background: var(--accent-success, #4caf50);
+        color: white;
+    }
+    .countdown-timer.far {
+        background: var(--bg-card);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+    }
+    .countdown-timer.past {
+        background: var(--text-muted);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <header class="header">
+        <div class="header-content">
+            <div class="header-brand">
+                <img src="{{ url_for('static', filename='images/cws-logo.png') }}" alt="CWS" class="header-logo">
+                <span class="header-divider">|</span>
+                <h1>Project Tracker</h1>
+            </div>
+            <div class="header-actions">
+                <a href="/intake" class="btn btn-secondary" style="position: relative;">
+                    Intake
+                    <span id="intakeBadge" class="intake-badge" style="display: none;"></span>
+                </a>
+                <a href="/forecasting" class="btn btn-secondary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">Forecasting</a>
+                <a href="/archived" class="btn btn-secondary">Archived</a>
+
+                <!-- Directory Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle">Directory</button>
+                    <div class="dropdown-menu">
+                        <a href="/vendors">🏢 Vendors</a>
+                        <a href="/contractors">👷 Contractors</a>
+                    </div>
+                </div>
+
+                <a href="/pipeline" class="btn btn-primary" style="background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);">AI Pipeline</a>
+
+                <!-- Tools Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle">Tools</button>
+                    <div class="dropdown-menu">
+                        <a href="#" onclick="event.preventDefault(); refreshProjects();">🔄 Refresh Local</a>
+                        <a href="#" onclick="event.preventDefault(); startBatchScan();">📋 Batch Scan Specs</a>
+                        <a href="#" onclick="event.preventDefault(); triggerSync();">
+                            <img src="{{ url_for('static', filename='images/projectdoglogo.png') }}" alt="" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 0.5rem;">
+                            Sync ProjectDog
+                        </a>
+                    </div>
+                </div>
+
+                <a href="/settings" class="btn btn-secondary" title="Settings">Settings</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation -->
+    <button class="mobile-menu-toggle" onclick="toggleMobileNav()" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <div class="mobile-nav-overlay" onclick="closeMobileNav()"></div>
+
+    <nav class="mobile-nav-drawer">
+        <div class="drawer-header">Menu</div>
+        <div class="drawer-content">
+            <a href="/intake" class="nav-item">📥 Intake</a>
+            <a href="/forecasting" class="nav-item">📊 Forecasting</a>
+            <a href="/archived" class="nav-item">📦 Archived</a>
+            <a href="/vendors" class="nav-item">🏢 Vendors</a>
+            <a href="/contractors" class="nav-item">👷 Contractors</a>
+            <a href="/pipeline" class="nav-item">🤖 AI Pipeline</a>
+            <a href="#" class="nav-item" onclick="event.preventDefault(); closeMobileNav(); refreshProjects();">🔄 Refresh Local</a>
+            <a href="#" class="nav-item" onclick="event.preventDefault(); closeMobileNav(); startBatchScan();">📋 Batch Scan Specs</a>
+            <a href="#" class="nav-item" onclick="event.preventDefault(); closeMobileNav(); triggerSync();">🔵 Sync ProjectDog</a>
+            <a href="/settings" class="nav-item">⚙️ Settings</a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <!-- Stats Cards -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_projects }}</div>
+                <div class="stat-label">Local Projects</div>
+            </div>
+            <div class="stat-card projectdog-card">
+                <img src="{{ url_for('static', filename='images/projectdoglogo.png') }}" alt="ProjectDog" class="stat-logo">
+                <div class="stat-number">{{ projectdog_projects|length }}</div>
+                <div class="stat-label">ProjectDog</div>
+            </div>
+            <div class="stat-card planhub-card" onclick="document.getElementById('sourceFilter').value='planhub'; filterProjects();" style="cursor: pointer; position: relative;">
+                {% if planhub_new_count and planhub_new_count > 0 %}
+                <span class="new-opportunities-badge">{{ planhub_new_count }} new</span>
+                {% endif %}
+                <img src="{{ url_for('static', filename='images/planhub_logo.svg') }}" alt="PlanHub" class="stat-logo planhub-logo">
+                <div class="stat-number">{{ planhub_projects|length }}</div>
+                <div class="stat-label">PlanHub</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ tracking_stats.estimates_created }}</div>
+                <div class="stat-label">Estimates</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ tracking_stats.proposals_generated }}</div>
+                <div class="stat-label">Proposals</div>
+            </div>
+        </section>
+
+        <!-- Mobile Filter Toggle -->
+        <button class="mobile-filter-toggle" onclick="toggleFilters()">
+            <span id="filterToggleText">🔍 Show Filters</span>
+        </button>
+
+        <!-- Filters -->
+        <section class="filters">
+            <div class="filter-group">
+                <label for="sourceFilter">Source:</label>
+                <select id="sourceFilter" onchange="filterProjects()">
+                    <option value="all">All Sources</option>
+                    <option value="local">Local Bidding</option>
+                    <option value="projectdog">ProjectDog</option>
+                    <option value="planhub">PlanHub</option>
+                    <option value="email_monitor">Email</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="gcFilter">Contractor:</label>
+                <select id="gcFilter" onchange="filterProjects()">
+                    <option value="all">All Contractors</option>
+                    <option value="direct">⭐ Direct Emails Only</option>
+                    {% for gc, count in gc_companies %}
+                    <option value="{{ gc }}">{{ gc }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="typeFilter">Type:</label>
+                <select id="typeFilter" onchange="filterProjects()">
+                    <option value="all">All Types</option>
+                    <option value="public">Public</option>
+                    <option value="private">Private</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="searchFilter">Search:</label>
+                <input type="text" id="searchFilter" placeholder="Search projects..." oninput="filterProjects()">
+            </div>
+            <div class="filter-group">
+                <label for="stateFilter">State:</label>
+                <select id="stateFilter" onchange="filterProjects()">
+                    <option value="all">All States</option>
+                    {% for state, count in stats.by_state.items() %}
+                    <option value="{{ state }}">{{ state }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="statusFilter">Status:</label>
+                <select id="statusFilter" onchange="filterProjects()">
+                    <option value="all">All Status</option>
+                    <option value="bid">Bidding</option>
+                    <option value="no_bid">No Bid</option>
+                    <option value="pending">Pending</option>
+                    <option value="gc_awarded">GC Awarded (Hot)</option>
+                    <option value="awarded">We Won</option>
+                    <option value="lost">Lost</option>
+                    <option value="has_estimate">Has Estimate</option>
+                    <option value="has_proposal">Has Proposal</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="scopeFilter">Scope:</label>
+                <select id="scopeFilter" onchange="filterProjects()">
+                    <option value="all">All Scope</option>
+                    <!-- Populated by JavaScript from API -->
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="projectTypeFilter">Project Type:</label>
+                <select id="projectTypeFilter" onchange="filterProjects()">
+                    <option value="all">All Types</option>
+                    <!-- Populated by JavaScript from API -->
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filesFilter">Files:</label>
+                <select id="filesFilter" onchange="filterProjects()">
+                    <option value="all">All Projects</option>
+                    <option value="has_folder">Has Local Folder</option>
+                    <option value="no_folder">No Local Folder</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="sortBy">Sort By:</label>
+                <select id="sortBy" onchange="sortProjects()">
+                    <option value="bid_date_asc">Bid Date (Soonest)</option>
+                    <option value="bid_date_desc">Bid Date (Latest)</option>
+                    <option value="updated_desc">Recently Updated</option>
+                    <option value="added_desc">Recently Added</option>
+                    <option value="added_asc">Oldest First</option>
+                    <option value="title_asc">Title (A-Z)</option>
+                    <option value="title_desc">Title (Z-A)</option>
+                </select>
+            </div>
+            <div class="filter-group view-toggle">
+                <label>View:</label>
+                <button class="view-btn active" id="gridViewBtn" onclick="setView('grid')" title="Grid View">&#9638;</button>
+                <button class="view-btn" id="listViewBtn" onclick="setView('list')" title="List View">&#9776;</button>
+            </div>
+            <div class="filter-group">
+                <a href="/archived" class="archived-btn">View Archived ({{ archived_count }})</a>
+            </div>
+        </section>
+
+        <!-- Bidding Projects Section -->
+        <section class="section">
+            <h2 class="section-title">Bidding Projects <span class="count">({{ projects|length }})</span></h2>
+            <div class="project-grid" id="projectGrid">
+                {% for project in projects %}
+                <div class="project-card {% if project.is_dcam %}dcam-card{% endif %} {% if project.is_rfq %}rfq-card{% endif %}"
+                     data-source="{{ project.source }}"
+                     data-type="{% if project.is_dcam %}public{% else %}private{% endif %}"
+                     data-state="{{ project.location.state if project.location and project.location.state else '' }}"
+                     data-title="{{ project.title|lower }}"
+                     data-decision="{{ project.bid_decision or '' }}"
+                     data-scope="{{ project.csi_tags|safe_join(',') if project.csi_tags else '' }}"
+                     data-tags="{{ project.tags|join(',')|lower if project.tags else '' }}"
+                     data-id="{{ project.project_code or project.id }}"
+                     data-bid-date="{{ project.bid_date or '' }}"
+                     data-gc="{% if project.gc_companies %}{% for gc in project.gc_companies %}{{ gc.company }}{% if not loop.last %},{% endif %}{% endfor %}{% else %}{{ project.gc_company or '' }}{% endif %}"
+                     data-direct="{{ 'true' if project.is_direct_email else 'false' }}"
+                     data-has-folder="{{ 'true' if project.has_local_folder else 'false' }}"
+                     onclick="window.location='/project/{{ project.project_code or project.id }}'"
+                     style="cursor: pointer;">
+
+                    <!-- Row 1: Badges -->
+                    <div class="card-header">
+                        {% if project.is_direct_email %}<span class="priority-star" title="Direct email from contractor">⭐</span>{% endif %}
+                        {% if project.source == 'projectdog' %}
+                        <span class="source-badge projectdog">ProjectDog</span>
+                        {% elif project.source == 'planhub' %}
+                        <span class="source-badge planhub">PlanHub</span>
+                        {% elif project.source == 'email_monitor' %}
+                        <span class="source-badge email">Email</span>
+                        {% else %}
+                        <span class="source-badge local">Local{% if project.email_linked %} 📧{% endif %}</span>
+                        {% endif %}
+                        {% if project.gc_companies %}
+                            {% for gc in project.gc_companies[:3] %}
+                            <span class="gc-badge{% if gc.is_direct %} direct{% endif %}" title="{{ gc.contacts|join(', ') if gc.contacts else gc.company }} ({{ gc.email_count }} emails)">{{ gc.company[:15] }}{% if gc.company|length > 15 %}...{% endif %}</span>
+                            {% endfor %}
+                            {% if project.gc_companies|length > 3 %}<span class="gc-badge more">+{{ project.gc_companies|length - 3 }}</span>{% endif %}
+                        {% elif project.gc_company %}<span class="gc-badge" title="{{ project.gc_contacts|join(', ') if project.gc_contacts else project.gc_company }}">{{ project.gc_company[:20] }}{% if project.gc_company|length > 20 %}...{% endif %}</span>{% endif %}
+                        {% if project.is_dcam %}<span class="type-badge dcam">DCAM</span>{% endif %}
+                        {% if project.is_rfq %}<span class="type-badge rfq">RFQ</span>{% endif %}
+                        {% if project.bid_decision == 'bid' %}<span class="decision-badge bid">Bid</span>
+                        {% elif project.bid_decision == 'awarded' %}<span class="decision-badge awarded">Won</span>
+                        {% elif project.bid_decision == 'lost' %}<span class="decision-badge lost">Lost</span>{% endif %}
+                        {% if project.has_suggested_links %}<span class="link-indicator" title="Potential duplicate sources detected">🔗</span>{% endif %}
+                        {% if project.has_local_folder %}<span class="folder-indicator" title="Has local folder" style="opacity: 0.7;">📁</span>{% endif %}
+                    </div>
+
+                    <!-- Row 2: Title -->
+                    <h3 class="card-title">{{ project.title or project.folder }}</h3>
+
+                    <!-- Row 3: Location -->
+                    <div class="card-location">
+                        {% if project.location and project.location.city %}{{ project.location.city }}, {{ project.location.state }}
+                        {% elif project.location and project.location.raw %}{{ project.location.raw }}{% endif %}
+                    </div>
+
+                    <!-- Row 4: Bid Date + Countdown -->
+                    <div class="card-bid-row">
+                        <span class="bid-date">{% if project.bid_date %}Bid: {{ project.bid_date | format_date }}{% else %}No bid date{% endif %}</span>
+                        {% if project.bid_date %}
+                        <span class="countdown-timer" data-bid-date="{{ project.bid_date }}"></span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Row 5: Division 8 Summary -->
+                    <p class="card-summary">
+                        {% if project.division_8 and project.division_8.scope_summary %}
+                            {{ project.division_8.scope_summary[:200] }}{% if project.division_8.scope_summary|length > 200 %}...{% endif %}
+                        {% else %}
+                            <span style="color: var(--text-muted); font-style: italic;">No Division 8 scope extracted</span>
+                        {% endif %}
+                    </p>
+
+                    <!-- Row 6: Division 8 Scope Tags -->
+                    {% set div8_tags = [] %}
+                    {% if project.csi_tags %}
+                        {% for tag in project.csi_tags %}
+                            {% if 'Window' in tag and 'Wood' not in tag %}{% set _ = div8_tags.append(tag) %}
+                            {% elif 'Storefront' in tag or 'Entrance' in tag %}{% set _ = div8_tags.append(tag) %}
+                            {% elif 'Curtain' in tag %}{% set _ = div8_tags.append(tag) %}
+                            {% elif 'Hollow Metal' in tag or 'Metal Door' in tag or 'Steel Door' in tag %}{% set _ = div8_tags.append(tag) %}
+                            {% elif 'Glazing' in tag or 'Glass' in tag %}{% set _ = div8_tags.append(tag) %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    <div class="scope-tags">
+                        {% for tag in div8_tags[:6] %}
+                        <span class="scope-tag {{ tag|tag_category }}">{{ tag|tag_short }}</span>
+                        {% endfor %}
+                        {% if div8_tags|length > 6 %}<span class="scope-tag scope-more">+{{ div8_tags|length - 6 }}</span>{% endif %}
+                    </div>
+
+                    <!-- Row 7: Project Type Tags -->
+                    {% if project.tags %}
+                    <div class="project-type-tags" style="margin-top: 0.5rem;">
+                        {% for tag in project.tags[:4] %}
+                        <span class="type-tag" style="background: var(--accent-light, #e3f2fd); color: var(--accent-dark, #1565c0); padding: 2px 6px; border-radius: 3px; font-size: 0.7rem; margin-right: 3px;">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Won Projects Section -->
+        {% if won_projects %}
+        <section class="section won-section" id="wonSection">
+            <h2>Won Projects <span class="count" id="wonCount">({{ won_projects|length }})</span></h2>
+            <div class="project-grid" id="wonGrid">
+                {% for project in won_projects %}
+                <div class="project-card won-card"
+                     data-source="{{ project.source }}"
+                     data-type="{% if project.is_dcam %}public{% else %}private{% endif %}"
+                     data-state="{{ project.location.state if project.location and project.location.state else '' }}"
+                     data-title="{{ project.title|lower }}"
+                     data-gc="{% if project.gc_companies %}{% for gc in project.gc_companies %}{{ gc.company }}{% if not loop.last %},{% endif %}{% endfor %}{% else %}{{ project.gc_company or '' }}{% endif %}"
+                     data-direct="{{ 'true' if project.is_direct_email else 'false' }}"
+                     onclick="window.location='/project/{{ project.project_code or project.id }}'"
+                     style="cursor: pointer;">
+                    <div class="card-header">
+                        <span class="decision-badge awarded">Won</span>
+                        {% if project.source == 'projectdog' %}
+                        <span class="source-badge projectdog">ProjectDog</span>
+                        {% elif project.source == 'planhub' %}
+                        <span class="source-badge planhub">PlanHub</span>
+                        {% elif project.source == 'email_monitor' %}
+                        <span class="source-badge email">Email</span>
+                        {% else %}
+                        <span class="source-badge local">Local</span>
+                        {% endif %}
+                    </div>
+                    <h3 class="card-title">{{ project.title or project.folder }}</h3>
+                    <div class="card-location">
+                        {% if project.location and project.location.city %}{{ project.location.city }}, {{ project.location.state }}{% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Sync Status -->
+        <section class="section sync-status">
+            <h3>Sync Status</h3>
+            <div class="status-info">
+                <span>Last Refresh: {{ last_refresh.strftime('%m/%d/%y %H:%M') if last_refresh else 'Never' }}</span>
+                <span>Next ProjectDog Sync: {{ sync_status.next_run[:16] if sync_status.next_run else 'Not scheduled' }}</span>
+                <span id="syncIndicator" class="{% if sync_status.sync_in_progress %}syncing{% endif %}">
+                    {{ 'Syncing...' if sync_status.sync_in_progress else 'Idle' }}
+                </span>
+            </div>
+        </section>
+    </main>
+
+    <!-- Status Modal -->
+    <div id="statusModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Project Status</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="modalProjectId">
+
+                <div class="form-group">
+                    <label>Bid Decision:</label>
+                    <select id="bidDecision">
+                        <option value="">-- Select --</option>
+                        <option value="pending">Pending Review</option>
+                        <option value="bid">We're Bidding</option>
+                        <option value="no_bid">No Bid</option>
+                        <option value="gc_awarded">GC Awarded (Hot!)</option>
+                        <option value="awarded">We Won</option>
+                        <option value="lost">Lost</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Decision Reason:</label>
+                    <input type="text" id="decisionReason" placeholder="Optional reason...">
+                </div>
+
+                <hr>
+
+                <div class="form-group">
+                    <label><input type="checkbox" id="proposalGenerated"> Proposal Generated</label>
+                </div>
+
+                <div class="form-group">
+                    <label><input type="checkbox" id="proposalSubmitted"> Proposal Submitted</label>
+                </div>
+
+                <hr>
+
+                <div class="form-group">
+                    <label>Estimate Total:</label>
+                    <input type="number" id="estimateTotal" placeholder="Enter estimate...">
+                </div>
+
+                <div class="form-group">
+                    <label>Estimate Confidence:</label>
+                    <select id="estimateConfidence">
+                        <option value="">-- Select --</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+
+                <hr>
+
+                <div class="form-group">
+                    <label>Add Tag:</label>
+                    <div class="tag-input">
+                        <input type="text" id="newTag" placeholder="Tag name...">
+                        <button onclick="addTag()">Add</button>
+                    </div>
+                    <div id="currentTags" class="current-tags"></div>
+                </div>
+
+                <hr>
+
+                <div class="form-group">
+                    <label>Add Note:</label>
+                    <textarea id="newNote" placeholder="Enter note..."></textarea>
+                    <button onclick="addNote()">Add Note</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="saveStatus()">Save</button>
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link Modal (PlanHub to Local) -->
+    <div id="linkModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="linkModalTitle">Link to Local Project</h3>
+                <button class="close-btn" onclick="closeLinkModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="linkPlanhubId">
+
+                <p id="linkProjectName" style="color: var(--text-muted); margin-bottom: 1rem;"></p>
+
+                <div id="currentLinkSection" style="display:none; margin-bottom: 1rem; padding: 0.75rem; background: var(--bg-card); border-radius: var(--border-radius-sm, 4px);">
+                    <strong>Currently linked to:</strong>
+                    <span id="currentLinkDisplay"></span>
+                    <button class="btn-small btn-danger" onclick="unlinkProject()" style="margin-left: 0.5rem;">Unlink</button>
+                </div>
+
+                <div class="form-group">
+                    <label>Select Local Project:</label>
+                    <select id="localProjectSelect" style="width: 100%;">
+                        <option value="">-- Choose a project --</option>
+                    </select>
+                </div>
+
+                <div id="suggestionsSection">
+                    <label>Suggested Matches:</label>
+                    <div id="suggestionsList" class="suggestions-list"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="saveLink()">Link</button>
+                <button class="btn btn-secondary" onclick="closeLinkModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    <script>
+        // Mobile Filters Toggle
+        function toggleFilters() {
+            const filters = document.querySelector('.filters');
+            const toggleText = document.getElementById('filterToggleText');
+            const isShowing = filters.classList.contains('show');
+
+            if (isShowing) {
+                filters.classList.remove('show');
+                toggleText.textContent = '🔍 Show Filters';
+            } else {
+                filters.classList.add('show');
+                toggleText.textContent = '✕ Hide Filters';
+            }
+        }
+
+        // Mobile Navigation Functions
+        function toggleMobileNav() {
+            const overlay = document.querySelector('.mobile-nav-overlay');
+            const drawer = document.querySelector('.mobile-nav-drawer');
+            const isActive = drawer.classList.contains('active');
+
+            if (isActive) {
+                closeMobileNav();
+            } else {
+                overlay.classList.add('active');
+                drawer.classList.add('active');
+                overlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeMobileNav() {
+            const overlay = document.querySelector('.mobile-nav-overlay');
+            const drawer = document.querySelector('.mobile-nav-drawer');
+            overlay.classList.remove('active');
+            drawer.classList.remove('active');
+            document.body.style.overflow = '';
+
+            // Hide overlay after transition
+            setTimeout(() => {
+                if (!drawer.classList.contains('active')) {
+                    overlay.style.display = 'none';
+                }
+            }, 300);
+        }
+
+        // Dropdown Navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdowns = document.querySelectorAll('.dropdown');
+
+            dropdowns.forEach(dropdown => {
+                const toggle = dropdown.querySelector('.dropdown-toggle');
+
+                toggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+
+                    // Close other dropdowns
+                    dropdowns.forEach(d => {
+                        if (d !== dropdown) {
+                            d.classList.remove('active');
+                        }
+                    });
+
+                    // Toggle current dropdown
+                    dropdown.classList.toggle('active');
+                });
+            });
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function() {
+                dropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            });
+        });
+
+        // Fetch intake pending count
+        async function updateIntakeBadge() {
+            try {
+                const response = await fetch('/api/intake/pending');
+                const data = await response.json();
+                const badge = document.getElementById('intakeBadge');
+                if (data.folders && data.folders.length > 0) {
+                    badge.textContent = data.folders.length;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (error) {
+                console.log('Intake badge fetch error:', error);
+            }
+        }
+        // Update on page load
+        updateIntakeBadge();
+
+        // Calculate and display countdown timers (Eastern timezone)
+        // Supports live HH:MM:SS countdown when within 24 hours
+        function updateCountdowns() {
+            const timers = document.querySelectorAll('.countdown-timer[data-bid-date]');
+            const now = new Date();
+
+            // Get current time in Eastern timezone
+            const easternNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+
+            timers.forEach(timer => {
+                const bidDateStr = timer.dataset.bidDate;
+                if (!bidDateStr) return;
+
+                // Parse the bid date - assume 5 PM Eastern if no time specified
+                let bidDate;
+                if (bidDateStr.match(/^\d{4}-\d{2}-\d{2}T/)) {
+                    // Full ISO with time
+                    bidDate = new Date(bidDateStr);
+                } else if (bidDateStr.match(/^\d{4}-\d{2}-\d{2}/)) {
+                    // Date only - assume 5 PM Eastern (common bid time)
+                    const parts = bidDateStr.split('-');
+                    bidDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 17, 0, 0);
+                } else if (bidDateStr.includes('/')) {
+                    const parts = bidDateStr.split('/');
+                    bidDate = new Date(parseInt(parts[2]), parseInt(parts[0]) - 1, parseInt(parts[1]), 17, 0, 0);
+                } else {
+                    bidDate = new Date(bidDateStr);
+                }
+
+                const diffMs = bidDate - easternNow;
+                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                const diffSecs = Math.floor((diffMs % (1000 * 60)) / 1000);
+
+                // Clear existing classes
+                timer.classList.remove('urgent', 'soon', 'normal', 'far', 'past', 'live');
+
+                if (diffMs < 0) {
+                    // Past due
+                    const pastDays = Math.ceil(Math.abs(diffMs) / (1000 * 60 * 60 * 24));
+                    timer.textContent = `${pastDays}d ago`;
+                    timer.classList.add('past');
+                } else if (diffMs < 24 * 60 * 60 * 1000) {
+                    // Within 24 hours - show live HH:MM:SS countdown
+                    const h = diffHours.toString().padStart(2, '0');
+                    const m = diffMins.toString().padStart(2, '0');
+                    const s = diffSecs.toString().padStart(2, '0');
+                    timer.textContent = `${h}:${m}:${s}`;
+                    timer.classList.add('live');
+                } else if (diffDays === 1) {
+                    timer.textContent = 'TOMORROW';
+                    timer.classList.add('urgent');
+                } else if (diffDays <= 7) {
+                    timer.textContent = `${diffDays}d`;
+                    timer.classList.add('urgent');
+                } else if (diffDays <= 14) {
+                    timer.textContent = `${diffDays}d`;
+                    timer.classList.add('soon');
+                } else if (diffDays <= 30) {
+                    timer.textContent = `${diffDays}d`;
+                    timer.classList.add('normal');
+                } else {
+                    timer.textContent = `${diffDays}d`;
+                    timer.classList.add('far');
+                }
+            });
+        }
+
+        // Run countdown every second for live updates
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCountdowns();
+            setInterval(updateCountdowns, 1000);
+
+            // Sort by bid date on initial load
+            if (typeof sortProjects === 'function') {
+                sortProjects();
+            }
+        });
+    </script>
+{% endblock %}

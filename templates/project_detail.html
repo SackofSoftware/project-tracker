@@ -1,0 +1,554 @@
+{% extends "base.html" %}
+{% block title %}{{ project.title or project.folder }} - Command Center{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/command-center.css') }}">
+    <style>
+        /* Page-specific overrides */
+        body {
+            overflow-x: hidden;
+            background: var(--bg);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <!-- Command Center Header -->
+    <header class="command-center-header">
+        <div style="display: flex; align-items: center; justify-content: space-between; max-width: 1800px; margin: 0 auto;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <a href="/" class="back-link" style="background: var(--card-bg); padding: 0.5rem 1rem; border: 2px solid var(--border); font-weight: 700; text-decoration: none; font-size: 0.75rem; text-transform: uppercase;">&larr; Dashboard</a>
+                <h1 style="font-size: 1.25rem; font-weight: 800; text-transform: uppercase; margin: 0;">
+                    {{ project.title or project.folder }}
+                </h1>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                {% if project.source == 'projectdog' %}
+                <span class="source-badge projectdog">ProjectDog</span>
+                {% elif project.source == 'planhub' %}
+                <span class="source-badge planhub">PlanHub</span>
+                {% else %}
+                <span class="source-badge local">Local</span>
+                {% endif %}
+                {% if project.bid_decision == 'bid' %}
+                <span class="decision-badge bid">Bidding</span>
+                {% elif project.bid_decision == 'no_bid' %}
+                <span class="decision-badge no-bid">No Bid</span>
+                {% elif project.bid_decision == 'awarded' %}
+                <span class="decision-badge awarded">Awarded</span>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Command Center Grid -->
+    <div class="command-center">
+        <!-- Left Column: Project Info -->
+        <aside class="left-column">
+            <!-- Project Metadata -->
+            <div class="project-meta-card">
+                <div class="project-meta-header">
+                    <h2>Project Info</h2>
+                </div>
+                <div class="project-meta-body">
+                    {% if project.owner %}
+                    <div class="meta-field">
+                        <span class="meta-label">Owner</span>
+                        <span class="meta-value">{{ project.owner }}</span>
+                    </div>
+                    {% endif %}
+                    {% if project.architect %}
+                    <div class="meta-field">
+                        <span class="meta-label">Architect</span>
+                        <span class="meta-value">{{ project.architect }}</span>
+                    </div>
+                    {% endif %}
+                    {% if project.location %}
+                    <div class="meta-field">
+                        <span class="meta-label">Location</span>
+                        <span class="meta-value">
+                            {% if project.location.city %}
+                                {{ project.location.city }}{% if project.location.state %}, {{ project.location.state }}{% endif %}
+                            {% elif project.location.raw %}
+                                {{ project.location.raw }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    {% endif %}
+                    <div class="meta-field">
+                        <span class="meta-label">Bid Date</span>
+                        <span class="meta-value bid-date" id="bidDateDisplay">
+                            {{ project.bid_date | format_date if project.bid_date else 'TBD' }}
+                        </span>
+                    </div>
+                    {% if project.value or project.project_value or project.project_value_str %}
+                    <div class="meta-field">
+                        <span class="meta-label">Project Value</span>
+                        <span class="meta-value">{{ project.project_value_str if project.project_value_str else "${:,.0f}".format(project.value or project.project_value or 0) }}</span>
+                    </div>
+                    {% endif %}
+                    {% if project.project_size %}
+                    <div class="meta-field">
+                        <span class="meta-label">Size</span>
+                        <span class="meta-value">{{ project.project_size }}</span>
+                    </div>
+                    {% endif %}
+                    {% if project.description %}
+                    <div class="meta-field">
+                        <span class="meta-label">Description</span>
+                        <span class="meta-value" style="font-size: 0.85em;">{{ project.description[:200] }}{% if project.description|length > 200 %}...{% endif %}</span>
+                    </div>
+                    {% endif %}
+                    {% if project.tags %}
+                    <div class="meta-field">
+                        <span class="meta-label">Project Type</span>
+                        <span class="meta-value">
+                            {% for tag in project.tags %}
+                            <span style="background: var(--accent-light); padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-right: 4px;">{{ tag }}</span>
+                            {% endfor %}
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Folder Link -->
+                <div class="folder-link-section" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                    <div class="meta-field">
+                        <span class="meta-label">Project Folder</span>
+                        <span class="meta-value" id="folderPathDisplay" style="font-size: 0.85em;" title="{{ project.full_folder_path or '' }}">
+                            {% if project.folder_display %}
+                                {{ project.folder_display }}
+                            {% elif project.full_folder_path %}
+                                {{ project.full_folder_path }}
+                            {% else %}
+                                <em style="color: var(--text-secondary);">Not linked</em>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                        <button class="quick-action-btn" onclick="openFolder()" id="openFolderBtn" {% if not project.full_folder_path %}disabled style="opacity: 0.5;"{% endif %}>
+                            Open Folder
+                        </button>
+                        <button class="quick-action-btn" onclick="linkFolder()">
+                            Link Folder
+                        </button>
+                        <button class="quick-action-btn" onclick="toggleFileList()" id="viewFilesBtn" {% if not project.full_folder_path %}disabled style="opacity: 0.5;"{% endif %}>
+                            View Files ▼
+                        </button>
+                    </div>
+                    <!-- File List (collapsible) -->
+                    <div id="fileListContainer" style="display: none; margin-top: 0.75rem; max-height: 300px; overflow-y: auto; border: 1px solid var(--border); border-radius: 4px; background: var(--bg);">
+                        <div id="fileListContent" style="padding: 0.5rem; font-size: 0.8em;">
+                            Loading...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <button class="quick-action-btn primary" onclick="runPipeline()">
+                        Run Analysis
+                    </button>
+                    <button class="quick-action-btn" onclick="window.location.href='/project/{{ project_id }}/analysis'" style="background: var(--accent-blue); color: white;">
+                        Div 8 Report
+                    </button>
+                    <button class="quick-action-btn" onclick="window.location.href='/project/{{ project_id }}/annotate'">
+                        Annotate
+                    </button>
+                    <button class="quick-action-btn" onclick="refreshData()">
+                        Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- PlanHub GCs (if available) -->
+            {% if project.general_contractors %}
+            <div class="project-meta-card">
+                <div class="project-meta-header" style="background: var(--accent-green, #4CAF50); color: white;">
+                    <h2>General Contractors</h2>
+                </div>
+                <div class="project-meta-body">
+                    {% for gc in project.general_contractors[:5] %}
+                    <div class="gc-card">
+                        {% if gc.logo %}
+                        <img src="{{ gc.logo }}" alt="{{ gc.name }}" class="gc-logo">
+                        {% else %}
+                        <div class="gc-logo" style="display: flex; align-items: center; justify-content: center; background: var(--bg); font-size: 1.25rem;">🏗️</div>
+                        {% endif %}
+                        <div class="gc-info">
+                            <div class="gc-name">{{ gc.name }}</div>
+                            {% if gc.phone %}
+                            <div class="gc-contact">{{ gc.phone }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Status Tracking -->
+            <div class="project-meta-card status-card">
+                <div class="project-meta-header">
+                    <h2>Status & Tracking</h2>
+                </div>
+                <div class="status-form">
+                    <div class="form-group">
+                        <label for="bidDecision">Bid Decision</label>
+                        <select id="bidDecision" onchange="updateStatus()">
+                            <option value="">-- Select --</option>
+                            <option value="bid" {% if project.bid_decision == 'bid' %}selected{% endif %}>Bidding</option>
+                            <option value="no_bid" {% if project.bid_decision == 'no_bid' %}selected{% endif %}>No Bid</option>
+                            <option value="gc_awarded" {% if project.bid_decision == 'gc_awarded' %}selected{% endif %}>GC Awarded</option>
+                            <option value="awarded" {% if project.bid_decision == 'awarded' %}selected{% endif %}>Awarded</option>
+                            <option value="lost" {% if project.bid_decision == 'lost' %}selected{% endif %}>Lost</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="estimateTotal">Estimate Total ($)</label>
+                        <input type="text" id="estimateTotal"
+                               value="{{ status.estimate.total if status and status.estimate else '' }}"
+                               placeholder="45,000">
+                    </div>
+                    <button class="quick-action-btn" style="width: 100%;" onclick="saveStatus()">
+                        Save Status
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center Column: Unified Scope Section -->
+        <main class="center-column">
+            <div id="unifiedScopeContainer">
+                <!-- Populated by unified-scope.js -->
+            </div>
+        </main>
+
+        <!-- Right Column: AI Superintendent -->
+        <aside class="right-column" id="aiSuperintendentContainer">
+            <!-- Populated by JavaScript -->
+        </aside>
+    </div>
+
+    <!-- Document Viewer Overlay (populated by JS) -->
+    <div id="documentViewerContainer"></div>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/services/sse-client.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/scope-cards.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/ai-superintendent.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/document-viewer.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/unified-scope.js') }}"></script>
+
+    <script>
+        // Project context
+        const projectId = '{{ project_id }}';
+        const project = {{ project | tojson | safe }};
+        const scopeCardsData = {{ scope_cards | tojson | safe }};
+
+        // Initialize components
+        let sseClient, scopeCards, aiSuperintendent, documentViewer;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize SSE Client
+            sseClient = new CommandCenterSSE(projectId);
+
+            // Initialize Unified Scope Manager
+            unifiedScope = new UnifiedScopeManager(
+                'unifiedScopeContainer',
+                projectId,
+                scopeCardsData
+            );
+
+            // Initialize AI Superintendent
+            aiSuperintendent = new AISuperintendent(
+                document.getElementById('aiSuperintendentContainer'),
+                projectId
+            );
+            aiSuperintendent.init();
+
+            // Initialize Document Viewer
+            documentViewer = new DocumentViewer(projectId);
+            documentViewer.init();
+
+            // Connect SSE
+            sseClient.connect();
+
+            // Wire up SSE events
+            sseClient.on('pipeline_stage', (data) => {
+                aiSuperintendent.handlePipelineStage(data);
+            });
+
+            sseClient.on('card_update', (data) => {
+                // Update unified scope with new card data
+                if (unifiedScope) {
+                    // Fetch latest cards and update
+                    fetch(`/api/project/${projectId}/scope-cards`)
+                        .then(res => res.json())
+                        .then(cards => unifiedScope.updateScopeCards(cards));
+                }
+            });
+
+            sseClient.on('activity', (data) => {
+                aiSuperintendent.handleActivity(data);
+            });
+
+            sseClient.on('chat_response', (data) => {
+                aiSuperintendent.handleChatResponse(data);
+            });
+        });
+
+        // Action handlers
+        async function runPipeline() {
+            try {
+                aiSuperintendent.addActivity({
+                    type: 'pipeline',
+                    icon: '🚀',
+                    message: 'Starting analysis pipeline...',
+                    detail: ''
+                });
+
+                const response = await fetch(`/api/project/${projectId}/pipeline/run`, {
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to start pipeline');
+                }
+
+                const data = await response.json();
+                console.log('Pipeline started:', data);
+            } catch (error) {
+                console.error('Pipeline error:', error);
+                aiSuperintendent.addActivity({
+                    type: 'error',
+                    icon: '❌',
+                    message: 'Failed to start pipeline',
+                    detail: error.message
+                });
+            }
+        }
+
+        function openFolder() {
+            fetch(`/api/project/${projectId}/folder/open`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.error) {
+                      alert('Could not open folder: ' + data.error);
+                  }
+              }).catch(err => {
+                  console.error('Error opening folder:', err);
+              });
+        }
+
+        let fileListLoaded = false;
+        function toggleFileList() {
+            const container = document.getElementById('fileListContainer');
+            const btn = document.getElementById('viewFilesBtn');
+            const isHidden = container.style.display === 'none';
+
+            if (isHidden) {
+                container.style.display = 'block';
+                btn.textContent = 'View Files ▲';
+
+                // Load files if not already loaded
+                if (!fileListLoaded) {
+                    loadFileList();
+                }
+            } else {
+                container.style.display = 'none';
+                btn.textContent = 'View Files ▼';
+            }
+        }
+
+        function loadFileList() {
+            const content = document.getElementById('fileListContent');
+            content.innerHTML = '<em>Loading...</em>';
+
+            fetch(`/api/project/${projectId}/folder/files`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        content.innerHTML = `<em style="color: var(--text-secondary);">${data.error}</em>`;
+                        return;
+                    }
+
+                    fileListLoaded = true;
+
+                    if (!data.files || data.files.length === 0) {
+                        content.innerHTML = '<em style="color: var(--text-secondary);">No files found</em>';
+                        return;
+                    }
+
+                    // Group by type
+                    const folders = data.files.filter(f => f.is_dir);
+                    const files = data.files.filter(f => !f.is_dir);
+
+                    let html = '';
+
+                    // Show folders first
+                    folders.forEach(f => {
+                        html += `<div style="padding: 2px 0;"><span style="color: var(--accent-blue);">📁</span> <strong>${f.name}</strong></div>`;
+                    });
+
+                    // Then files
+                    files.forEach(f => {
+                        const icon = getFileIcon(f.name);
+                        const size = f.size ? ` <span style="color: var(--text-secondary);">(${formatFileSize(f.size)})</span>` : '';
+                        html += `<div style="padding: 2px 0;">${icon} ${f.name}${size}</div>`;
+                    });
+
+                    content.innerHTML = html;
+                })
+                .catch(err => {
+                    content.innerHTML = '<em style="color: var(--accent-danger);">Error loading files</em>';
+                    console.error('Error loading files:', err);
+                });
+        }
+
+        function getFileIcon(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const icons = {
+                'pdf': '📄',
+                'dwg': '📐',
+                'xlsx': '📊', 'xls': '📊',
+                'docx': '📝', 'doc': '📝',
+                'jpg': '🖼️', 'jpeg': '🖼️', 'png': '🖼️',
+                'zip': '📦', 'rar': '📦'
+            };
+            return icons[ext] || '📄';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function linkFolder() {
+            // Get current path as default if available
+            const displayEl = document.getElementById('folderPathDisplay');
+            const currentPath = displayEl.getAttribute('title') || displayEl.textContent.trim();
+            const defaultPath = currentPath && !currentPath.includes('Not linked') ? currentPath : '';
+
+            const folderPath = prompt(
+                'Enter the full folder path:\n\n' +
+                'Tip: In Finder, right-click the folder and hold Option to copy path',
+                defaultPath
+            );
+
+            if (!folderPath || !folderPath.trim()) {
+                return;
+            }
+
+            // Save the folder path
+            fetch(`/api/project/${projectId}/folder`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folder_path: folderPath.trim() })
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.status === 'ok') {
+                      // Update display with shortened path
+                      const fullPath = data.folder_path;
+                      const parts = fullPath.split('/');
+                      const shortPath = parts.length >= 2 ? parts.slice(-2).join('/') : parts[parts.length - 1];
+                      displayEl.textContent = shortPath;
+                      displayEl.setAttribute('title', fullPath);
+                      const openBtn = document.getElementById('openFolderBtn');
+                      openBtn.disabled = false;
+                      openBtn.style.opacity = '1';
+                  } else {
+                      alert('Error: ' + (data.error || 'Failed to link folder'));
+                  }
+              }).catch(err => {
+                  console.error('Error linking folder:', err);
+                  alert('Failed to link folder');
+              });
+        }
+
+        async function refreshData() {
+            aiSuperintendent.addActivity({
+                type: 'info',
+                icon: '🔄',
+                message: 'Refreshing data...',
+                detail: ''
+            });
+
+            await scopeCards.load();
+
+            aiSuperintendent.addActivity({
+                type: 'info',
+                icon: '✅',
+                message: 'Data refreshed',
+                detail: ''
+            });
+        }
+
+        async function updateStatus() {
+            const decision = document.getElementById('bidDecision').value;
+            if (!decision) return;
+
+            try {
+                const response = await fetch(`/api/project/${projectId}/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: `mark as ${decision}` })
+                });
+
+                const data = await response.json();
+                console.log('Status updated:', data);
+            } catch (error) {
+                console.error('Status update error:', error);
+            }
+        }
+
+        async function saveStatus() {
+            const decision = document.getElementById('bidDecision').value;
+            const estimate = document.getElementById('estimateTotal').value;
+
+            try {
+                // Update decision if set
+                if (decision) {
+                    await fetch(`/api/project/${projectId}/chat`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: `mark as ${decision}` })
+                    });
+                }
+
+                // Update estimate if set
+                if (estimate) {
+                    await fetch(`/api/project/${projectId}/chat`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: `set estimate to $${estimate}` })
+                    });
+                }
+
+                aiSuperintendent.addActivity({
+                    type: 'info',
+                    icon: '✅',
+                    message: 'Status saved',
+                    detail: ''
+                });
+            } catch (error) {
+                console.error('Save error:', error);
+                aiSuperintendent.addActivity({
+                    type: 'error',
+                    icon: '❌',
+                    message: 'Failed to save status',
+                    detail: error.message
+                });
+            }
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (sseClient) {
+                sseClient.disconnect();
+            }
+        });
+    </script>
+{% endblock %}

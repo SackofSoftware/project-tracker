@@ -1,0 +1,198 @@
+{
+  "01": {
+    "title": "General Requirements",
+    "valid": true
+  },
+  "02": {
+    "title": "Existing Conditions",
+    "valid": true
+  },
+  "03": {
+    "title": "Concrete",
+    "valid": true
+  },
+  "04": {
+    "title": "Masonry",
+    "valid": true
+  },
+  "05": {
+    "title": "Metals",
+    "valid": true
+  },
+  "06": {
+    "title": "Wood, Plastics, and Composites",
+    "valid": true
+  },
+  "07": {
+    "title": "Thermal and Moisture Protection",
+    "valid": true
+  },
+  "08": {
+    "title": "Openings",
+    "valid": true
+  },
+  "09": {
+    "title": "Finishes",
+    "valid": true
+  },
+  "10": {
+    "title": "Specialties",
+    "valid": true
+  },
+  "11": {
+    "title": "Equipment",
+    "valid": true
+  },
+  "12": {
+    "title": "Furnishings",
+    "valid": true
+  },
+  "13": {
+    "title": "Special Construction",
+    "valid": true
+  },
+  "14": {
+    "title": "Conveying Equipment",
+    "valid": true
+  },
+  "21": {
+    "title": "Fire Suppression",
+    "valid": true
+  },
+  "22": {
+    "title": "Plumbing",
+    "valid": true
+  },
+  "23": {
+    "title": "Heating, Ventilating, and Air Conditioning (HVAC)",
+    "valid": true
+  },
+  "25": {
+    "title": "Integrated Automation",
+    "valid": true
+  },
+  "26": {
+    "title": "Electrical",
+    "valid": true
+  },
+  "27": {
+    "title": "Communications",
+    "valid": true
+  },
+  "28": {
+    "title": "Electronic Safety and Security",
+    "valid": true
+  },
+  "31": {
+    "title": "Earthwork",
+    "valid": true
+  },
+  "32": {
+    "title": "Exterior Improvements",
+    "valid": true
+  },
+  "33": {
+    "title": "Utilities",
+    "valid": true
+  },
+  "34": {
+    "title": "Transportation",
+    "valid": true
+  },
+  "35": {
+    "title": "Waterway and Marine Construction",
+    "valid": true
+  },
+  "40": {
+    "title": "Process Interconnections",
+    "valid": true
+  },
+  "41": {
+    "title": "Material Processing and Handling Equipment",
+    "valid": true
+  },
+  "42": {
+    "title": "Process Heating, Cooling, and Drying Equipment",
+    "valid": true
+  },
+  "43": {
+    "title": "Process Gas and Liquid Handling, Purification, and Storage Equipment",
+    "valid": true
+  },
+  "44": {
+    "title": "Pollution and Waste Control Equipment",
+    "valid": true
+  },
+  "45": {
+    "title": "Industry-Specific Manufacturing Equipment",
+    "valid": true
+  },
+  "46": {
+    "title": "Water and Wastewater Equipment",
+    "valid": true
+  },
+  "48": {
+    "title": "Electrical Power Generation",
+    "valid": true
+  },
+  "15": {
+    "title": "Reserved for Future Expansion",
+    "valid": true
+  },
+  "16": {
+    "title": "Reserved for Future Expansion",
+    "valid": true
+  },
+  "17": {
+    "title": "Reserved for Future Expansion",
+    "valid": true
+  },
+  "18": {
+    "title": "Reserved for Future Expansion",
+    "valid": true
+  },
+  "19": {
+    "title": "Reserved for Future Expansion",
+    "valid": true
+  },
+  "20": {
+    "title": "Reserved for Future Expansion",
+    "valid": true
+  },
+  "24": {
+    "title": "Reserved for Future Expansion",
+    "valid": true
+  },
+  "29": {
+    "title": "Reserved for Future Expansion",
+    "valid": true
+  },
+  "30": {
+    "title": "Reserved for Future Expansion",
+    "valid": true
+  },
+  "36": {
+    "title": "Reserved for Future Expansion",
+    "valid": true
+  },
+  "37": {
+    "title": "Reserved for Future Expansion",
+    "valid": true
+  },
+  "38": {
+    "title": "Reserved for Future Expansion",
+    "valid": true
+  },
+  "39": {
+    "title": "Reserved for Future Expansion",
+    "valid": true
+  },
+  "47": {
+    "title": "Reserved for Future Expansion",
+    "valid": true
+  },
+  "49": {
+    "title": "Reserved for Future Expansion",
+    "valid": true
+  }
+}

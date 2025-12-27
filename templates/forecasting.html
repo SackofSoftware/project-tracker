@@ -1,0 +1,724 @@
+{% extends "base.html" %}
+
+{% block title %}Gov Leads - Forecasting{% endblock %}
+
+{% block head %}
+<style>
+    .forecast-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+        font-size: 0.85rem;
+    }
+    .forecast-table th,
+    .forecast-table td {
+        padding: 0.6rem 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .forecast-table th {
+        background: var(--bg-elevated);
+        font-weight: 600;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-secondary);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+    .forecast-table tr {
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    .forecast-table tr:hover {
+        background: var(--bg-elevated);
+    }
+    .type-badge {
+        display: inline-block;
+        padding: 0.2rem 0.4rem;
+        border-radius: 3px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .type-badge.bid {
+        background: #2196f3;
+        color: white;
+    }
+    .type-badge.lead {
+        background: #9c27b0;
+        color: white;
+    }
+    .days-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    .days-badge.urgent {
+        background: #f44336;
+        color: white;
+    }
+    .days-badge.soon {
+        background: #ff9800;
+        color: white;
+    }
+    .days-badge.normal {
+        background: #4caf50;
+        color: white;
+    }
+    .days-badge.far {
+        background: var(--bg-card);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+    }
+    .days-badge.forecast {
+        background: #e1bee7;
+        color: #6a1b9a;
+    }
+    .value-cell {
+        font-family: var(--font-mono, monospace);
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    .doc-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.15rem 0.4rem;
+        border-radius: 3px;
+        font-size: 0.7rem;
+        background: #e3f2fd;
+        color: #1565c0;
+    }
+    .doc-badge.has-docs {
+        background: #c8e6c9;
+        color: #2e7d32;
+        cursor: pointer;
+    }
+    .doc-badge.no-docs {
+        background: var(--bg-elevated);
+        color: var(--text-muted);
+    }
+    .title-cell {
+        max-width: 280px;
+        font-weight: 500;
+    }
+    .title-cell .title {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .title-cell .location {
+        font-size: 0.7rem;
+        color: var(--text-secondary);
+        margin-top: 2px;
+    }
+    .org-cell {
+        max-width: 160px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-secondary);
+    }
+    .loading {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-secondary);
+    }
+    .toggle-group {
+        display: inline-flex;
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+    }
+    .toggle-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        background: var(--bg-card);
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    .toggle-btn:not(:last-child) {
+        border-right: 1px solid var(--border-color);
+    }
+    .toggle-btn.active {
+        background: var(--accent-primary);
+        color: white;
+    }
+    .toggle-btn:hover:not(.active) {
+        background: var(--bg-elevated);
+    }
+    /* Detail Modal */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+    .modal-overlay.active {
+        display: flex;
+    }
+    .modal-content {
+        background: var(--bg-card);
+        border-radius: 8px;
+        width: 90%;
+        max-width: 800px;
+        max-height: 85vh;
+        overflow-y: auto;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .modal-header {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        position: sticky;
+        top: 0;
+        background: var(--bg-card);
+        z-index: 10;
+    }
+    .modal-header h2 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-secondary);
+        line-height: 1;
+    }
+    .modal-body {
+        padding: 1.5rem;
+    }
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .detail-item {
+        padding: 0.75rem;
+        background: var(--bg-elevated);
+        border-radius: 6px;
+    }
+    .detail-item label {
+        display: block;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.25rem;
+    }
+    .detail-item .value {
+        font-weight: 500;
+    }
+    .detail-item.full-width {
+        grid-column: span 2;
+    }
+    .docs-section {
+        margin-top: 1.5rem;
+    }
+    .docs-section h3 {
+        font-size: 0.9rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .doc-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .doc-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        background: var(--bg-elevated);
+        border-radius: 6px;
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: background 0.15s;
+    }
+    .doc-item:hover {
+        background: var(--accent-primary);
+        color: white;
+    }
+    .doc-item .doc-icon {
+        font-size: 1.5rem;
+    }
+    .doc-item .doc-info {
+        flex: 1;
+    }
+    .doc-item .doc-title {
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+    .doc-item .doc-meta {
+        font-size: 0.7rem;
+        color: var(--text-secondary);
+    }
+    .doc-item:hover .doc-meta {
+        color: rgba(255,255,255,0.8);
+    }
+    .modal-actions {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+    }
+    .table-container {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    .vertical-badge {
+        font-size: 0.65rem;
+        padding: 0.15rem 0.35rem;
+        background: var(--bg-elevated);
+        border-radius: 3px;
+        color: var(--text-secondary);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <header class="header">
+        <div class="header-content">
+            <div class="header-brand">
+                <img src="{{ url_for('static', filename='images/cws-logo.png') }}" alt="CWS" class="header-logo">
+                <span class="header-divider">|</span>
+                <h1>Gov Leads - Forecasting</h1>
+            </div>
+            <div class="header-actions">
+                <a href="/" class="btn btn-secondary">Dashboard</a>
+                <a href="/intake" class="btn btn-secondary">Intake</a>
+                <a href="/archived" class="btn btn-secondary">Archived</a>
+                <a href="/vendors" class="btn btn-secondary">Vendors</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Stats Cards -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_records }}</div>
+                <div class="stat-label">Total Records</div>
+            </div>
+            <div class="stat-card" style="border-left: 3px solid #2196f3;">
+                <div class="stat-number">{{ stats.bids }}</div>
+                <div class="stat-label">BIDs</div>
+            </div>
+            <div class="stat-card" style="border-left: 3px solid #9c27b0;">
+                <div class="stat-number">{{ stats.leads }}</div>
+                <div class="stat-label">LEADs (Forecast)</div>
+            </div>
+            <div class="stat-card" style="border-left: 3px solid #4caf50;">
+                <div class="stat-number">{{ stats.active_bids }}</div>
+                <div class="stat-label">Active BIDs</div>
+            </div>
+        </section>
+
+        <!-- Filters -->
+        <section class="filters">
+            <div class="filter-group">
+                <div class="toggle-group">
+                    <button class="toggle-btn active" data-type="all" onclick="setTypeFilter('all')">All</button>
+                    <button class="toggle-btn" data-type="BID" onclick="setTypeFilter('BID')">BIDs</button>
+                    <button class="toggle-btn" data-type="LEAD" onclick="setTypeFilter('LEAD')">LEADs</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label for="stateFilter">State:</label>
+                <select id="stateFilter" onchange="loadLeads()">
+                    <option value="">All States</option>
+                    {% for state in states %}
+                    <option value="{{ state }}">{{ state }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="searchFilter">Search:</label>
+                <input type="text" id="searchFilter" placeholder="Search title, org..." oninput="debounceSearch()">
+            </div>
+            <div class="filter-group">
+                <label>
+                    <input type="checkbox" id="activeOnly" onchange="loadLeads()"> Active Only (w/ dates)
+                </label>
+            </div>
+            <div class="filter-group">
+                <label>
+                    <input type="checkbox" id="docsOnly" onchange="loadLeads()"> Has Documents
+                </label>
+            </div>
+        </section>
+
+        <!-- Results Table -->
+        <section class="card">
+            <div class="table-container" id="resultsContainer">
+                <div class="loading">Loading...</div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Detail Modal -->
+    <div class="modal-overlay" id="detailModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div>
+                    <h2 id="modalTitle">Loading...</h2>
+                    <div id="modalSubtitle" style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px;"></div>
+                </div>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="loading">Loading details...</div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                <button class="btn btn-primary" id="convertBtn" onclick="convertToProject()">Convert to Project</button>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentType = 'all';
+    let searchTimeout = null;
+    let currentLeadId = null;
+    let allLeads = [];
+
+    function setTypeFilter(type) {
+        currentType = type;
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.type === type);
+        });
+        loadLeads();
+    }
+
+    function debounceSearch() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(loadLeads, 300);
+    }
+
+    async function loadLeads() {
+        const container = document.getElementById('resultsContainer');
+        container.innerHTML = '<div class="loading">Loading...</div>';
+
+        const params = new URLSearchParams();
+
+        if (currentType !== 'all') {
+            params.append('type', currentType);
+        }
+
+        const state = document.getElementById('stateFilter').value;
+        if (state) {
+            params.append('state', state);
+        }
+
+        const search = document.getElementById('searchFilter').value.trim();
+        if (search) {
+            params.append('q', search);
+        }
+
+        const activeOnly = document.getElementById('activeOnly').checked;
+        if (activeOnly) {
+            params.append('active', 'true');
+        }
+
+        params.append('limit', '300');
+
+        try {
+            const response = await fetch(`/api/govleads?${params}`);
+            const data = await response.json();
+            allLeads = data.leads || [];
+
+            // Client-side filter for docs
+            const docsOnly = document.getElementById('docsOnly').checked;
+            let filtered = allLeads;
+            if (docsOnly) {
+                filtered = allLeads.filter(l => l.document_count > 0);
+            }
+
+            if (filtered.length > 0) {
+                container.innerHTML = renderTable(filtered);
+            } else {
+                container.innerHTML = '<div class="empty-state">No leads found matching your criteria.</div>';
+            }
+        } catch (error) {
+            console.error('Error loading leads:', error);
+            container.innerHTML = '<div class="empty-state">Error loading leads. Please try again.</div>';
+        }
+    }
+
+    function renderTable(leads) {
+        let html = `
+            <table class="forecast-table">
+                <thead>
+                    <tr>
+                        <th style="width:50px">Type</th>
+                        <th>Title / Location</th>
+                        <th>Organization</th>
+                        <th style="width:60px">State</th>
+                        <th style="width:90px">Est. Value</th>
+                        <th style="width:120px">Timeline</th>
+                        <th style="width:70px">Docs</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        for (const lead of leads) {
+            const typeClass = lead.entity_type === 'BID' ? 'bid' : 'lead';
+            const timeline = getTimelineDisplay(lead);
+
+            html += `
+                <tr onclick="openDetail(${lead.id})">
+                    <td><span class="type-badge ${typeClass}">${lead.entity_type}</span></td>
+                    <td class="title-cell">
+                        <span class="title" title="${escapeHtml(lead.title)}">${truncate(lead.title, 45)}</span>
+                        ${lead.place_of_performance ? `<span class="location">${truncate(lead.place_of_performance, 50)}</span>` : ''}
+                    </td>
+                    <td class="org-cell" title="${escapeHtml(lead.organization)}">${truncate(lead.organization, 25)}</td>
+                    <td>${lead.state || '-'}</td>
+                    <td class="value-cell">${formatValue(lead.estimated_value)}</td>
+                    <td>${timeline}</td>
+                    <td>
+                        ${lead.document_count > 0
+                            ? `<span class="doc-badge has-docs">${lead.document_count} PDF${lead.document_count > 1 ? 's' : ''}</span>`
+                            : `<span class="doc-badge no-docs">-</span>`}
+                    </td>
+                </tr>
+            `;
+        }
+
+        html += '</tbody></table>';
+        return html;
+    }
+
+    function getTimelineDisplay(lead) {
+        if (lead.entity_type === 'LEAD') {
+            // For LEADs, show fiscal year forecast
+            if (lead.fiscal_years) {
+                return `<span class="days-badge forecast">${lead.fiscal_years}</span>`;
+            }
+            return `<span class="days-badge far">Forecast</span>`;
+        }
+
+        // For BIDs, show days until response
+        if (lead.days_until_response !== null && lead.days_until_response !== undefined) {
+            const days = lead.days_until_response;
+            let cls = 'far';
+            if (days <= 3) cls = 'urgent';
+            else if (days <= 7) cls = 'soon';
+            else if (days <= 30) cls = 'normal';
+
+            if (days === 0) return `<span class="days-badge ${cls}">TODAY</span>`;
+            if (days === 1) return `<span class="days-badge ${cls}">1 day</span>`;
+            return `<span class="days-badge ${cls}">${days} days</span>`;
+        }
+
+        return `<span class="days-badge far">TBD</span>`;
+    }
+
+    function formatValue(value) {
+        if (!value) return '-';
+        if (value >= 1000000) {
+            return '$' + (value / 1000000).toFixed(1) + 'M';
+        } else if (value >= 1000) {
+            return '$' + Math.round(value / 1000) + 'K';
+        }
+        return '$' + Math.round(value);
+    }
+
+    function truncate(str, len) {
+        if (!str) return '-';
+        return str.length > len ? str.substring(0, len) + '...' : str;
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    async function openDetail(leadId) {
+        currentLeadId = leadId;
+        document.getElementById('detailModal').classList.add('active');
+        document.getElementById('modalBody').innerHTML = '<div class="loading">Loading details...</div>';
+
+        try {
+            const response = await fetch(`/api/govleads/${leadId}`);
+            const lead = await response.json();
+
+            document.getElementById('modalTitle').textContent = lead.title;
+            document.getElementById('modalSubtitle').innerHTML = `
+                <span class="type-badge ${lead.entity_type === 'BID' ? 'bid' : 'lead'}">${lead.entity_type}</span>
+                &nbsp;${lead.organization} &bull; ${lead.state}
+            `;
+
+            let bodyHtml = `
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <label>Estimated Value</label>
+                        <div class="value">${lead.estimated_value_str || formatValue(lead.estimated_value) || 'Not specified'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>Response Date</label>
+                        <div class="value">${lead.response_date_str || 'Not specified'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>Solicitation Date</label>
+                        <div class="value">${lead.solicitation_date_str || 'Not specified'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>Days Until Response</label>
+                        <div class="value">${getTimelineDisplay(lead)}</div>
+                    </div>
+                    ${lead.place_of_performance ? `
+                    <div class="detail-item full-width">
+                        <label>Place of Performance</label>
+                        <div class="value">${lead.place_of_performance}</div>
+                    </div>
+                    ` : ''}
+                    ${lead.vertical ? `
+                    <div class="detail-item">
+                        <label>Vertical</label>
+                        <div class="value">${lead.vertical}</div>
+                    </div>
+                    ` : ''}
+                    ${lead.primary_requirement ? `
+                    <div class="detail-item">
+                        <label>Primary Requirement</label>
+                        <div class="value">${lead.primary_requirement}</div>
+                    </div>
+                    ` : ''}
+                    ${lead.fiscal_years ? `
+                    <div class="detail-item">
+                        <label>Fiscal Years</label>
+                        <div class="value">${lead.fiscal_years}</div>
+                    </div>
+                    ` : ''}
+                </div>
+
+                ${lead.description ? `
+                <div class="detail-item full-width" style="margin-bottom: 1rem;">
+                    <label>Description</label>
+                    <div class="value" style="font-size: 0.85rem; line-height: 1.5;">${escapeHtml(lead.description).substring(0, 500)}${lead.description.length > 500 ? '...' : ''}</div>
+                </div>
+                ` : ''}
+
+                ${lead.contact && Object.keys(lead.contact).length > 0 ? `
+                <div class="detail-item full-width" style="margin-bottom: 1rem;">
+                    <label>Contact</label>
+                    <div class="value" style="font-size: 0.85rem;">
+                        ${lead.contact.Name ? `<strong>${lead.contact.Name}</strong><br>` : ''}
+                        ${lead.contact.Title ? `${lead.contact.Title}<br>` : ''}
+                        ${lead.contact.Phone ? `Phone: ${lead.contact.Phone}<br>` : ''}
+                        ${lead.contact.Email ? `Email: ${lead.contact.Email}` : ''}
+                    </div>
+                </div>
+                ` : ''}
+            `;
+
+            // Documents section
+            if (lead.documents && lead.documents.length > 0) {
+                bodyHtml += `
+                    <div class="docs-section">
+                        <h3>Documents (${lead.documents.length})</h3>
+                        <div class="doc-list">
+                `;
+
+                for (const doc of lead.documents) {
+                    // Use doc_id based URL - finds file by {doc_id}_*.pdf pattern
+                    bodyHtml += `
+                        <a href="/api/govleads/document-by-id/${leadId}/${doc.doc_id}" target="_blank" class="doc-item">
+                            <span class="doc-icon">&#128196;</span>
+                            <div class="doc-info">
+                                <div class="doc-title">${escapeHtml(doc.title)}</div>
+                                <div class="doc-meta">${doc.doc_type} &bull; ${doc.file_size} &bull; ${doc.posting_date}</div>
+                            </div>
+                        </a>
+                    `;
+                }
+
+                bodyHtml += '</div></div>';
+            }
+
+            document.getElementById('modalBody').innerHTML = bodyHtml;
+
+        } catch (error) {
+            console.error('Error loading detail:', error);
+            document.getElementById('modalBody').innerHTML = '<div class="empty-state">Error loading details.</div>';
+        }
+    }
+
+    function closeModal(event) {
+        if (event && event.target !== event.currentTarget) return;
+        document.getElementById('detailModal').classList.remove('active');
+        currentLeadId = null;
+    }
+
+    async function convertToProject() {
+        if (!currentLeadId) return;
+        if (!confirm('Convert this lead to a tracked project?')) return;
+
+        try {
+            const response = await fetch(`/api/govleads/${currentLeadId}/convert`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({prefix: 'L'})
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(`Created project: ${data.project_number}\n\nProject ID: ${data.project_id}`);
+                closeModal();
+                loadLeads();
+            } else {
+                alert('Error: ' + (data.error || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error converting lead:', error);
+            alert('Error converting lead. Please try again.');
+        }
+    }
+
+    // Keyboard shortcut to close modal
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+    });
+
+    // Load leads on page load
+    document.addEventListener('DOMContentLoaded', loadLeads);
+</script>
+{% endblock %}

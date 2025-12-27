@@ -1,0 +1,661 @@
+{% extends "base.html" %}
+{% block title %}Division 8 Analysis - {{ project_name }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/analysis.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="analysis-container">
+    <!-- Header -->
+    <header class="analysis-header">
+        <div class="header-left">
+            <a href="/project/{{ project_id }}" class="back-link">
+                <span class="back-arrow">&larr;</span> Back to Project
+            </a>
+            <h1>Division 8 Analysis</h1>
+            <span class="project-name">{{ project_name }}</span>
+        </div>
+        <div class="header-actions">
+            <button class="action-btn" id="refreshBtn" onclick="refreshAnalysis()">
+                <span class="icon">&#x21bb;</span> Refresh Analysis
+            </button>
+            <button class="action-btn primary" onclick="exportPDF()" {% if not analysis %}disabled{% endif %}>
+                <span class="icon">&#x1F4C4;</span> Export PDF
+            </button>
+        </div>
+    </header>
+
+    <!-- Analysis Status Bar -->
+    <div class="analysis-status" id="analysisStatus">
+        {% if analysis %}
+            {% set analyzed_date = format_date(analysis.metadata.analyzed_at) if analysis.metadata else 'Unknown' %}
+            {% set confidence = analysis.metadata.confidence if analysis.metadata else 'unknown' %}
+            {% set generator = analysis.metadata.generator if analysis.metadata else 'unknown' %}
+        <div class="status-badge complete">
+            <span class="status-icon">&#x2713;</span>
+            Analyzed: {{ analyzed_date }}
+            <span class="separator">|</span>
+            Confidence: <span class="confidence {{ confidence }}">{{ confidence }}</span>
+            <span class="separator">|</span>
+            Model: {{ generator | truncate(40) }}
+        </div>
+        {% else %}
+        <div class="status-badge pending">
+            <span class="status-icon">&#x26A0;</span>
+            Analysis not run yet. Click "Refresh Analysis" to start.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Tab Navigation -->
+    <nav class="analysis-tabs">
+        <button class="tab-btn active" data-tab="overview">Overview</button>
+        <button class="tab-btn" data-tab="doors">Doors</button>
+        <button class="tab-btn" data-tab="windows">Windows</button>
+        <button class="tab-btn" data-tab="storefronts">Storefronts</button>
+        <button class="tab-btn" data-tab="hardware">Hardware</button>
+        <button class="tab-btn" data-tab="glazing">Glazing</button>
+        <button class="tab-btn" data-tab="json">Raw JSON</button>
+    </nav>
+
+    <!-- Tab Content -->
+    <main class="analysis-content">
+        <!-- Overview Tab -->
+        <section class="tab-panel active" id="tab-overview">
+            {% if analysis %}
+            <!-- Summary Card -->
+            <div class="scope-card summary-card">
+                <div class="card-header">
+                    <span class="icon">&#x1F4CB;</span>
+                    <h2>Scope Summary</h2>
+                </div>
+                <div class="card-body">
+                    <p class="summary-text">{{ analysis.summary.scope_description or 'No summary available' }}</p>
+                    {% if analysis.summary.key_items %}
+                    <ul class="key-items">
+                        {% for item in analysis.summary.key_items %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card doors">
+                    <span class="stat-value">{{ analysis.summary.total_doors or '?' }}</span>
+                    <span class="stat-label">Doors</span>
+                </div>
+                <div class="stat-card windows">
+                    <span class="stat-value">{{ analysis.summary.total_windows or '?' }}</span>
+                    <span class="stat-label">Windows</span>
+                </div>
+                <div class="stat-card storefront {% if analysis.summary.has_storefront %}active{% endif %}">
+                    <span class="stat-icon">{% if analysis.summary.has_storefront %}&#x2713;{% else %}&#x2717;{% endif %}</span>
+                    <span class="stat-label">Storefront</span>
+                </div>
+                <div class="stat-card hardware {% if analysis.summary.has_hardware %}active{% endif %}">
+                    <span class="stat-icon">{% if analysis.summary.has_hardware %}&#x2713;{% else %}&#x2717;{% endif %}</span>
+                    <span class="stat-label">Hardware</span>
+                </div>
+            </div>
+
+            <!-- Exclusions -->
+            {% if analysis.exclusions %}
+            <div class="scope-card exclusions-card">
+                <div class="card-header warning">
+                    <span class="icon">&#x26A0;</span>
+                    <h3>Exclusions</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="exclusions-list">
+                        {% for exclusion in analysis.exclusions %}
+                        <li>{{ exclusion }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Clarifications Needed -->
+            {% if analysis.clarifications_needed %}
+            <div class="scope-card clarifications-card">
+                <div class="card-header info">
+                    <span class="icon">&#x2753;</span>
+                    <h3>Clarifications Needed</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="clarifications-list">
+                        {% for item in analysis.clarifications_needed %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">&#x1F50D;</div>
+                <h3>No Analysis Data</h3>
+                <p>Run analysis to extract Division 8 scope from project documents.</p>
+                <button class="action-btn primary" onclick="refreshAnalysis()">Run Analysis</button>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- Doors Tab -->
+        <section class="tab-panel" id="tab-doors">
+            {% if analysis and analysis.doors %}
+            <div class="scope-cards-grid">
+                <!-- Metal Doors & Frames -->
+                {% set metal = analysis.doors.metal_doors_frames %}
+                <div class="scope-card {% if metal.specified %}specified{% else %}not-specified{% endif %}">
+                    <div class="card-header">
+                        <span class="icon">&#x1F6AA;</span>
+                        <h3>Metal Doors & Frames</h3>
+                        <span class="status-badge {% if metal.specified %}specified{% else %}not-specified{% endif %}">
+                            {% if metal.specified %}Specified{% else %}Not Specified{% endif %}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="field">
+                            <label>Count</label>
+                            <span class="value">{{ metal.count or 'not specified' }}</span>
+                        </div>
+                        {% if metal.types %}
+                        <div class="field">
+                            <label>Types</label>
+                            <div class="tags">
+                                {% for type in metal.types %}
+                                <span class="tag">{{ type }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if metal.manufacturers %}
+                        <div class="field">
+                            <label>Manufacturers</label>
+                            <span class="value">{{ metal.manufacturers | join(', ') }}</span>
+                        </div>
+                        {% endif %}
+                        {% if metal.notes %}
+                        <div class="field notes">
+                            <label>Notes</label>
+                            <ul>
+                                {% for note in metal.notes[:3] %}
+                                <li>{{ note | truncate(150) }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% if metal.spec_sections %}
+                    <div class="card-footer">
+                        <span class="spec-refs">{{ metal.spec_sections | join(', ') }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Wood Doors (Excluded) -->
+                {% set wood = analysis.doors.wood_doors %}
+                <div class="scope-card excluded">
+                    <div class="card-header">
+                        <span class="icon">&#x1F6AA;</span>
+                        <h3>Wood Doors</h3>
+                        <span class="status-badge excluded">Excluded</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="exclusion-note">{{ wood.exclusion_note or 'Division 6 - by others' }}</p>
+                    </div>
+                </div>
+
+                <!-- Aluminum Doors -->
+                {% set alum = analysis.doors.aluminum_doors %}
+                {% if alum.specified %}
+                <div class="scope-card specified">
+                    <div class="card-header">
+                        <span class="icon">&#x1F6AA;</span>
+                        <h3>Aluminum Doors</h3>
+                        <span class="status-badge specified">Specified</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="field">
+                            <label>Count</label>
+                            <span class="value">{{ alum.count or 'not specified' }}</span>
+                        </div>
+                        {% if alum.types %}
+                        <div class="field">
+                            <label>Types</label>
+                            <div class="tags">
+                                {% for type in alum.types %}
+                                <span class="tag">{{ type }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Access Doors -->
+                {% set access = analysis.doors.access_doors %}
+                {% if access.specified %}
+                <div class="scope-card specified">
+                    <div class="card-header">
+                        <span class="icon">&#x1F510;</span>
+                        <h3>Access Doors & Panels</h3>
+                        <span class="status-badge specified">Specified</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="field">
+                            <label>Count</label>
+                            <span class="value">{{ access.count or 'not specified' }}</span>
+                        </div>
+                        {% if access.types %}
+                        <div class="field">
+                            <label>Types</label>
+                            <div class="tags">
+                                {% for type in access.types %}
+                                <span class="tag">{{ type }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Automatic Entrances -->
+                {% set auto = analysis.doors.automatic_entrances %}
+                {% if auto.specified %}
+                <div class="scope-card specified">
+                    <div class="card-header">
+                        <span class="icon">&#x2194;</span>
+                        <h3>Automatic Entrances</h3>
+                        <span class="status-badge specified">Specified</span>
+                    </div>
+                    <div class="card-body">
+                        {% if auto.types %}
+                        <div class="field">
+                            <label>Types</label>
+                            <div class="tags">
+                                {% for type in auto.types %}
+                                <span class="tag">{{ type }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if auto.manufacturers %}
+                        <div class="field">
+                            <label>Manufacturers</label>
+                            <span class="value">{{ auto.manufacturers | join(', ') }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No door data available. Run analysis first.</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- Windows Tab -->
+        <section class="tab-panel" id="tab-windows">
+            {% if analysis and analysis.windows %}
+            <div class="scope-cards-grid">
+                <!-- Aluminum Windows -->
+                {% set alum_win = analysis.windows.aluminum_windows %}
+                <div class="scope-card {% if alum_win.specified %}specified{% else %}not-specified{% endif %}">
+                    <div class="card-header">
+                        <span class="icon">&#x1FA9F;</span>
+                        <h3>Aluminum Windows</h3>
+                        <span class="status-badge {% if alum_win.specified %}specified{% else %}not-specified{% endif %}">
+                            {% if alum_win.specified %}Specified{% else %}Not Specified{% endif %}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="field">
+                            <label>Count</label>
+                            <span class="value">{{ alum_win.count or 'not specified' }}</span>
+                        </div>
+                        {% if alum_win.types %}
+                        <div class="field">
+                            <label>Types</label>
+                            <div class="tags">
+                                {% for type in alum_win.types %}
+                                <span class="tag">{{ type }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if alum_win.manufacturers %}
+                        <div class="field">
+                            <label>Manufacturers</label>
+                            <span class="value">{{ alum_win.manufacturers | join(', ') }}</span>
+                        </div>
+                        {% endif %}
+                        {% if alum_win.performance %}
+                        <div class="field">
+                            <label>Performance</label>
+                            <div class="performance-specs">
+                                {% for key, val in alum_win.performance.items() %}
+                                <span class="perf-item">{{ key }}: {{ val }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if alum_win.notes %}
+                        <div class="field notes">
+                            <label>Notes</label>
+                            <ul>
+                                {% for note in alum_win.notes[:3] %}
+                                <li>{{ note | truncate(150) }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Vinyl Windows -->
+                {% set vinyl = analysis.windows.vinyl_windows %}
+                <div class="scope-card {% if vinyl.specified %}specified{% else %}not-specified{% endif %}">
+                    <div class="card-header">
+                        <span class="icon">&#x1FA9F;</span>
+                        <h3>Vinyl Windows</h3>
+                        <span class="status-badge {% if vinyl.specified %}specified{% else %}not-specified{% endif %}">
+                            {% if vinyl.specified %}Specified{% else %}Not Specified{% endif %}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="field">
+                            <label>Count</label>
+                            <span class="value">{{ vinyl.count or 'not specified' }}</span>
+                        </div>
+                        {% if vinyl.types %}
+                        <div class="field">
+                            <label>Types</label>
+                            <div class="tags">
+                                {% for type in vinyl.types %}
+                                <span class="tag">{{ type }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if vinyl.manufacturers %}
+                        <div class="field">
+                            <label>Manufacturers</label>
+                            <span class="value">{{ vinyl.manufacturers | join(', ') }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No window data available. Run analysis first.</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- Storefronts Tab -->
+        <section class="tab-panel" id="tab-storefronts">
+            {% if analysis %}
+            <div class="scope-cards-grid">
+                <!-- Storefront -->
+                {% set sf = analysis.storefronts %}
+                <div class="scope-card {% if sf.specified %}specified{% else %}not-specified{% endif %}">
+                    <div class="card-header">
+                        <span class="icon">&#x1F3EA;</span>
+                        <h3>Storefront</h3>
+                        <span class="status-badge {% if sf.specified %}specified{% else %}not-specified{% endif %}">
+                            {% if sf.specified %}Specified{% else %}Not Specified{% endif %}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        {% if sf.sf_estimate %}
+                        <div class="field">
+                            <label>Estimated SF</label>
+                            <span class="value highlight">{{ sf.sf_estimate }} SF</span>
+                        </div>
+                        {% endif %}
+                        {% if sf.systems %}
+                        <div class="field">
+                            <label>Systems</label>
+                            <div class="tags">
+                                {% for sys in sf.systems %}
+                                <span class="tag">{{ sys }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if sf.manufacturers %}
+                        <div class="field">
+                            <label>Manufacturers</label>
+                            <span class="value">{{ sf.manufacturers | join(', ') }}</span>
+                        </div>
+                        {% endif %}
+                        {% if sf.finish %}
+                        <div class="field">
+                            <label>Finish</label>
+                            <span class="value">{{ sf.finish }}</span>
+                        </div>
+                        {% endif %}
+                        {% if sf.notes %}
+                        <div class="field notes">
+                            <label>Notes</label>
+                            <ul>
+                                {% for note in sf.notes[:3] %}
+                                <li>{{ note | truncate(150) }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Curtain Wall -->
+                {% set cw = analysis.curtain_wall %}
+                <div class="scope-card {% if cw.specified %}specified{% else %}not-specified{% endif %}">
+                    <div class="card-header">
+                        <span class="icon">&#x1F3D7;</span>
+                        <h3>Curtain Wall</h3>
+                        <span class="status-badge {% if cw.specified %}specified{% else %}not-specified{% endif %}">
+                            {% if cw.specified %}Specified{% else %}Not Specified{% endif %}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        {% if cw.sf_estimate %}
+                        <div class="field">
+                            <label>Estimated SF</label>
+                            <span class="value highlight">{{ cw.sf_estimate }} SF</span>
+                        </div>
+                        {% endif %}
+                        {% if cw.systems %}
+                        <div class="field">
+                            <label>Systems</label>
+                            <div class="tags">
+                                {% for sys in cw.systems %}
+                                <span class="tag">{{ sys }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if cw.manufacturers %}
+                        <div class="field">
+                            <label>Manufacturers</label>
+                            <span class="value">{{ cw.manufacturers | join(', ') }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No storefront data available. Run analysis first.</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- Hardware Tab -->
+        <section class="tab-panel" id="tab-hardware">
+            {% if analysis and analysis.hardware %}
+            {% set hw = analysis.hardware %}
+            <div class="scope-cards-grid">
+                <div class="scope-card {% if hw.specified %}specified{% else %}not-specified{% endif %} wide">
+                    <div class="card-header">
+                        <span class="icon">&#x1F511;</span>
+                        <h3>Door Hardware</h3>
+                        <span class="status-badge {% if hw.specified %}specified{% else %}not-specified{% endif %}">
+                            {% if hw.specified %}Specified{% else %}Not Specified{% endif %}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        {% if hw.hardware_sets %}
+                        <div class="field">
+                            <label>Hardware Sets</label>
+                            <div class="tags">
+                                {% for set in hw.hardware_sets %}
+                                <span class="tag">{{ set }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if hw.manufacturers %}
+                        <div class="field">
+                            <label>Manufacturers</label>
+                            <span class="value">{{ hw.manufacturers | join(', ') }}</span>
+                        </div>
+                        {% endif %}
+                        {% if hw.lockset_types %}
+                        <div class="field">
+                            <label>Lockset Types</label>
+                            <div class="tags">
+                                {% for type in hw.lockset_types %}
+                                <span class="tag">{{ type }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if hw.finish %}
+                        <div class="field">
+                            <label>Finish</label>
+                            <span class="value">{{ hw.finish }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="field">
+                            <label>Access Control</label>
+                            <span class="value">{% if hw.access_control %}Yes{% else %}No{% endif %}</span>
+                        </div>
+                        {% if hw.notes %}
+                        <div class="field notes">
+                            <label>Notes</label>
+                            <ul>
+                                {% for note in hw.notes[:5] %}
+                                <li>{{ note | truncate(200) }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No hardware data available. Run analysis first.</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- Glazing Tab -->
+        <section class="tab-panel" id="tab-glazing">
+            {% if analysis and analysis.glazing %}
+            {% set gl = analysis.glazing %}
+            <div class="scope-cards-grid">
+                <div class="scope-card {% if gl.specified %}specified{% else %}not-specified{% endif %} wide">
+                    <div class="card-header">
+                        <span class="icon">&#x1FA9F;</span>
+                        <h3>Glass & Glazing</h3>
+                        <span class="status-badge {% if gl.specified %}specified{% else %}not-specified{% endif %}">
+                            {% if gl.specified %}Specified{% else %}Not Specified{% endif %}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        {% if gl.glass_types %}
+                        <div class="field">
+                            <label>Glass Types</label>
+                            <div class="tags">
+                                {% for type in gl.glass_types %}
+                                <span class="tag">{{ type }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if gl.performance %}
+                        <div class="field">
+                            <label>Performance Specs</label>
+                            <div class="performance-specs">
+                                {% for key, val in gl.performance.items() %}
+                                <span class="perf-item">{{ key }}: {{ val }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if gl.notes %}
+                        <div class="field notes">
+                            <label>Notes</label>
+                            <ul>
+                                {% for note in gl.notes[:5] %}
+                                <li>{{ note | truncate(200) }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No glazing data available. Run analysis first.</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- Raw JSON Tab -->
+        <section class="tab-panel" id="tab-json">
+            {% if analysis %}
+            <div class="json-container">
+                <div class="json-header">
+                    <span>Raw Analysis JSON</span>
+                    <button class="copy-btn" onclick="copyJSON()">Copy</button>
+                </div>
+                <pre class="json-content" id="jsonContent">{{ analysis | tojson(indent=2) }}</pre>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No analysis data available.</p>
+            </div>
+            {% endif %}
+        </section>
+    </main>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+        <div class="spinner"></div>
+        <p id="loadingMessage">Running analysis...</p>
+    </div>
+</div>
+
+<script>
+    const projectId = "{{ project_id }}";
+</script>
+<script src="{{ url_for('static', filename='js/analysis.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,353 @@
+{
+  "export_info":{
+    "export_timestamp":"2025-08-06T10:17:46.791081",
+    "total_pages":4,
+    "page_range":{
+      "first":1,
+      "last":2
+    },
+    "model_used":"qwen3:8b",
+    "data_integrity":{
+      "total_records":4,
+      "pages_with_structured_data":3,
+      "average_content_length":1729.0
+    }
+  },
+  "data":[
+    {
+      "metadata":{
+        "page_number":1,
+        "source_file":"Masterformat2018 1.pdf",
+        "model":"granite3-moe:3b",
+        "timestamp":"2025-08-06T10:02:10.483405",
+        "extraction_date":"2025-08-06",
+        "content_length":1741,
+        "has_previous_context":false,
+        "save_attempt_count":1
+      },
+      "raw_content":" \n \n \n  \n \n01 00 00 General  May be used  as Division  level \nSection  title. \n Requirements   \n01 10 00 Summary  \n01 11 00 Summary  of Work  \nIncludes:  description  of construction  delivered  under  a single \ncontract. Description of provisions for future construction.  \n \nMay Include: list of products ordered in advance, owner - \nfurnished  products , salvaged  material  and equipment,  products \ndelivered to owner, and owner -installed products.  \n \nAlternate  Terms/Abbreviations:  purchase  contract:  procurement \ncontract: purchase order.  \n \nSee: 00 24 00 for procurement  scopes.  \n00 54 13 for agreement  form supplementary  scope  statement. \n01 31 00 for coordination of work under a single contract.  \n01 64 00 for owner -supplied  products.  \n \n01 11 13 Work  Covered  by Contract  Documents  \n01 11 16 Work  by Owner  \n01 11 19 Purchase  Contracts  \n01 12 00 Multiple  Contract  Summary  \nIncludes:  description  of construction  delivered  under  more  than \none construction contract; for example, multiple prime, \nconstruction management, and design -build. Summary of \ncontracts, related prior construction, related concurrent \nconstruction, c ontract interface, phasing of construction, and \ntemporary facilities and controls responsibility.  \n \nMay Include: list of products ordered in advance, owner - \nfurnished  products,  salvaged  material  and equipment,  products \ndelivered to owner, and owner -installe d products, future \nconstruction, and provisions for future construction associated \nwith each contract.  \n \nSee: 00 24 00 for procurement  scopes.  \n00 54 13 for agreement  form supplementary  scope  statement.  \n01 31 16 for multiple  contract  coordination.  \nDIVISION  01 \u2013 GENERAL  \nREQUIREMENTS  ",
+      "response_text":"{\n  \"page_info\": {\n    \"page_number\": 1,\n    \"has_spillover_from_previous\": false,\n    \"has_spillover_to_next\": true\n  },\n  \"sections\": [\n    {\n      \"section_number\": \"01 00 00\",\n      \"title\": \"General\",\n      \"division\": \"01\",\n      \"level\": 1,\n      \"status\": \"complete\",\n      \"content\": {\n        \"includes\": [\"description of construction delivered under a single contract\", \"description of provisions for future construction\"],\n        \"may_include\": [\"list of products ordered in advance\", \"owner-furnished products\", \"salvaged material and equipment\", \"products delivered to owner\", \"and owner-installed products\"],\n        \"alternate_terms\": [\"purchase contract: procurement contract: purchase order\"],\n        \"see\": [\"00 24 00 for procurement scopes\", \"00 54 13 for agreement form supplementary scope statement\", \"01 31 16 for multiple contract coordination\"]\n      },\n      \"cross_references\": {},\n      \"sub_sections\": [\n        {\"section_number\": \"01 10 00\", \"title\": \"Summary\"},\n        {\"section_number\": \"01 11 00\", \"title\": \"Summary of Work\"}\n      ],\n      \"raw_text\": \"01 00 00 General\\nIncludes: description of construction delivered under a single contract. Description of provisions for future construction.\\nMay Include: list of products ordered in advance, owner -furnished products, salvaged material and equipment, products delivered to owner, and owner -installed products.\\nAlternate Terms/Abbreviations: purchase contract: procurement contract: purchase order.\\nSee: 00 24 00 for procurement scopes. 00 54 13 for agreement form supplementary scope statement. 01 31 16 for multiple contract coordination.\"\n    }\n  ]\n}",
+      "structured":{
+        "page_info":{
+          "page_number":1,
+          "has_spillover_from_previous":false,
+          "has_spillover_to_next":true
+        },
+        "sections":[
+          {
+            "section_number":"01 00 00",
+            "title":"General",
+            "division":"01",
+            "level":1,
+            "status":"complete",
+            "content":{
+              "includes":[
+                "description of construction delivered under a single contract",
+                "description of provisions for future construction"
+              ],
+              "may_include":[
+                "list of products ordered in advance",
+                "owner-furnished products",
+                "salvaged material and equipment",
+                "products delivered to owner",
+                "and owner-installed products"
+              ],
+              "alternate_terms":[
+                "purchase contract: procurement contract: purchase order"
+              ],
+              "see":[
+                "00 24 00 for procurement scopes",
+                "00 54 13 for agreement form supplementary scope statement",
+                "01 31 16 for multiple contract coordination"
+              ]
+            },
+            "cross_references":{},
+            "sub_sections":[
+              {
+                "section_number":"01 10 00",
+                "title":"Summary"
+              },
+              {
+                "section_number":"01 11 00",
+                "title":"Summary of Work"
+              }
+            ],
+            "raw_text":"01 00 00 General\nIncludes: description of construction delivered under a single contract. Description of provisions for future construction.\nMay Include: list of products ordered in advance, owner -furnished products, salvaged material and equipment, products delivered to owner, and owner -installed products.\nAlternate Terms/Abbreviations: purchase contract: procurement contract: purchase order.\nSee: 00 24 00 for procurement scopes. 00 54 13 for agreement form supplementary scope statement. 01 31 16 for multiple contract coordination."
+          }
+        ]
+      }
+    },
+    {
+      "metadata":{
+        "page_number":2,
+        "source_file":"Masterformat2018 2.pdf",
+        "model":"granite3-moe:3b",
+        "timestamp":"2025-08-06T10:02:20.816771",
+        "extraction_date":"2025-08-06",
+        "content_length":1693,
+        "has_previous_context":true,
+        "save_attempt_count":1
+      },
+      "raw_content":" \n \n \n  \n01 12 13 Summary  of Contracts  \n01 12 16 Work  Sequence  \n01 12 19 Contract  Interface  \n01 14 00 Work  Restrictions  \nIncludes: restrictions that affect construction operations. \nLocation  of construction,  occupancy  requirements,  and use of \npremises and site.  \n \nSee: 01 53 00 for temporary  construction  related  to access  and \nuse of site.  \n01 55 00 for temporary  vehicular  access  and parking.  \n01 56 00 for temporary  barriers  and enclosures.  \n \n01 14 13 Access  to Site \n01 14 16 Coordination  with Occupants  \n01 14 19 Use of Site \n01 14 33 Work  in Rights -of-Way \n01 18 00 Project  Utility  Sources  \nIncludes:  information  concerning  utility  companies  providing \npermanent services to the project.  \n \nSee: 01 51 00 for temporary  utilities.  \n \n01 18 13 Utility  Service  Connections  \nNotes:  this is the location  to specify  information  necessary  for \nconnecting utilities and where connection is made by utility.  \n \n01 20 00 Price  and Payment  Procedures  \n01 21 00 Allowances  \nIncludes: administrative and procedural requirements for cash \nand quantity allowances for products, installation, testing, and \ncontingencies. Time allowances. In a project manual \napplication,  other  titles affected  by allowances  should  reference \nthis title.  \n \nMay Include:  allowance  amounts  and descriptions.  \n \nSee: 00 70 00 for conditions  of the contract  for allowance \nrequirements.  \n \nSee Also:  00 24 00 for procurement  scopes  for allowance \namounts and items.  \n00 40 00 for allowances  included  in procurement  forms.  \n00 43 21 for allowances  procurement  form supplement.  \n00 54 21 for allowances  schedule  agreement  form supplement.  ",
+      "response_text":"{\n  \"page_info\": {\n    \"page_number\": 1,\n    \"has_spillover_from_previous\": false,\n    \"has_spillover_to_next\": true\n  },\n  \"sections\": [\n    {\n      \"section_number\": \"01 12 13\",\n      \"title\": \"Summary of Contracts\",\n      \"division\": \"01\",\n      \"level\": 1,\n      \"status\": \"complete\",\n      \"content\": {\n        \"includes\": [\"restrictions that affect construction operations\"],\n        \"location_of_construction\": \"\",\n        \"occupancy_requirements\": \"\",\n        \"use_of_premises_and_site\": \"\"\n      },\n      \"cross_references\": {\n        \"see\": [],\n        \"see_also\": []\n      },\n      \"sub_sections\": [\n        {\"section_number\": \"01 53 00\", \"title\": \"Temporary Construction Related to Access and Use of Site\"},\n        {\"section_number\": \"01 55 00\", \"title\": \"Temporary Vehicular Access and Parking\"},\n        {\"section_number\": \"01 56 00\", \"title\": \"Temporary Barriers and Enclosures\"}\n      ],\n      \"raw_text\": \"\"\n    },\n    {\n      \"section_number\": \"01 12 16\",\n      \"title\": \"Work Sequence\",\n      \"division\": \"01\",\n      \"level\": 1,\n      \"status\": \"complete\",\n      \"content\": {\n        \"includes\": []\n      },\n      \"cross_references\": {\n        \"see\": [],\n        \"see_also\": []\n      },\n      \"sub_sections\": [\n        {\"section_number\": \"01 12 19\", \"title\": \"Contract Interface\"},\n        {\"section_number\": \"01 14 00\", \"title\": \"Work Restrictions\"}\n      ],\n      \"raw_text\": \"\"\n    },\n    {\n      \"section_number\": \"01 12 19\",\n      \"title\": \"Contract Interface\",\n      \"division\": \"01\",\n      \"level\": 1,\n      \"status\": \"complete\",\n      \"content\": {\n        \"includes\": []\n      },\n      \"cross_references\": {\n        \"see\": [],\n        \"see_also\": []\n      },\n      \"sub_sections\": [\n        {\"section_number\": \"01 53 00\", \"title\": \"Temporary Construction Related to Access and Use of Site\"},\n        {\"section_number\": \"01 55 00\", \"title\": \"Temporary Vehicular Access and Parking\"},\n        {\"section_number\": \"01 56 00\", \"title\": \"Temporary Barriers and Enclosures\"}\n      ],\n      \"raw_text\": \"\"\n    },\n    {\n      \"section_number\": \"01 14 00\",\n      \"title\": \"Work Restrictions\",\n      \"division\": \"01\",\n      \"level\": 1,\n      \"status\": \"complete\",\n      \"content\": {\n        \"includes\": [],\n        \"location_of_construction\": \"\",\n        \"occupancy_requirements\": \"\",\n        \"use_of_premises_and_site\": \"\"\n      },\n      \"cross_references\": {\n        \"see\": [],\n        \"see_also\": []\n      },\n      \"sub_sections\": [\n        {\"section_number\": \"01 53 00\", \"title\": \"Temporary Construction Related to Access and Use of Site\"},\n        {\"section_number\": \"01 55 00\", \"title\": \"Temporary Vehicular Access and Parking\"},\n        {\"section_number\": \"01 56 00\", \"title\": \"Temporary Barriers and Enclosures\"}\n      ],\n      \"raw_text\": \"\"\n    },\n    {\n      \"section_number\": \"01 14 13\",\n      \"title\": \"Access to Site\",\n      \"division\": \"01\",\n      \"level\": 1,\n      \"status\": \"complete\",\n      \"content\": {\n        \"includes\": []\n      },\n      \"cross_references\": {\n        \"see\": [],\n        \"see_also\": []\n      },\n      \"sub_sections\": [\n        {\"section_number\": \"01 53 00\", \"title\": \"Temporary Construction Related to Access and Use of Site\"}\n      ],\n      \"raw_text\": \"\"\n    },\n    {\n      \"section_number\": \"01 14 16\",\n      \"title\": \"Coordination with Occupants\",\n      \"division\": \"01\",\n      \"level\": 1,\n      \"status\": \"complete\",\n      \"content\": {\n        \"includes\": []\n      },\n      \"cross_references\": {\n        \"see\": [],\n        \"see_also\": []\n      },\n      \"sub_sections\": [\n        {\"section_number\": \"01 53 00\", \"title\": \"Temporary Construction Related to Access and Use of Site\"}\n      ],\n      \"raw_text\": \"\"\n    }\n  ]\n}",
+      "structured":{
+        "page_info":{
+          "page_number":1,
+          "has_spillover_from_previous":false,
+          "has_spillover_to_next":true
+        },
+        "sections":[
+          {
+            "section_number":"01 12 13",
+            "title":"Summary of Contracts",
+            "division":"01",
+            "level":1,
+            "status":"complete",
+            "content":{
+              "includes":[
+                "restrictions that affect construction operations"
+              ],
+              "location_of_construction":"",
+              "occupancy_requirements":"",
+              "use_of_premises_and_site":""
+            },
+            "cross_references":{
+              "see":[],
+              "see_also":[]
+            },
+            "sub_sections":[
+              {
+                "section_number":"01 53 00",
+                "title":"Temporary Construction Related to Access and Use of Site"
+              },
+              {
+                "section_number":"01 55 00",
+                "title":"Temporary Vehicular Access and Parking"
+              },
+              {
+                "section_number":"01 56 00",
+                "title":"Temporary Barriers and Enclosures"
+              }
+            ],
+            "raw_text":""
+          },
+          {
+            "section_number":"01 12 16",
+            "title":"Work Sequence",
+            "division":"01",
+            "level":1,
+            "status":"complete",
+            "content":{
+              "includes":[]
+            },
+            "cross_references":{
+              "see":[],
+              "see_also":[]
+            },
+            "sub_sections":[
+              {
+                "section_number":"01 12 19",
+                "title":"Contract Interface"
+              },
+              {
+                "section_number":"01 14 00",
+                "title":"Work Restrictions"
+              }
+            ],
+            "raw_text":""
+          },
+          {
+            "section_number":"01 12 19",
+            "title":"Contract Interface",
+            "division":"01",
+            "level":1,
+            "status":"complete",
+            "content":{
+              "includes":[]
+            },
+            "cross_references":{
+              "see":[],
+              "see_also":[]
+            },
+            "sub_sections":[
+              {
+                "section_number":"01 53 00",
+                "title":"Temporary Construction Related to Access and Use of Site"
+              },
+              {
+                "section_number":"01 55 00",
+                "title":"Temporary Vehicular Access and Parking"
+              },
+              {
+                "section_number":"01 56 00",
+                "title":"Temporary Barriers and Enclosures"
+              }
+            ],
+            "raw_text":""
+          },
+          {
+            "section_number":"01 14 00",
+            "title":"Work Restrictions",
+            "division":"01",
+            "level":1,
+            "status":"complete",
+            "content":{
+              "includes":[],
+              "location_of_construction":"",
+              "occupancy_requirements":"",
+              "use_of_premises_and_site":""
+            },
+            "cross_references":{
+              "see":[],
+              "see_also":[]
+            },
+            "sub_sections":[
+              {
+                "section_number":"01 53 00",
+                "title":"Temporary Construction Related to Access and Use of Site"
+              },
+              {
+                "section_number":"01 55 00",
+                "title":"Temporary Vehicular Access and Parking"
+              },
+              {
+                "section_number":"01 56 00",
+                "title":"Temporary Barriers and Enclosures"
+              }
+            ],
+            "raw_text":""
+          },
+          {
+            "section_number":"01 14 13",
+            "title":"Access to Site",
+            "division":"01",
+            "level":1,
+            "status":"complete",
+            "content":{
+              "includes":[]
+            },
+            "cross_references":{
+              "see":[],
+              "see_also":[]
+            },
+            "sub_sections":[
+              {
+                "section_number":"01 53 00",
+                "title":"Temporary Construction Related to Access and Use of Site"
+              }
+            ],
+            "raw_text":""
+          },
+          {
+            "section_number":"01 14 16",
+            "title":"Coordination with Occupants",
+            "division":"01",
+            "level":1,
+            "status":"complete",
+            "content":{
+              "includes":[]
+            },
+            "cross_references":{
+              "see":[],
+              "see_also":[]
+            },
+            "sub_sections":[
+              {
+                "section_number":"01 53 00",
+                "title":"Temporary Construction Related to Access and Use of Site"
+              }
+            ],
+            "raw_text":""
+          }
+        ]
+      }
+    },
+    {
+      "metadata":{
+        "page_number":1,
+        "source_file":"Masterformat2018 1.pdf",
+        "model":"qwen2.5-coder:7b",
+        "timestamp":"2025-08-06T10:07:22.088524",
+        "extraction_date":"2025-08-06",
+        "content_length":1741,
+        "has_previous_context":true,
+        "save_attempt_count":1
+      },
+      "raw_content":" \n \n \n  \n \n01 00 00 General  May be used  as Division  level \nSection  title. \n Requirements   \n01 10 00 Summary  \n01 11 00 Summary  of Work  \nIncludes:  description  of construction  delivered  under  a single \ncontract. Description of provisions for future construction.  \n \nMay Include: list of products ordered in advance, owner - \nfurnished  products , salvaged  material  and equipment,  products \ndelivered to owner, and owner -installed products.  \n \nAlternate  Terms/Abbreviations:  purchase  contract:  procurement \ncontract: purchase order.  \n \nSee: 00 24 00 for procurement  scopes.  \n00 54 13 for agreement  form supplementary  scope  statement. \n01 31 00 for coordination of work under a single contract.  \n01 64 00 for owner -supplied  products.  \n \n01 11 13 Work  Covered  by Contract  Documents  \n01 11 16 Work  by Owner  \n01 11 19 Purchase  Contracts  \n01 12 00 Multiple  Contract  Summary  \nIncludes:  description  of construction  delivered  under  more  than \none construction contract; for example, multiple prime, \nconstruction management, and design -build. Summary of \ncontracts, related prior construction, related concurrent \nconstruction, c ontract interface, phasing of construction, and \ntemporary facilities and controls responsibility.  \n \nMay Include: list of products ordered in advance, owner - \nfurnished  products,  salvaged  material  and equipment,  products \ndelivered to owner, and owner -installe d products, future \nconstruction, and provisions for future construction associated \nwith each contract.  \n \nSee: 00 24 00 for procurement  scopes.  \n00 54 13 for agreement  form supplementary  scope  statement.  \n01 31 16 for multiple  contract  coordination.  \nDIVISION  01 \u2013 GENERAL  \nREQUIREMENTS  ",
+      "response_text":"```json\n{\n  \"page_info\": {\n    \"page_number\": 2,\n    \"has_spillover_from_previous\": true,\n    \"has_spillover_to_next\": false\n  },\n  \"sections\": [\n    {\n      \"section_number\": \"01 00 00\",\n      \"title\": \"General\",\n      \"division\": \"01\",\n      \"level\": 1,\n      \"status\": \"complete\",\n      \"content\": {\n        \"includes\": [],\n        \"may_include\": [\"list of products ordered in advance\", \"owner-furnished products\", \"salvaged material and equipment\", \"products delivered to owner\", \"owner-installed products\"],\n        \"products\": [],\n        \"alternate_terms\": [\"purchase contract: procurement contract: purchase order\"]\n      },\n      \"cross_references\": {\n        \"see\": [\n          {\"section_number\": \"00 24 00\", \"description\": \"for procurement scopes\"},\n          {\"section_number\": \"00 54 13\", \"description\": \"for agreement form supplementary scope statement\"}\n        ],\n        \"see_also\": []\n      },\n      \"sub_sections\": [\n        {\"section_number\": \"01 10 00\", \"title\": \"Summary\"},\n        {\"section_number\": \"01 11 00\", \"title\": \"Summary of Work\"},\n        {\"section_number\": \"01 12 00\", \"title\": \"Multiple Contract Summary\"}\n      ],\n      \"raw_text\": \"01 00 00 General\\nMay be used as Division level Section title. Requirements\\n\\n01 10 00 Summary\\n01 11 00 Summary of Work\\nIncludes: description of construction delivered under a single contract. Description of provisions for future construction.\\n\\nMay Include: list of products ordered in advance, owner-furnished products, salvaged material and equipment, products delivered to owner, and owner-installed products.\\n\\nAlternate Terms/Abbreviations: purchase contract: procurement contract: purchase order.\\n\\nSee: 00 24 00 for procurement scopes.\\n00 54 13 for agreement form supplementary scope statement.\\n01 31 00 for coordination of work under a single contract.\\n01 64 00 for owner-supplied products.\\n\\n01 11 13 Work Covered by Contract Documents\\n01 11 16 Work by Owner\\n01 11 19 Purchase Contracts\\n01 12 00 Multiple Contract Summary\\nIncludes: description of construction delivered under more than one construction contract; for example, multiple prime, construction management, and design-build. Summary of contracts, related prior construction, related concurrent construction, contract interface, phasing of construction, and temporary facilities and controls responsibility.\\n\\nMay Include: list of products ordered in advance, owner-furnished products, salvaged material and equipment, products delivered to owner, and owner-installed products, future construction, and provisions for future construction associated with each contract.\\n\\nSee: 00 24 00 for procurement scopes.\\n00 54 13 for agreement form supplementary scope statement.\\n01 31 16 for multiple contract coordination.\"\n    }\n  ]\n}\n```",
+      "structured":{
+        "page_info":{
+          "page_number":2,
+          "has_spillover_from_previous":true,
+          "has_spillover_to_next":false
+        },
+        "sections":[
+          {
+            "section_number":"01 00 00",
+            "title":"General",
+            "division":"01",
+            "level":1,
+            "status":"complete",
+            "content":{
+              "includes":[],
+              "may_include":[
+                "list of products ordered in advance",
+                "owner-furnished products",
+                "salvaged material and equipment",
+                "products delivered to owner",
+                "owner-installed products"
+              ],
+              "products":[],
+              "alternate_terms":[
+                "purchase contract: procurement contract: purchase order"
+              ]
+            },
+            "cross_references":{
+              "see":[
+                {
+                  "section_number":"00 24 00",
+                  "description":"for procurement scopes"
+                },
+                {
+                  "section_number":"00 54 13",
+                  "description":"for agreement form supplementary scope statement"
+                }
+              ],
+              "see_also":[]
+            },
+            "sub_sections":[
+              {
+                "section_number":"01 10 00",
+                "title":"Summary"
+              },
+              {
+                "section_number":"01 11 00",
+                "title":"Summary of Work"
+              },
+              {
+                "section_number":"01 12 00",
+                "title":"Multiple Contract Summary"
+              }
+            ],
+            "raw_text":"01 00 00 General\nMay be used as Division level Section title. Requirements\n\n01 10 00 Summary\n01 11 00 Summary of Work\nIncludes: description of construction delivered under a single contract. Description of provisions for future construction.\n\nMay Include: list of products ordered in advance, owner-furnished products, salvaged material and equipment, products delivered to owner, and owner-installed products.\n\nAlternate Terms/Abbreviations: purchase contract: procurement contract: purchase order.\n\nSee: 00 24 00 for procurement scopes.\n00 54 13 for agreement form supplementary scope statement.\n01 31 00 for coordination of work under a single contract.\n01 64 00 for owner-supplied products.\n\n01 11 13 Work Covered by Contract Documents\n01 11 16 Work by Owner\n01 11 19 Purchase Contracts\n01 12 00 Multiple Contract Summary\nIncludes: description of construction delivered under more than one construction contract; for example, multiple prime, construction management, and design-build. Summary of contracts, related prior construction, related concurrent construction, contract interface, phasing of construction, and temporary facilities and controls responsibility.\n\nMay Include: list of products ordered in advance, owner-furnished products, salvaged material and equipment, products delivered to owner, and owner-installed products, future construction, and provisions for future construction associated with each contract.\n\nSee: 00 24 00 for procurement scopes.\n00 54 13 for agreement form supplementary scope statement.\n01 31 16 for multiple contract coordination."
+          }
+        ]
+      }
+    },
+    {
+      "metadata":{
+        "page_number":1,
+        "source_file":"Masterformat2018 1.pdf",
+        "model":"qwen3:8b",
+        "timestamp":"2025-08-06T10:17:37.973353",
+        "extraction_date":"2025-08-06",
+        "content_length":1741,
+        "has_previous_context":true,
+        "save_attempt_count":1
+      },
+      "raw_content":" \n \n \n  \n \n01 00 00 General  May be used  as Division  level \nSection  title. \n Requirements   \n01 10 00 Summary  \n01 11 00 Summary  of Work  \nIncludes:  description  of construction  delivered  under  a single \ncontract. Description of provisions for future construction.  \n \nMay Include: list of products ordered in advance, owner - \nfurnished  products , salvaged  material  and equipment,  products \ndelivered to owner, and owner -installed products.  \n \nAlternate  Terms/Abbreviations:  purchase  contract:  procurement \ncontract: purchase order.  \n \nSee: 00 24 00 for procurement  scopes.  \n00 54 13 for agreement  form supplementary  scope  statement. \n01 31 00 for coordination of work under a single contract.  \n01 64 00 for owner -supplied  products.  \n \n01 11 13 Work  Covered  by Contract  Documents  \n01 11 16 Work  by Owner  \n01 11 19 Purchase  Contracts  \n01 12 00 Multiple  Contract  Summary  \nIncludes:  description  of construction  delivered  under  more  than \none construction contract; for example, multiple prime, \nconstruction management, and design -build. Summary of \ncontracts, related prior construction, related concurrent \nconstruction, c ontract interface, phasing of construction, and \ntemporary facilities and controls responsibility.  \n \nMay Include: list of products ordered in advance, owner - \nfurnished  products,  salvaged  material  and equipment,  products \ndelivered to owner, and owner -installe d products, future \nconstruction, and provisions for future construction associated \nwith each contract.  \n \nSee: 00 24 00 for procurement  scopes.  \n00 54 13 for agreement  form supplementary  scope  statement.  \n01 31 16 for multiple  contract  coordination.  \nDIVISION  01 \u2013 GENERAL  \nREQUIREMENTS  ",
+      "response_text":"<think>\nOkay, let's tackle this parsing task. The user wants me to extract Masterformat construction specification data exactly as written, without making up any information. Let me start by understanding the structure of the provided text.\n\nFirst, the context from the previous page mentions handling section spillovers, but the current page's content seems to start with \"01 00 00 General...\" which is part of Division 01. The user provided an example of how to parse a section, so I need to follow that structure closely.\n\nLooking at the text, there are several sections. The first one is \"01 00 00 General May be used as Division level Section title. Requirements\". Wait, the section number here is \"01 00 00\", which is a Level 1 section (since the last two digits are 00). The title is \"General May be used as Division level Section title. Requirements\". But the example shows that the title should be the main heading. Maybe the title here is \"General\" and the rest is part of the content? Or perhaps the entire line is the title. Hmm, the example had \"Fibrous Reinforcing\" as the title. So maybe the title here is \"General\" and the rest is part of the content. Wait, the example's title was the first part after the section number. Let me check the example again.\n\nIn the example, \"03 24 00 Fibrous Reinforcing\" had the title \"Fibrous Reinforcing\". So the title is the part after the section number and before the first colon or period. So for \"01 00 00 General May be used as Division level Section title. Requirements\", the title would be \"General May be used as Division level Section title. Requirements\"? That seems long. Wait, maybe the title is \"General\" and the rest is part of the content. But the example's title was the entire line after the section number. Wait, the example's title was \"Fibrous Reinforcing\", which is the part after the section number. So maybe the title here is \"General May be used as Division level Section title. Requirements\". But that seems like a run-on sentence. Alternatively, maybe the title is \"General\" and the rest is part of the content. But the user's example shows that the title is the entire line after the section number. So I need to parse the title as the entire text after the section number until the first colon or period. Wait, in the example, the title was \"Fibrous Reinforcing\", which is the part after the section number. So in the current text, the first section is \"01 00 00 General May be used as Division level Section title. Requirements\". The title here would be \"General May be used as Division level Section title. Requirements\". But that seems like a title. However, the example's title was just \"Fibrous Reinforcing\". Maybe the title is the first part after the section number, and the rest is part of the content. Wait, the example's title was \"Fibrous Reinforcing\", and the content started with \"Includes: fibrous...\". So perhaps the title is the part after the section number until the first colon or period. Let me check the example again. The example's text was:\n\n\"03 24 00 Fibrous Reinforcing\nIncludes: fibrous reinforcing for reinforcement of concrete. Steel fibers, synthetic fibers.\"\n\nSo the title is \"Fibrous Reinforcing\", and the content starts with \"Includes: ...\". So in the current text, the first line is \"01 00 00 General May be used as Division level Section title. Requirements\". The title here would be \"General May be used as Division level Section title. Requirements\". But that seems like a long title. Alternatively, maybe the title is \"General\" and the rest is part of the content. But the user's example shows that the title is the entire line after the section number. So I need to take the entire line after the section number as the title. Wait, but the example's title was \"Fibrous Reinforcing\", which is the part after the section number. So in the current text, the first line is \"01 00 00 General May be used as Division level Section title. Requirements\". The title would be \"General May be used as Division level Section title. Requirements\". But that seems like a title. However, the example's title was just the name, not a full sentence. Maybe the title is \"General\" and the rest is part of the content. But the user's example shows that the title is the part after the section number until the first colon or period. Wait, in the example, the title was \"Fibrous Reinforcing\", and the content started with \"Includes: ...\". So the title is the part after the section number until the first colon or period. So in the current text, the first line is \"01 00 00 General May be used as Division level Section title. Requirements\". The title would be \"General May be used as Division level Section title. Requirements\" because that's the entire line after the section number. But that seems like a title. However, the example's title was a single word. Maybe the title is \"General\" and the rest is part of the content. But the user's example shows that the title is the entire line after the section number. So I need to take the entire line after the section number as the title. Wait, but the example's title was \"Fibrous Reinforcing\", which is the part after the section number. So in the current text, the first line is \"01 00 00 General May be used as Division level Section title. Requirements\". The title would be \"General May be used as Division level Section title. Requirements\". But that's a long title. However, the user's example shows that the title is the part after the section number. So I need to take that as the title. Then, the content starts with \"Requirements\" but that's part of the title. Wait, maybe the title is \"General\" and the rest is part of the content. But the example's title was the entire line after the section number. So I think the title is \"General May be used as Division level Section title. Requirements\". But that seems odd. Alternatively, maybe the title is \"General\" and the rest is part of the content. But the user's example shows that the title is the entire line after the section number. So I'll proceed with that.\n\nNext, the section \"01 10 00 Summary\" has a title \"Summary\". Then, \"Includes: description of construction delivered under a single contract. Description of provisions for future construction.\" So the includes are the two sentences. Then \"May Include: list of products ordered in advance, owner - furnished products , salvaged material and equipment, products delivered to owner, and owner -installed products.\" So the may_include is the list. Then \"Alternate Terms/Abbreviations: purchase contract: procurement contract: purchase order.\" So alternate_terms is split by colons. Then \"See: 00 24 00 for procurement scopes. 00 54 13 for agreement form supplementary scope statement. 01 31 00 for coordination of work under a single contract. 01 64 00 for owner -supplied products.\" So the see references are those section numbers with their descriptions. Then the next sections are \"01 11 13 Work Covered by Contract Documents\", \"01 11 16 Work by Owner\", \"01 11 19 Purchase Contracts\", \"01 12 00 Multiple Contract Summary\" with includes and may_include, and see references. Then \"DIVISION 01 \u2013 GENERAL REQUIREMENTS\" which is a heading, not a section.\n\nSo, I need to parse each section, extract the section number, title, includes, may_include, products, alternate_terms, cross_references (see and see_also), and sub_sections if any. But in the current text, there are no sub_sections mentioned. The example had sub_sections, but in this text, there are none. So the sections are:\n\n1. 01 00 00 General May be used as Division level Section title. Requirements\n2. 01 10 00 Summary\n3. 01 11 00 Summary of Work\n4. 01 11 13 Work Covered by Contract Documents\n5. 01 11 16 Work by Owner\n6. 01 11 19 Purchase Contracts\n7. 01 12 00 Multiple Contract Summary\n\nWait, the text starts with \"01 00 00 General...\" which is a Level 1 section (since the last two digits are 00). Then \"01 10 00 Summary\" is Level 1. Then \"01 11 00 Summary of Work\" is Level 1. Then \"01 11 13 Work Covered by Contract Documents\" is Level 2 (since the last digit is 13). Similarly for the others. So each section number is parsed as per the rules.\n\nNow, for each section, I need to extract the content. For example, the first section \"01 00 00 General May be used as Division level Section title. Requirements\" has no includes, may_include, products, etc. It's just the title and the content. Wait, the example had includes, may_include, etc. So maybe the first section is just the title and the content is the rest. But according to the parsing rules, I need to extract includes, may_include, etc. But in the first section, there's no includes or may_include. So the content would be empty for those fields. The alternate_terms and see references would be empty. The cross_references would have the see entries. Wait, the first section's text is \"01 00 00 General May be used as Division level Section title. Requirements\". There's no includes, may_include, etc. So the content would have includes as empty, may_include as empty, products as empty, alternate_terms as empty, and cross_references as empty. But the user's example had the title as the part after the section number. So the first section's title is \"General May be used as Division level Section title. Requirements\". But that seems like a title. However, the example's title was just the name. Maybe the title is \"General\" and the rest is part of the content. But the user's example shows that the title is the entire line after the section number. So I need to take that as the title. Then, the content for that section would be the rest of the text. Wait, but the first section's text is just the title. So the content would be empty. But the example's content started with \"Includes: ...\". So in this case, the first section has no content. So the content fields would be empty. Then, the next section is \"01 10 00 Summary\" with includes and may_include. Let me proceed step by step.\n\nFor each section:\n\n1. 01 00 00: Title is \"General May be used as Division level Section title. Requirements\". No includes, may_include, products, alternate_terms, see, etc. So the content is empty. Cross_references is empty. Sub_sections is empty.\n\n2. 01 10 00: Title is \"Summary\". Includes: \"description of construction delivered under a single contract. Description of provisions for future construction.\" (split into two includes). May Include: \"list of products ordered in advance, owner - furnished products , salvaged material and equipment, products delivered to owner, and owner -installed products.\" (split into one may_include). Alternate Terms/Abbreviations: \"purchase contract: procurement contract: purchase order.\" (split into three terms). See: \"00 24 00 for procurement scopes. 00 54 13 for agreement form supplementary scope statement. 01 31 00 for coordination of work under a single contract. 01 64 00 for owner -supplied products.\" (split into four see entries). No sub_sections.\n\n3. 01 11 00: Title is \"Summary of Work\". Includes: \"description of construction delivered under a single contract. Description of provisions for future construction.\" (same as previous includes). May Include: \"list of products ordered in advance, owner - furnished products , salvaged material and equipment, products delivered to owner, and owner -installed products.\" (same as previous may_include). Alternate Terms/Abbreviations: same as previous. See: same as previous. Wait, but in the text, the first section (01 10 00) has the see references, and the next section (01 11 00) has the same see references? Wait, looking back, the text after 01 10 00 is:\n\n\"01 10 00 Summary  \n01 11 00 Summary of Work  \nIncludes:  description  of construction  delivered  under  a single \ncontract. Description of provisions for future construction.  \n \nMay Include: list of products ordered in advance, owner - \nfurnished  products , salvaged  material  and equipment,  products \ndelivered to owner, and owner -installed products.  \n \nAlternate  Terms/Abbreviations:  purchase  contract:  procurement \ncontract: purchase order.  \n \nSee: 00 24 00 for procurement  scopes.  \n00 54 13 for agreement  form supplementary  scope  statement. \n01 31 00 for coordination of work under a single contract.  \n01 64 00 for owner -supplied  products.  \n \n01 11 13 Work  Covered  by Contract  Documents  \n01 11 16 Work  by Owner  \n01 11 19 Purchase  Contracts  \n01 12 00 Multiple  Contract  Summary  \nIncludes:  description  of construction  delivered  under  more  than \none construction contract; for example, multiple prime, \nconstruction management, and design -build. Summary of \ncontracts, related prior construction, related concurrent \nconstruction, c ontract interface, phasing of construction, and \ntemporary facilities and controls responsibility.  \n \nMay Include: list of products ordered in advance, owner - \nfurnished  products,  salvaged  material  and equipment,  products \ndelivered to owner, and owner -installe d products, future \nconstruction, and provisions for future construction associated \nwith each contract.  \n \nSee: 00 24 00 for procurement  scopes.  \n00 53 13 for agreement  form supplementary  scope  statement.  \n01 31 16 for multiple  contract  coordination.  \nDIVISION  01 \u2013 GENERAL  \nREQUIREMENTS\"\n\nWait, the first section (01 10 00) has the see references, and then the next section (01 11 00) has includes, may_include, etc. So the 01 11 00 section's includes and may_include are the same as the previous section? Or is the 01 11 00 section's includes and may_include different? Let me check the text again.\n\nThe text after 01 10 00 is:\n\n\"01 11 00 Summary of Work  \nIncludes:  description  of construction  delivered  under  a single \ncontract. Description of provisions for future construction.  \n \nMay Include: list of products ordered in advance, owner - \nfurnished  products , salvaged  material  and equipment,  products \ndelivered to owner, and owner -installed products.  \n \nAlternate  Terms/Abbreviations:  purchase  contract:  procurement \ncontract: purchase order.  \n \nSee: 00 24 00 for procurement  scopes.  \n00 54 13 for agreement  form supplementary  scope  statement. \n01 31 00 for coordination of work under a single contract.  \n01 64 00 for owner -supplied  products.  \n \n01 11 13 Work  Covered  by Contract  Documents  \n01 11 16 Work  by Owner  \n01 11 19 Purchase  Contracts  \n01 12 00 Multiple  Contract  Summary  \nIncludes:  description  of construction  delivered  under  more  than \none construction contract; for example, multiple prime, \nconstruction management, and design -build. Summary of \ncontracts, related prior construction, related concurrent \nconstruction, c ontract interface, phasing of construction, and \ntemporary facilities and controls responsibility.  \n \nMay Include: list of products ordered in advance, owner - \nfurnished  products,  salvaged  material  and equipment,  products \ndelivered to owner, and owner -installe d products, future \nconstruction, and provisions for future construction associated \nwith each contract.  \n \nSee: 00 24 00 for procurement  scopes.  \n00 53 13 for agreement  form supplementary  scope  statement.  \n01 31 16 for multiple  contract  coordination.  \nDIVISION  01 \u2013 GENERAL  \nREQUIREMENTS\"\n\nWait, the 01 11 00 section has includes and may_include, and the same see references as the 01 10 00 section. But the 01 11 00 section's includes and may_include are the same as the 01 10 00 section? Or is the 01 11 00 section's includes and may_include different? Let me check the text again.\n\nThe 01 10 00 section's includes are:\n\nIncludes: description of construction delivered under a single contract. Description of provisions for future construction.\n\nMay Include: list of products ordered in advance, owner - furnished products , salvaged material and equipment, products delivered to owner, and owner -installed products.\n\nThen, the 01 11 00 section's includes are the same as the 01 10 00's includes? Or is it different? Wait, the text after 01 10 00 is:\n\n\"01 11 00 Summary of Work  \nIncludes:  description  of construction ",
+      "structured":null
+    }
+  ]
+}
